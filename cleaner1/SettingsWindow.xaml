@@ -1,0 +1,28 @@
+<Window x:Class="ModernFileCleaner.SettingsWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        mc:Ignorable="d"
+        Title="Settings" Height="300" Width="400" 
+        WindowStartupLocation="CenterOwner" 
+        Background="#FF2D2D30">
+    <Grid Margin="10">
+        <StackPanel>
+            <GroupBox Header="General Settings" Foreground="White" FontWeight="Bold" BorderBrush="#FF007ACC">
+                <StackPanel Margin="10">
+                    <CheckBox x:Name="chkAutoAnalyze" Content="Auto-analyze on startup" Foreground="White" Margin="0,5"/>
+                    <CheckBox x:Name="chkAutoClean" Content="Auto-clean on exit" Foreground="White" Margin="0,5"/>
+                    <CheckBox x:Name="chkShowNotifications" Content="Show notifications" Foreground="White" Margin="0,5"/>
+                </StackPanel>
+            </GroupBox>
+
+            <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,20,0,0">
+                <Button x:Name="btnSave" Content="Save" Width="80" Height="30" Margin="0,0,10,0" 
+                        Background="#FF007ACC" Foreground="White" BorderBrush="#FF007ACC" Click="btnSave_Click"/>
+                <Button x:Name="btnCancel" Content="Cancel" Width="80" Height="30" 
+                        Background="#FF007ACC" Foreground="White" BorderBrush="#FF007ACC" Click="btnCancel_Click"/>
+            </StackPanel>
+        </StackPanel>
+    </Grid>
+</Window>
