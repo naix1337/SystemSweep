@@ -4,28 +4,26 @@ namespace ModernFileCleaner
 {
     public partial class SettingsWindow : Window
     {
-        private readonly MainWindow mainWindow;
-
-        public SettingsWindow(MainWindow owner)
+        public SettingsWindow()
         {
             InitializeComponent();
-            mainWindow = owner;
-            Owner = owner;
             LoadSettings();
         }
 
         private void LoadSettings()
         {
-            chkAutoAnalyze.IsChecked = mainWindow.AutoAnalyze;
-            chkAutoClean.IsChecked = mainWindow.AutoClean;
-            chkShowNotifications.IsChecked = mainWindow.ShowNotifications;
+            AppSettings.Instance.Load();
+            chkAutoAnalyze.IsChecked = AppSettings.Instance.AutoAnalyze;
+            chkAutoClean.IsChecked = AppSettings.Instance.AutoClean;
+            chkNotifications.IsChecked = AppSettings.Instance.ShowNotifications;
         }
 
         private void SaveSettings()
         {
-            mainWindow.AutoAnalyze = chkAutoAnalyze.IsChecked ?? false;
-            mainWindow.AutoClean = chkAutoClean.IsChecked ?? false;
-            mainWindow.ShowNotifications = chkShowNotifications.IsChecked ?? false;
+            AppSettings.Instance.AutoAnalyze = chkAutoAnalyze.IsChecked ?? false;
+            AppSettings.Instance.AutoClean = chkAutoClean.IsChecked ?? false;
+            AppSettings.Instance.ShowNotifications = chkNotifications.IsChecked ?? false;
+            AppSettings.Instance.Save();
         }
 
         private void btnSave_Click(object sender, RoutedEventArgs e)

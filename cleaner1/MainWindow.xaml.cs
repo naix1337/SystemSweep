@@ -15,7 +15,7 @@ namespace ModernFileCleaner
 
         public MainWindow()
         {
-            // Admin-Rechte prÃ¼fen
+            // Admin-Rechte prüfen
             var identity = WindowsIdentity.GetCurrent();
             var principal = new WindowsPrincipal(identity);
             isAdmin = principal.IsInRole(WindowsBuiltInRole.Administrator);
@@ -106,7 +106,7 @@ namespace ModernFileCleaner
 
             if (chkStoreCache.IsChecked == true)
             {
-                totalSpaceToClean += 100 * 1024 * 1024; // GeschÃ¤tzte GrÃ¶ÃŸe
+                totalSpaceToClean += 100 * 1024 * 1024; // Geschätzte Größe
             }
 
             if (chkWindowsLogs.IsChecked == true)
@@ -132,13 +132,13 @@ namespace ModernFileCleaner
         {
             if (totalSpaceToClean == 0)
             {
-                MessageBox.Show("Bitte fÃ¼hren Sie zuerst eine Analyse durch oder wÃ¤hlen Sie Bereinigungsoptionen.", "Information", MessageBoxButton.OK, MessageBoxImage.Information);
+                MessageBox.Show("Bitte führen Sie zuerst eine Analyse durch oder wählen Sie Bereinigungsoptionen.", "Information", MessageBoxButton.OK, MessageBoxImage.Information);
                 return;
             }
 
             if ((chkWindowsOld.IsChecked == true || chkMemoryDumps.IsChecked == true) && !isAdmin)
             {
-                MessageBox.Show("Administratorrechte fÃ¼r ausgewÃ¤hlte Operationen erforderlich.", "Berechtigungsfehler", MessageBoxButton.OK, MessageBoxImage.Error);
+                MessageBox.Show("Administratorrechte für ausgewählte Operationen erforderlich.", "Berechtigungsfehler", MessageBoxButton.OK, MessageBoxImage.Error);
                 return;
             }
 
@@ -150,7 +150,7 @@ namespace ModernFileCleaner
             {
                 if (chkTemporaryFiles.IsChecked == true)
                 {
-                    txtProgressStatus.Text = "Bereinige temporÃ¤re Dateien...";
+                    txtProgressStatus.Text = "Bereinige temporäre Dateien...";
                     CleanTempFiles();
                 }
 
@@ -215,7 +215,7 @@ namespace ModernFileCleaner
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"Fehler wÃ¤hrend der Bereinigung: {ex.Message}", "Fehler", MessageBoxButton.OK, MessageBoxImage.Error);
+                MessageBox.Show($"Fehler während der Bereinigung: {ex.Message}", "Fehler", MessageBoxButton.OK, MessageBoxImage.Error);
                 txtProgressStatus.Text = "Bereinigung fehlgeschlagen.";
             }
             finally
@@ -247,7 +247,7 @@ namespace ModernFileCleaner
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"Windows Update konnte nicht geÃ¶ffnet werden: {ex.Message}",
+                MessageBox.Show($"Windows Update konnte nicht geöffnet werden: {ex.Message}",
                               "Fehler", MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
@@ -443,7 +443,7 @@ namespace ModernFileCleaner
         {
             if (!isAdmin)
             {
-                MessageBox.Show("Administratorrechte zum LÃ¶schen des Windows.old-Ordners erforderlich.",
+                MessageBox.Show("Administratorrechte zum Löschen des Windows.old-Ordners erforderlich.",
                               "Berechtigungsfehler", MessageBoxButton.OK, MessageBoxImage.Warning);
                 return;
             }
@@ -461,7 +461,7 @@ namespace ModernFileCleaner
                 }
                 catch (UnauthorizedAccessException)
                 {
-                    MessageBox.Show("Administratorrechte zum LÃ¶schen des Windows.old-Ordners erforderlich.",
+                    MessageBox.Show("Administratorrechte zum Löschen des Windows.old-Ordners erforderlich.",
                                   "Berechtigungsfehler", MessageBoxButton.OK, MessageBoxImage.Warning);
                 }
                 catch (Exception ex)
@@ -505,7 +505,7 @@ namespace ModernFileCleaner
         {
             if (!isAdmin)
             {
-                MessageBox.Show("Administratorrechte zum LÃ¶schen von Speicherabbilddateien erforderlich.",
+                MessageBox.Show("Administratorrechte zum Löschen von Speicherabbilddateien erforderlich.",
                               "Berechtigungsfehler", MessageBoxButton.OK, MessageBoxImage.Warning);
                 return;
             }
@@ -519,7 +519,7 @@ namespace ModernFileCleaner
                 try { File.Delete(dumpPath); }
                 catch (UnauthorizedAccessException)
                 {
-                    MessageBox.Show("Administratorrechte zum LÃ¶schen von Speicherabbilddateien erforderlich.",
+                    MessageBox.Show("Administratorrechte zum Löschen von Speicherabbilddateien erforderlich.",
                                   "Berechtigungsfehler", MessageBoxButton.OK, MessageBoxImage.Warning);
                 }
                 catch { }
@@ -537,7 +537,7 @@ namespace ModernFileCleaner
                 }
                 catch (UnauthorizedAccessException)
                 {
-                    MessageBox.Show("Administratorrechte zum LÃ¶schen von Minidump-Dateien erforderlich.",
+                    MessageBox.Show("Administratorrechte zum Löschen von Minidump-Dateien erforderlich.",
                                   "Berechtigungsfehler", MessageBoxButton.OK, MessageBoxImage.Warning);
                 }
                 catch { }
