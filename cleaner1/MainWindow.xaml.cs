@@ -11,44 +11,14 @@ namespace ModernFileCleaner
     {
         private long totalSpaceToClean = 0;
         private DispatcherTimer progressTimer;
-        private DateTime lastCleaned = DateTime.MinValue;
         private bool isAdmin = false;
-
-        // Settings
-        public bool AutoAnalyze { get; set; } = false;
-        public bool AutoClean { get; set; } = false;
-        public bool ShowNotifications { get; set; } = true;
 
         public MainWindow()
         {
-            // Admin check
+            // Admin-Rechte prüfen
             var identity = WindowsIdentity.GetCurrent();
             var principal = new WindowsPrincipal(identity);
             isAdmin = principal.IsInRole(WindowsBuiltInRole.Administrator);
-
-            if (!isAdmin)
-            {
-                var result = MessageBox.Show("This application requires administrator privileges to use all features.\n\nRestart as Administrator?",
-                                           "Admin Rights Required",
-                                           MessageBoxButton.YesNo,
-                                           MessageBoxImage.Warning);
-
-                if (result == MessageBoxResult.Yes)
-                {
-                    try
-                    {
-                        Process.Start(new ProcessStartInfo
-                        {
-                            FileName = Process.GetCurrentProcess().MainModule.FileName,
-                            UseShellExecute = true,
-                            Verb = "runas"
-                        });
-                    }
-                    catch { }
-                    Application.Current.Shutdown();
-                    return;
-                }
-            }
 
             InitializeComponent();
             txtAdminStatus.Text = isAdmin ? "Yes" : "No";
@@ -59,7 +29,7 @@ namespace ModernFileCleaner
 
         private void Window_Loaded(object sender, RoutedEventArgs e)
         {
-            if (AutoAnalyze)
+            if (AppSettings.Instance.AutoAnalyze)
             {
                 btnAnalyze_Click(null, null);
             }
@@ -86,16 +56,18 @@ namespace ModernFileCleaner
 
         private void LoadSettings()
         {
-            if (lastCleaned != DateTime.MinValue)
+            AppSettings.Instance.Load();
+            if (AppSettings.Instance.LastCleaned != DateTime.MinValue)
             {
-                txtLastCleaned.Text = lastCleaned.ToString("g");
+                txtLastCleaned.Text = AppSettings.Instance.LastCleaned.ToString("g");
             }
         }
 
         private void SaveSettings()
         {
-            lastCleaned = DateTime.Now;
-            txtLastCleaned.Text = lastCleaned.ToString("g");
+            AppSettings.Instance.LastCleaned = DateTime.Now;
+            AppSettings.Instance.Save();
+            txtLastCleaned.Text = AppSettings.Instance.LastCleaned.ToString("g");
         }
 
         private void btnAnalyze_Click(object sender, RoutedEventArgs e)
@@ -122,11 +94,6 @@ namespace ModernFileCleaner
                 totalSpaceToClean += CalculateThumbnailCacheSize();
             }
 
-            if (chkWindowsLogs.IsChecked == true)
-            {
-                totalSpaceToClean += CalculateWindowsLogFilesSize();
-            }
-
             if (chkErrorReports.IsChecked == true)
             {
                 totalSpaceToClean += CalculateErrorReportsSize();
@@ -139,7 +106,12 @@ namespace ModernFileCleaner
 
             if (chkStoreCache.IsChecked == true)
             {
-                totalSpaceToClean += 100 * 1024 * 1024; // Estimated size
+                totalSpaceToClean += 100 * 1024 * 1024; // Geschätzte Größe
+            }
+
+            if (chkWindowsLogs.IsChecked == true)
+            {
+                totalSpaceToClean += CalculateWindowsLogFilesSize();
             }
 
             if (chkWindowsOld.IsChecked == true && isAdmin)
@@ -153,20 +125,20 @@ namespace ModernFileCleaner
             }
 
             txtSpaceToClean.Text = $"{totalSpaceToClean / (1024 * 1024)} MB";
-            txtProgressStatus.Text = "Analysis complete. Ready to clean.";
+            txtProgressStatus.Text = "Analyse abgeschlossen. Bereit zur Bereinigung.";
         }
 
         private void btnClean_Click(object sender, RoutedEventArgs e)
         {
             if (totalSpaceToClean == 0)
             {
-                MessageBox.Show("Please analyze first or select cleaning options.", "Information", MessageBoxButton.OK, MessageBoxImage.Information);
+                MessageBox.Show("Bitte führen Sie zuerst eine Analyse durch oder wählen Sie Bereinigungsoptionen.", "Information", MessageBoxButton.OK, MessageBoxImage.Information);
                 return;
             }
 
             if ((chkWindowsOld.IsChecked == true || chkMemoryDumps.IsChecked == true) && !isAdmin)
             {
-                MessageBox.Show("Admin rights required for selected operations.", "Permission Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                MessageBox.Show("Administratorrechte für ausgewählte Operationen erforderlich.", "Berechtigungsfehler", MessageBoxButton.OK, MessageBoxImage.Error);
                 return;
             }
 
@@ -178,73 +150,73 @@ namespace ModernFileCleaner
             {
                 if (chkTemporaryFiles.IsChecked == true)
                 {
-                    txtProgressStatus.Text = "Cleaning temporary files...";
+                    txtProgressStatus.Text = "Bereinige temporäre Dateien...";
                     CleanTempFiles();
                 }
 
                 if (chkRecycleBin.IsChecked == true)
                 {
-                    txtProgressStatus.Text = "Emptying recycle bin...";
+                    txtProgressStatus.Text = "Leere Papierkorb...";
                     EmptyRecycleBin();
                 }
 
                 if (chkDownloadCache.IsChecked == true)
                 {
-                    txtProgressStatus.Text = "Cleaning download cache...";
+                    txtProgressStatus.Text = "Bereinige Download-Cache...";
                     CleanDownloadCache();
                 }
 
                 if (chkThumbnailCache.IsChecked == true)
                 {
-                    txtProgressStatus.Text = "Cleaning thumbnail cache...";
+                    txtProgressStatus.Text = "Bereinige Thumbnail-Cache...";
                     CleanThumbnailCache();
-                }
-
-                if (chkWindowsLogs.IsChecked == true)
-                {
-                    txtProgressStatus.Text = "Cleaning Windows log files...";
-                    CleanWindowsLogFiles();
                 }
 
                 if (chkErrorReports.IsChecked == true)
                 {
-                    txtProgressStatus.Text = "Cleaning error reports...";
+                    txtProgressStatus.Text = "Bereinige Fehlerberichte...";
                     CleanErrorReports();
                 }
 
                 if (chkInstallerTemp.IsChecked == true)
                 {
-                    txtProgressStatus.Text = "Cleaning installer temp files...";
+                    txtProgressStatus.Text = "Bereinige Installer-Temp-Dateien...";
                     CleanInstallerTempFiles();
                 }
 
                 if (chkStoreCache.IsChecked == true)
                 {
-                    txtProgressStatus.Text = "Cleaning Microsoft Store cache...";
+                    txtProgressStatus.Text = "Bereinige Microsoft Store Cache...";
                     CleanStoreCache();
+                }
+
+                if (chkWindowsLogs.IsChecked == true)
+                {
+                    txtProgressStatus.Text = "Bereinige Windows-Protokolldateien...";
+                    CleanWindowsLogFiles();
                 }
 
                 if (chkWindowsOld.IsChecked == true && isAdmin)
                 {
-                    txtProgressStatus.Text = "Cleaning Windows.old folder...";
+                    txtProgressStatus.Text = "Bereinige Windows.old Ordner...";
                     CleanWindowsOld();
                 }
 
                 if (chkMemoryDumps.IsChecked == true && isAdmin)
                 {
-                    txtProgressStatus.Text = "Cleaning memory dumps...";
+                    txtProgressStatus.Text = "Bereinige Speicherabbilder...";
                     CleanMemoryDumps();
                 }
 
                 SaveSettings();
-                txtProgressStatus.Text = "Cleaning completed successfully!";
+                txtProgressStatus.Text = "Bereinigung erfolgreich abgeschlossen!";
                 totalSpaceToClean = 0;
                 txtSpaceToClean.Text = "0 MB";
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"Error during cleaning: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
-                txtProgressStatus.Text = "Cleaning failed.";
+                MessageBox.Show($"Fehler während der Bereinigung: {ex.Message}", "Fehler", MessageBoxButton.OK, MessageBoxImage.Error);
+                txtProgressStatus.Text = "Bereinigung fehlgeschlagen.";
             }
             finally
             {
@@ -255,16 +227,36 @@ namespace ModernFileCleaner
 
         private void btnSettings_Click(object sender, RoutedEventArgs e)
         {
-            var settingsWindow = new SettingsWindow(this);
+            var settingsWindow = new SettingsWindow();
+            settingsWindow.Owner = this;
             settingsWindow.ShowDialog();
         }
 
-        #region Cleaning Methods
+        private void btnAbout_Click(object sender, RoutedEventArgs e)
+        {
+            var aboutWindow = new AboutWindow();
+            aboutWindow.Owner = this;
+            aboutWindow.ShowDialog();
+        }
+
+        private void btnUpdate_Click(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                Process.Start("ms-settings:windowsupdate");
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Windows Update konnte nicht geöffnet werden: {ex.Message}",
+                              "Fehler", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+        }
+
+        #region Bereinigungsmethoden
 
         private long CalculateTempFilesSize()
         {
             long size = 0;
-
             string tempPath = Path.GetTempPath();
             size += GetDirectorySize(tempPath);
 
@@ -295,7 +287,6 @@ namespace ModernFileCleaner
         {
             try
             {
-                // Alternative implementation
                 string recyclePath = Path.Combine(
                     Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),
                     "Microsoft", "Windows", "RecycleBin");
@@ -307,7 +298,7 @@ namespace ModernFileCleaner
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"Error emptying recycle bin: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                MessageBox.Show($"Fehler beim Leeren des Papierkorbs: {ex.Message}", "Fehler", MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
 
@@ -344,37 +335,6 @@ namespace ModernFileCleaner
             if (Directory.Exists(thumbnailCachePath))
             {
                 foreach (var file in Directory.GetFiles(thumbnailCachePath, "thumbcache_*.db"))
-                {
-                    try { File.Delete(file); } catch { }
-                }
-            }
-        }
-
-        private long CalculateWindowsLogFilesSize()
-        {
-            string windowsPath = Environment.GetFolderPath(Environment.SpecialFolder.Windows);
-            long size = 0;
-            if (Directory.Exists(windowsPath))
-            {
-                foreach (var file in Directory.GetFiles(windowsPath, "*.log", SearchOption.AllDirectories))
-                {
-                    try
-                    {
-                        var fi = new FileInfo(file);
-                        size += fi.Length;
-                    }
-                    catch { }
-                }
-            }
-            return size;
-        }
-
-        private void CleanWindowsLogFiles()
-        {
-            string windowsPath = Environment.GetFolderPath(Environment.SpecialFolder.Windows);
-            if (Directory.Exists(windowsPath))
-            {
-                foreach (var file in Directory.GetFiles(windowsPath, "*.log", SearchOption.AllDirectories))
                 {
                     try { File.Delete(file); } catch { }
                 }
@@ -435,8 +395,39 @@ namespace ModernFileCleaner
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"Error cleaning Store cache: {ex.Message}", "Error",
+                MessageBox.Show($"Fehler beim Bereinigen des Store-Caches: {ex.Message}", "Fehler",
                                MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+        }
+
+        private long CalculateWindowsLogFilesSize()
+        {
+            string windowsPath = Environment.GetFolderPath(Environment.SpecialFolder.Windows);
+            long size = 0;
+            if (Directory.Exists(windowsPath))
+            {
+                foreach (var file in Directory.GetFiles(windowsPath, "*.log", SearchOption.AllDirectories))
+                {
+                    try
+                    {
+                        var fi = new FileInfo(file);
+                        size += fi.Length;
+                    }
+                    catch { }
+                }
+            }
+            return size;
+        }
+
+        private void CleanWindowsLogFiles()
+        {
+            string windowsPath = Environment.GetFolderPath(Environment.SpecialFolder.Windows);
+            if (Directory.Exists(windowsPath))
+            {
+                foreach (var file in Directory.GetFiles(windowsPath, "*.log", SearchOption.AllDirectories))
+                {
+                    try { File.Delete(file); } catch { }
+                }
             }
         }
 
@@ -452,8 +443,8 @@ namespace ModernFileCleaner
         {
             if (!isAdmin)
             {
-                MessageBox.Show("Admin rights required to delete Windows.old folder.",
-                              "Permission Error", MessageBoxButton.OK, MessageBoxImage.Warning);
+                MessageBox.Show("Administratorrechte zum Löschen des Windows.old-Ordners erforderlich.",
+                              "Berechtigungsfehler", MessageBoxButton.OK, MessageBoxImage.Warning);
                 return;
             }
 
@@ -470,13 +461,13 @@ namespace ModernFileCleaner
                 }
                 catch (UnauthorizedAccessException)
                 {
-                    MessageBox.Show("Admin rights required to delete Windows.old folder.",
-                                  "Permission Error", MessageBoxButton.OK, MessageBoxImage.Warning);
+                    MessageBox.Show("Administratorrechte zum Löschen des Windows.old-Ordners erforderlich.",
+                                  "Berechtigungsfehler", MessageBoxButton.OK, MessageBoxImage.Warning);
                 }
                 catch (Exception ex)
                 {
-                    MessageBox.Show($"Error cleaning Windows.old: {ex.Message}",
-                                  "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                    MessageBox.Show($"Fehler beim Bereinigen von Windows.old: {ex.Message}",
+                                  "Fehler", MessageBoxButton.OK, MessageBoxImage.Error);
                 }
             }
         }
@@ -514,12 +505,11 @@ namespace ModernFileCleaner
         {
             if (!isAdmin)
             {
-                MessageBox.Show("Admin rights required to delete memory dump files.",
-                              "Permission Error", MessageBoxButton.OK, MessageBoxImage.Warning);
+                MessageBox.Show("Administratorrechte zum Löschen von Speicherabbilddateien erforderlich.",
+                              "Berechtigungsfehler", MessageBoxButton.OK, MessageBoxImage.Warning);
                 return;
             }
 
-            // Main memory dump
             string dumpPath = Path.Combine(
                 Environment.GetFolderPath(Environment.SpecialFolder.Windows),
                 "MEMORY.DMP");
@@ -529,13 +519,12 @@ namespace ModernFileCleaner
                 try { File.Delete(dumpPath); }
                 catch (UnauthorizedAccessException)
                 {
-                    MessageBox.Show("Admin rights required to delete memory dump files.",
-                                  "Permission Error", MessageBoxButton.OK, MessageBoxImage.Warning);
+                    MessageBox.Show("Administratorrechte zum Löschen von Speicherabbilddateien erforderlich.",
+                                  "Berechtigungsfehler", MessageBoxButton.OK, MessageBoxImage.Warning);
                 }
                 catch { }
             }
 
-            // Minidumps
             string minidumpPath = Path.Combine(
                 Environment.GetFolderPath(Environment.SpecialFolder.Windows),
                 "Minidump");
@@ -548,8 +537,8 @@ namespace ModernFileCleaner
                 }
                 catch (UnauthorizedAccessException)
                 {
-                    MessageBox.Show("Admin rights required to delete minidump files.",
-                                  "Permission Error", MessageBoxButton.OK, MessageBoxImage.Warning);
+                    MessageBox.Show("Administratorrechte zum Löschen von Minidump-Dateien erforderlich.",
+                                  "Berechtigungsfehler", MessageBoxButton.OK, MessageBoxImage.Warning);
                 }
                 catch { }
             }
@@ -557,7 +546,7 @@ namespace ModernFileCleaner
 
         #endregion
 
-        #region Helper Methods
+        #region Hilfsmethoden
 
         private long GetDirectorySize(string path, string searchPattern = "*.*")
         {
