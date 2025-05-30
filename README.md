@@ -42,7 +42,7 @@ To use SystemSweep, follow these simple steps:
 
 ## 🤝 Contributing
 
-Contributions are welcome! If you have suggestions for improvements, new features, or bug fixes, please open an issue or submit a pull request.
+Contributions are welcome! If you have suggestions for improvements, new features, or bug fixes, please open an issue or dm me on discord: naixx1337.
 
 ## 📄 License
 
