@@ -26,7 +26,7 @@
                       HorizontalAlignment="Center"
                       Margin="0,0,0,30"/>
             
-            <TextBlock Text="2023 Your Company" 
+            <TextBlock Text="naix" 
                       Foreground="LightGray"
                       HorizontalAlignment="Center"
                       Margin="0,0,0,30"/>
