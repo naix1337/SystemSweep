@@ -1,6 +1,6 @@
 # SystemSweep
 
-![SystemSweep Screenshot](https://github.com/naix1337/SystemSweep/blob/main/image_784f36.png) SystemSweep is a simple yet effective cleaner tool designed for Windows operating systems. It helps you free up disk space by removing various types of unnecessary files and data that accumulate over time, improving system performance and reclaiming valuable storage.
+![SystemSweep Screenshot](https://github.com/naix1337/SystemSweep/blob/main/cleaner1/01.png) SystemSweep is a simple yet effective cleaner tool designed for Windows operating systems. It helps you free up disk space by removing various types of unnecessary files and data that accumulate over time, improving system performance and reclaiming valuable storage.
 
 ## ✨ Features
 
