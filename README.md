@@ -36,8 +36,8 @@ To use SystemSweep, follow these simple steps:
 
 1.  **Launch SystemSweep:** Open the application.
 2.  **Select Cleaning Options:** Check the boxes next to the types of files you wish to clean.
-3.  **Analyze (Implicit):** The tool will likely calculate the space to be cleaned based on your selections (though a dedicated "Analyze" button isn't shown, this is standard for cleaner tools).
-4.  **Clean:** Locate and click the "Clean" or similar button (not visible in the screenshot, but expected for a cleaner tool) to start the cleaning process.
+3.  **Analyze (Implicit):** The tool will calculate the space to be cleaned based on your selections.
+4.  **Clean:** Locate and click the "Clean Now" button to start the cleaning process.
 5.  **Monitor Progress:** Observe the progress bar to see the cleaning status.
 
 ## 🤝 Contributing
