@@ -22,6 +22,7 @@
                 <ui:NavigationViewItem Content="Dashboard" Icon="GridDots24" Tag="dashboard" IsActive="True" />
                 <ui:NavigationViewItem Content="Clean" Icon="Wrench24" Tag="clean" />
                 <ui:NavigationViewItem Content="Browser Cache" Icon="Globe24" Tag="browsers" />
+                <ui:NavigationViewItem Content="Duplicates" Icon="Copy24" Tag="duplicates" />
                 <ui:NavigationViewItem Content="Startup" Icon="PlayCircle24" Tag="startup" />
                 <ui:NavigationViewItem Content="Statistics" Icon="DataBarVertical24" Tag="stats" />
                 <ui:NavigationViewItem Content="Settings" Icon="Settings24" Tag="settings" />

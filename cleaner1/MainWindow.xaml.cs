@@ -83,6 +83,12 @@ public partial class MainWindow
                 _currentPage = "clean";
                 NavFrame.Navigate(_pages["clean"]);
                 break;
+            case "duplicates":
+                if (!_pages.ContainsKey("duplicates"))
+                    _pages["duplicates"] = new DuplicatesPage();
+                _currentPage = "duplicates";
+                NavFrame.Navigate(_pages["duplicates"]);
+                break;
             case "browsers":
                 if (!_pages.ContainsKey("browsers"))
                     _pages["browsers"] = new BrowserCachePage();
