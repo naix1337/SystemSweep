@@ -66,6 +66,20 @@ public partial class MainWindow
                     _pages["about"] = new AboutPage();
                 NavFrame.Navigate(_pages["about"]);
                 break;
+            case "theme":
+                ThemeService.Toggle();
+                AppSettings.Instance.Theme = ThemeService.CurrentTheme;
+                AppSettings.Instance.Save();
+                navTheme.Content = ThemeService.CurrentTheme == "Dark" ? "Dark Mode" : "Light Mode";
+                navTheme.Icon = new Wpf.Ui.Controls.SymbolIcon(
+                    ThemeService.CurrentTheme == "Dark"
+                        ? Wpf.Ui.Controls.SymbolRegular.DarkTheme24
+                        : Wpf.Ui.Controls.SymbolRegular.BrightnessHigh24);
+                // Navigate to Clean page
+                if (!_pages.ContainsKey("clean"))
+                    _pages["clean"] = new CleanPage(_historyService);
+                NavFrame.Navigate(_pages["clean"]);
+                break;
         }
     }
 }
