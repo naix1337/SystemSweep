@@ -24,6 +24,8 @@ public partial class TweaksPage
         GamingPanel.Children.Clear();
         SystemPanel.Children.Clear();
         NetworkPanel.Children.Clear();
+        DiskPanel.Children.Clear();
+        CleanupPanel.Children.Clear();
 
         foreach (var tweak in _allTweaks)
         {
@@ -33,6 +35,8 @@ public partial class TweaksPage
                 "Gaming" => GamingPanel,
                 "System" => SystemPanel,
                 "Network" => NetworkPanel,
+                "Disk" => DiskPanel,
+                "Cleanup" => CleanupPanel,
                 _ => SystemPanel
             };
             panel.Children.Add(card);
@@ -197,6 +201,8 @@ public partial class TweaksPage
         GamingPanel.Children.Clear();
         SystemPanel.Children.Clear();
         NetworkPanel.Children.Clear();
+        DiskPanel.Children.Clear();
+        CleanupPanel.Children.Clear();
         foreach (var tweak in _allTweaks)
         {
             var card = CreateTweakCard(tweak);
@@ -205,6 +211,8 @@ public partial class TweaksPage
                 "Gaming" => GamingPanel,
                 "System" => SystemPanel,
                 "Network" => NetworkPanel,
+                "Disk" => DiskPanel,
+                "Cleanup" => CleanupPanel,
                 _ => SystemPanel
             };
             panel.Children.Add(card);

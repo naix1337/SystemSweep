@@ -31,6 +31,12 @@
             <TextBlock Text="🌐 NETWORK" Foreground="#FFFFA500" FontSize="13" FontWeight="Bold" Margin="0,0,0,12"/>
             <StackPanel x:Name="NetworkPanel" Margin="0,0,0,24"/>
 
+            <TextBlock Text="💾 DISK &amp; MEMORY" Foreground="#FF8888FF" FontSize="13" FontWeight="Bold" Margin="0,0,0,12"/>
+            <StackPanel x:Name="DiskPanel" Margin="0,0,0,24"/>
+
+            <TextBlock Text="🧹 CLEANUP" Foreground="#FFFF8888" FontSize="13" FontWeight="Bold" Margin="0,0,0,12"/>
+            <StackPanel x:Name="CleanupPanel" Margin="0,0,0,24"/>
+
             <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Margin="0,8,0,24">
                 <ui:Button Content="✅ Apply All Recommended" Appearance="Primary" Width="200" Height="38" Margin="0,0,12,0" Click="ApplyRecommended_Click"/>
                 <ui:Button Content="↩️ Revert All" Appearance="Secondary" Width="140" Height="38" Click="RevertAll_Click"/>
