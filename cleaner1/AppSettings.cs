@@ -11,6 +11,7 @@ namespace ModernFileCleaner
         private static readonly Lazy<AppSettings> lazy = new Lazy<AppSettings>(() => new AppSettings());
         public static AppSettings Instance { get { return lazy.Value; } }
 
+        public string Theme { get; set; } = "Dark";
         public bool AutoAnalyze { get; set; }
         public bool AutoClean { get; set; }
         public bool ShowNotifications { get; set; }
@@ -21,6 +22,7 @@ namespace ModernFileCleaner
 
         private AppSettings()
         {
+            Theme = "Dark";
             AutoAnalyze = false;
             AutoClean = false;
             ShowNotifications = true;
@@ -38,6 +40,7 @@ namespace ModernFileCleaner
                     var settings = JsonConvert.DeserializeObject<AppSettings>(json);
                     if (settings != null)
                     {
+                        Theme = settings.Theme;
                         AutoAnalyze = settings.AutoAnalyze;
                         AutoClean = settings.AutoClean;
                         ShowNotifications = settings.ShowNotifications;
