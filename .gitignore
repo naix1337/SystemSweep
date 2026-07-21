@@ -5,3 +5,5 @@ obj/
 .vs/
 *.cache
 *.log
+*.key
+*.dat
