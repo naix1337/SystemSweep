@@ -19,7 +19,8 @@
                            IsPaneToggleVisible="False"
                            HeaderVisibility="Collapsed">
             <ui:NavigationView.MenuItems>
-                <ui:NavigationViewItem Content="Clean" Icon="Wrench24" Tag="clean" IsActive="True" />
+                <ui:NavigationViewItem Content="Dashboard" Icon="GridDots24" Tag="dashboard" IsActive="True" />
+                <ui:NavigationViewItem Content="Clean" Icon="Wrench24" Tag="clean" />
                 <ui:NavigationViewItem Content="Statistics" Icon="DataBarVertical24" Tag="stats" />
                 <ui:NavigationViewItem Content="Settings" Icon="Settings24" Tag="settings" />
                 <ui:NavigationViewItem Content="About" Icon="Info24" Tag="about" />
