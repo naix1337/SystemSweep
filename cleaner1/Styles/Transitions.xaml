@@ -1,0 +1,13 @@
+<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+
+    <PowerEase x:Key="FadeEasing" EasingMode="EaseOut" Power="2"/>
+    <PowerEase x:Key="HoverEasing" EasingMode="EaseOut" Power="3"/>
+
+    <Storyboard x:Key="PageFadeIn">
+        <DoubleAnimation Storyboard.TargetProperty="Opacity"
+                         From="0" To="1"
+                         Duration="0:0:0.2"
+                         EasingFunction="{StaticResource FadeEasing}"/>
+    </Storyboard>
+</ResourceDictionary>

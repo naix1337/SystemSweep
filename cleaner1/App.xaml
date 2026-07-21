@@ -9,6 +9,7 @@
                 <ui:ControlsDictionary />
                 <ResourceDictionary Source="Styles/Transitions.xaml"/>
                 <ResourceDictionary Source="Styles/ModernScrollBar.xaml"/>
+                <ResourceDictionary Source="Styles/ProgressStyles.xaml"/>
             </ResourceDictionary.MergedDictionaries>
 
             <!-- Global ScrollViewer style: enable touch panning -->

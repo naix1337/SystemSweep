@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.Windows;
+using System.Windows.Media.Animation;
 using System.Windows.Navigation;
 using ModernFileCleaner.Pages;
 using ModernFileCleaner.Services;
@@ -16,6 +17,27 @@ public partial class MainWindow
         InitializeComponent();
         _historyService.Load();
         NavView.SelectionChanged += OnSelectionChanged;
+
+        // Page fade transition animation
+        NavFrame.Navigated += (_, _) =>
+        {
+            if (NavFrame.Content is FrameworkElement element)
+            {
+                element.Opacity = 0;
+                var storyboard = new Storyboard();
+                var animation = new DoubleAnimation
+                {
+                    From = 0,
+                    To = 1,
+                    Duration = new Duration(TimeSpan.FromMilliseconds(200)),
+                    EasingFunction = new QuadraticEase { EasingMode = EasingMode.EaseOut }
+                };
+                Storyboard.SetTarget(animation, element);
+                Storyboard.SetTargetProperty(animation, new PropertyPath("Opacity"));
+                storyboard.Children.Add(animation);
+                storyboard.Begin();
+            }
+        };
 
         // Workaround: Navigate to first page after load
         Loaded += (_, _) =>

@@ -9,7 +9,7 @@
             <Border CornerRadius="20" Background="#FF2D2D2D"
                     Width="96" Height="96" Margin="0,0,0,20"
                     HorizontalAlignment="Center">
-                <TextBlock Text="🧹" FontSize="48"
+                <TextBlock Text="&#xE8B7;" FontFamily="/Wpf.Ui;Component/Resources/Font/#Segoe Fluent Icons" FontSize="40"
                            HorizontalAlignment="Center"
                            VerticalAlignment="Center"/>
             </Border>
