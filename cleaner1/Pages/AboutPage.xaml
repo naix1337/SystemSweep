@@ -3,55 +3,86 @@
       xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
       xmlns:ui="http://schemas.lepo.co/wpfui/2022/xaml"
       Title="About">
-    <Grid Margin="24">
-        <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center">
+    <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalAlignment="Center" VerticalAlignment="Center">
+        <StackPanel Margin="40" MaxWidth="480">
             <!-- App Icon -->
-            <Border CornerRadius="20" Background="#FF2D2D2D"
-                    Width="96" Height="96" Margin="0,0,0,20"
-                    HorizontalAlignment="Center">
-                <TextBlock Text="&#xE8B7;" FontFamily="/Wpf.Ui;Component/Resources/Font/#Segoe Fluent Icons" FontSize="40"
-                           HorizontalAlignment="Center"
-                           VerticalAlignment="Center"/>
+            <Border CornerRadius="24" Background="#FF0078D4" Width="88" Height="88" Margin="0,0,0,20" HorizontalAlignment="Center">
+                <TextBlock Text="🧹" FontSize="40" HorizontalAlignment="Center" VerticalAlignment="Center"/>
             </Border>
 
-            <!-- App Name -->
-            <TextBlock Text="System Sweep"
-                       FontSize="28" FontWeight="SemiBold"
-                       Foreground="White"
-                       HorizontalAlignment="Center"
-                       Margin="0,0,0,8"/>
+            <!-- App Name + Tagline -->
+            <TextBlock Text="System Sweep" FontSize="32" FontWeight="Bold" Foreground="White" HorizontalAlignment="Center"/>
+            <TextBlock Text="Professional Edition v2.0" FontSize="14" Foreground="#FF0078D4" HorizontalAlignment="Center" Margin="0,4,0,24"/>
 
-            <!-- Version -->
-            <Border CornerRadius="8" Background="#1A0078D4"
-                    Padding="12,4" Margin="0,0,0,20"
-                    HorizontalAlignment="Center">
-                <TextBlock Text="Version 2.0 — Fluent Edition"
-                           FontSize="13" Foreground="#FF0078D4"
-                           FontWeight="SemiBold"/>
+            <!-- Info Cards -->
+            <Border CornerRadius="12" Background="#FF2D2D2D" Padding="20" Margin="0,0,0,12">
+                <StackPanel>
+                    <Grid Margin="0,0,0,12">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="120"/>
+                            <ColumnDefinition Width="*"/>
+                        </Grid.ColumnDefinitions>
+                        <TextBlock Grid.Column="0" Text="Version" Foreground="#FF888888" FontSize="13"/>
+                        <TextBlock Grid.Column="1" x:Name="txtVersion" Text="2.0.0" Foreground="White" FontSize="13" FontWeight="SemiBold"/>
+                    </Grid>
+                    <Grid Margin="0,0,0,12">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="120"/>
+                            <ColumnDefinition Width="*"/>
+                        </Grid.ColumnDefinitions>
+                        <TextBlock Grid.Column="0" Text="Developer" Foreground="#FF888888" FontSize="13"/>
+                        <TextBlock Grid.Column="1" Text="naix.dev" Foreground="White" FontSize="13"/>
+                    </Grid>
+                    <Grid Margin="0,0,0,12">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="120"/>
+                            <ColumnDefinition Width="*"/>
+                        </Grid.ColumnDefinitions>
+                        <TextBlock Grid.Column="0" Text="License" Foreground="#FF888888" FontSize="13"/>
+                        <TextBlock Grid.Column="1" Text="Single-User License" Foreground="White" FontSize="13"/>
+                    </Grid>
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="120"/>
+                            <ColumnDefinition Width="*"/>
+                        </Grid.ColumnDefinitions>
+                        <TextBlock Grid.Column="0" Text="Runtime" Foreground="#FF888888" FontSize="13"/>
+                        <TextBlock Grid.Column="1" Text=".NET 8.0 • WPF UI 3.x" Foreground="White" FontSize="13"/>
+                    </Grid>
+                </StackPanel>
             </Border>
 
             <!-- Description -->
-            <TextBlock Text="A modern system cleaning tool for Windows 11"
-                       FontSize="14" Foreground="#FF888888"
-                       HorizontalAlignment="Center"
-                       Margin="0,0,0,8"/>
-            <TextBlock Text="Built with WPF UI • .NET 8 • Fluent Design"
-                       FontSize="12" Foreground="#FF666666"
-                       HorizontalAlignment="Center"
-                       Margin="0,0,0,40"/>
+            <Border CornerRadius="12" Background="#FF2D2D2D" Padding="20" Margin="0,0,0,12">
+                <TextBlock TextWrapping="Wrap" Foreground="#FFCCCCCC" FontSize="13" LineHeight="22">
+                    System Sweep Professional is a comprehensive Windows optimization toolkit.
+                    It cleans temporary files, manages startup programs, finds duplicates,
+                    optimizes system settings for gaming and performance, and monitors
+                    system health — all in a modern Fluent Design interface.
+                </TextBlock>
+            </Border>
 
-            <!-- Developer -->
-            <TextBlock Text="Developed by naix"
-                       FontSize="14" Foreground="#FF888888"
-                       HorizontalAlignment="Center"
-                       Margin="0,0,0,30"/>
+            <!-- Update Check -->
+            <Border CornerRadius="12" Background="#FF2D2D2D" Padding="20" Margin="0,0,0,12">
+                <StackPanel>
+                    <TextBlock Text="Updates" FontSize="15" FontWeight="SemiBold" Foreground="White" Margin="0,0,0,12"/>
+                    <ui:Button x:Name="btnCheckUpdate" Content="🔍 Check for Updates" Appearance="Primary"
+                               Width="200" Height="36" HorizontalAlignment="Left" Click="CheckUpdate_Click"/>
+                    <TextBlock x:Name="txtUpdateStatus" Text="" Foreground="#FF888888" FontSize="12" Margin="0,8,0,0"/>
+                </StackPanel>
+            </Border>
 
-            <!-- Close button -->
-            <ui:Button Content="✖  Close"
-                       Appearance="Secondary"
-                       Width="120" Height="36"
-                       HorizontalAlignment="Center"
-                       Click="Button_Click"/>
+            <!-- Links -->
+            <WrapPanel HorizontalAlignment="Center" Margin="0,8,0,24">
+                <ui:Button Content="🌐 Website" Appearance="Secondary" Width="120" Height="34" Margin="0,0,8,0" Click="Website_Click"/>
+                <ui:Button Content="⭐ Rate and Review" Appearance="Secondary" Width="140" Height="34" Margin="8,0,8,0" Click="Rate_Click"/>
+                <ui:Button Content="📧 Support" Appearance="Secondary" Width="120" Height="34" Margin="8,0,0,0" Click="Support_Click"/>
+            </WrapPanel>
+
+            <!-- Copyright -->
+            <TextBlock Text="© 2026 naix.dev. All rights reserved." FontSize="11" Foreground="#FF555555" HorizontalAlignment="Center" Margin="0,0,0,16"/>
+
+            <ui:Button Content="Close" Appearance="Secondary" Width="120" Height="36" HorizontalAlignment="Center" Click="Button_Click"/>
         </StackPanel>
-    </Grid>
+    </ScrollViewer>
 </Page>
