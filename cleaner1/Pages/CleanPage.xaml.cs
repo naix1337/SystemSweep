@@ -31,6 +31,11 @@ public partial class CleanPage
         CardsContainer.ItemsSource = _categories;
     }
 
+    public void RunAutoAnalyze()
+    {
+        btnAnalyze_Click(null, null);
+    }
+
     private void SelectAllToggle_Click(object sender, RoutedEventArgs e)
     {
         bool isChecked = SelectAllToggle.IsChecked ?? true;
