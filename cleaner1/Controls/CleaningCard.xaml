@@ -8,9 +8,38 @@
             BorderThickness="1"
             Padding="16"
             Margin="6">
+        <Border.RenderTransform>
+            <ScaleTransform CenterX="0.5" CenterY="0.5" ScaleX="1" ScaleY="1"/>
+        </Border.RenderTransform>
+        <Border.Resources>
+            <Storyboard x:Key="HoverIn">
+                <DoubleAnimation To="1.02" Duration="0:0:0.15"
+                                 Storyboard.TargetProperty="RenderTransform.ScaleX"
+                                 EasingFunction="{StaticResource HoverEasing}"/>
+                <DoubleAnimation To="1.02" Duration="0:0:0.15"
+                                 Storyboard.TargetProperty="RenderTransform.ScaleY"
+                                 EasingFunction="{StaticResource HoverEasing}"/>
+            </Storyboard>
+            <Storyboard x:Key="HoverOut">
+                <DoubleAnimation To="1.0" Duration="0:0:0.15"
+                                 Storyboard.TargetProperty="RenderTransform.ScaleX"
+                                 EasingFunction="{StaticResource HoverEasing}"/>
+                <DoubleAnimation To="1.0" Duration="0:0:0.15"
+                                 Storyboard.TargetProperty="RenderTransform.ScaleY"
+                                 EasingFunction="{StaticResource HoverEasing}"/>
+            </Storyboard>
+        </Border.Resources>
         <Border.Style>
             <Style TargetType="Border">
                 <Style.Triggers>
+                    <Trigger Property="IsMouseOver" Value="True">
+                        <Trigger.EnterActions>
+                            <BeginStoryboard Storyboard="{StaticResource HoverIn}"/>
+                        </Trigger.EnterActions>
+                        <Trigger.ExitActions>
+                            <BeginStoryboard Storyboard="{StaticResource HoverOut}"/>
+                        </Trigger.ExitActions>
+                    </Trigger>
                     <DataTrigger Binding="{Binding SafetyName}" Value="Dangerous">
                         <Setter Property="BorderBrush" Value="#44FF4444"/>
                     </DataTrigger>

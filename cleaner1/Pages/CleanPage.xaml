@@ -16,7 +16,7 @@
 
         <!-- Header -->
         <StackPanel Grid.Row="0" Orientation="Horizontal" Margin="0,0,0,16">
-            <TextBlock Text="🧹" FontSize="28" Margin="0,0,12,0" VerticalAlignment="Center"/>
+            <TextBlock Text="&#xE8B7;" FontFamily="/Wpf.Ui;Component/Resources/Font/#Segoe Fluent Icons" FontSize="24" Margin="0,0,12,0" VerticalAlignment="Center"/>
             <StackPanel>
                 <TextBlock Text="System Clean" FontSize="22" FontWeight="SemiBold" Foreground="White"/>
                 <TextBlock Text="Select categories to clean" FontSize="13" Foreground="#FF888888"/>
@@ -62,7 +62,7 @@
         <!-- Progress Bar -->
         <ProgressBar x:Name="ProgressBar"
                      Grid.Row="3"
-                     Height="4"
+                     Style="{StaticResource SmoothProgressBar}"
                      Margin="0,0,0,8"
                      Visibility="Collapsed"
                      IsIndeterminate="False"/>

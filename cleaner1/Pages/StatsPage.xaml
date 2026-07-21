@@ -11,7 +11,7 @@
 
         <!-- Header -->
         <StackPanel Grid.Row="0" Orientation="Horizontal" Margin="0,0,0,24">
-            <TextBlock Text="📊" FontSize="28" Margin="0,0,12,0" VerticalAlignment="Center"/>
+            <TextBlock Text="&#xE933;" FontFamily="/Wpf.Ui;Component/Resources/Font/#Segoe Fluent Icons" FontSize="24" Margin="0,0,12,0" VerticalAlignment="Center"/>
             <StackPanel>
                 <TextBlock Text="Statistics" FontSize="22" FontWeight="SemiBold" Foreground="White"/>
                 <TextBlock Text="Your cleaning history overview" FontSize="13" Foreground="#FF888888"/>
