@@ -1,0 +1,96 @@
+<Page x:Class="ModernFileCleaner.Pages.DashboardPage"
+      xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+      xmlns:ui="http://schemas.lepo.co/wpfui/2022/xaml"
+      Title="Dashboard">
+    <ScrollViewer VerticalScrollBarVisibility="Auto" Margin="24">
+        <StackPanel>
+            <!-- Header -->
+            <StackPanel Orientation="Horizontal" Margin="0,0,0,24">
+                <TextBlock Text="&#xE933;" FontSize="28" FontFamily="/Wpf.Ui;Component/Resources/Font/#Segoe Fluent Icons" Margin="0,0,12,0" VerticalAlignment="Center"/>
+                <StackPanel>
+                    <TextBlock Text="Dashboard" FontSize="22" FontWeight="SemiBold" Foreground="White"/>
+                    <TextBlock Text="PC health at a glance" FontSize="13" Foreground="#FF888888"/>
+                </StackPanel>
+            </StackPanel>
+
+            <!-- Health Score -->
+            <Border x:Name="HealthCard" CornerRadius="12" Background="#FF2D2D2D" Padding="20" Margin="0,0,0,16">
+                <StackPanel>
+                    <TextBlock Text="System Health" FontSize="14" Foreground="#FF888888" Margin="0,0,0,8"/>
+                    <TextBlock x:Name="txtHealthScore" Text="&#x2014;" FontSize="36" FontWeight="Bold" Foreground="#FF4CAF50"/>
+                    <TextBlock x:Name="txtHealthLabel" Text="Initializing..." FontSize="13" Foreground="#FF888888" Margin="0,4,0,0"/>
+                    <ProgressBar x:Name="HealthBar" Height="6" Margin="0,12,0,0" CornerRadius="3" Background="#FF3D3D3D"/>
+                </StackPanel>
+            </Border>
+
+            <!-- System Cards (2x2 Grid) -->
+            <Grid Margin="0,0,0,16">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                </Grid.RowDefinitions>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="*"/>
+                </Grid.ColumnDefinitions>
+
+                <!-- CPU -->
+                <Border Grid.Row="0" Grid.Column="0" CornerRadius="12" Background="#FF2D2D2D" Padding="16" Margin="0,0,6,6">
+                    <StackPanel>
+                        <TextBlock Text="&#xE8B7;" FontFamily="/Wpf.Ui;Component/Resources/Font/#Segoe Fluent Icons" FontSize="20" Foreground="#FF0078D4"/>
+                        <TextBlock Text="CPU" FontSize="12" Foreground="#FF888888" Margin="0,8,0,2"/>
+                        <TextBlock x:Name="txtCpu" Text="&#x2014;" FontSize="22" FontWeight="SemiBold" Foreground="White"/>
+                    </StackPanel>
+                </Border>
+
+                <!-- RAM -->
+                <Border Grid.Row="0" Grid.Column="1" CornerRadius="12" Background="#FF2D2D2D" Padding="16" Margin="6,0,0,6">
+                    <StackPanel>
+                        <TextBlock Text="&#xE8B7;" FontFamily="/Wpf.Ui;Component/Resources/Font/#Segoe Fluent Icons" FontSize="20" Foreground="#FF4CAF50"/>
+                        <TextBlock Text="RAM" FontSize="12" Foreground="#FF888888" Margin="0,8,0,2"/>
+                        <TextBlock x:Name="txtRam" Text="&#x2014;" FontSize="22" FontWeight="SemiBold" Foreground="White"/>
+                    </StackPanel>
+                </Border>
+
+                <!-- Disk -->
+                <Border Grid.Row="1" Grid.Column="0" CornerRadius="12" Background="#FF2D2D2D" Padding="16" Margin="0,6,6,0">
+                    <StackPanel>
+                        <TextBlock Text="&#xE8B7;" FontFamily="/Wpf.Ui;Component/Resources/Font/#Segoe Fluent Icons" FontSize="20" Foreground="#FFFFA500"/>
+                        <TextBlock Text="Free Space" FontSize="12" Foreground="#FF888888" Margin="0,8,0,2"/>
+                        <TextBlock x:Name="txtDisk" Text="&#x2014;" FontSize="22" FontWeight="SemiBold" Foreground="White"/>
+                    </StackPanel>
+                </Border>
+
+                <!-- Uptime -->
+                <Border Grid.Row="1" Grid.Column="1" CornerRadius="12" Background="#FF2D2D2D" Padding="16" Margin="6,6,0,0">
+                    <StackPanel>
+                        <TextBlock Text="&#xE8B7;" FontFamily="/Wpf.Ui;Component/Resources/Font/#Segoe Fluent Icons" FontSize="20" Foreground="#FF8888FF"/>
+                        <TextBlock Text="Uptime" FontSize="12" Foreground="#FF888888" Margin="0,8,0,2"/>
+                        <TextBlock x:Name="txtUptime" Text="&#x2014;" FontSize="22" FontWeight="SemiBold" Foreground="White"/>
+                    </StackPanel>
+                </Border>
+            </Grid>
+
+            <!-- Disk Chart -->
+            <Border CornerRadius="12" Background="#FF2D2D2D" Padding="20" Margin="0,0,0,16">
+                <StackPanel>
+                    <TextBlock Text="Free Disk Space (7 days)" FontSize="14" Foreground="#FF888888" Margin="0,0,0,12"/>
+                    <Border x:Name="ChartArea" Height="120" Background="#FF363636" CornerRadius="8"/>
+                </StackPanel>
+            </Border>
+
+            <!-- Quick Actions -->
+            <Border CornerRadius="12" Background="#FF2D2D2D" Padding="20" Margin="0,0,0,16">
+                <StackPanel>
+                    <TextBlock Text="Quick Actions" FontSize="14" Foreground="#FF888888" Margin="0,0,0,12"/>
+                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+                        <ui:Button Content="Quick Clean" Appearance="Primary" Width="140" Height="38" Margin="0,0,10,0" Click="QuickClean_Click"/>
+                        <ui:Button Content="Empty Recycle Bin" Appearance="Caution" Width="160" Height="38" Margin="0,0,10,0" Click="EmptyRecycle_Click"/>
+                        <ui:Button Content="Refresh" Appearance="Secondary" Width="120" Height="38" Click="Refresh_Click"/>
+                    </StackPanel>
+                </StackPanel>
+            </Border>
+        </StackPanel>
+    </ScrollViewer>
+</Page>
