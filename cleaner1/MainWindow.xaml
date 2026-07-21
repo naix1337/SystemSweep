@@ -15,7 +15,6 @@
                            PaneDisplayMode="Left"
                            OpenPaneLength="200"
                            CompactPaneLength="48"
-                           BreadcrumbBar="Collapsed"
                            IsPaneToggleVisible="False"
                            HeaderVisibility="Collapsed">
             <ui:NavigationView.MenuItems>
