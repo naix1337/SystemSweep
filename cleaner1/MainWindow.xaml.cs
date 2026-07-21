@@ -22,6 +22,7 @@ public partial class MainWindow
         navBrowser.Click += NavButton_Click;
         navDuplicates.Click += NavButton_Click;
         navStartup.Click += NavButton_Click;
+        navTweaks.Click += NavButton_Click;
         navStats.Click += NavButton_Click;
         navSettings.Click += NavButton_Click;
         navAbout.Click += NavButton_Click;
@@ -83,6 +84,12 @@ public partial class MainWindow
                     _pages["startup"] = new StartupPage();
                 _currentPage = "startup";
                 NavFrame.Navigate(_pages["startup"]);
+                break;
+            case "tweaks":
+                if (!_pages.ContainsKey("tweaks"))
+                    _pages["tweaks"] = new TweaksPage();
+                _currentPage = "tweaks";
+                NavFrame.Navigate(_pages["tweaks"]);
                 break;
             case "stats":
                 if (!_pages.ContainsKey("stats"))

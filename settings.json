@@ -1,0 +1,9 @@
+{
+  "Theme": "Dark",
+  "AutoAnalyze": false,
+  "AutoClean": false,
+  "ShowNotifications": true,
+  "SafetyBackup": true,
+  "LastCleaned": "0001-01-01T00:00:00",
+  "DiskHistory": []
+}

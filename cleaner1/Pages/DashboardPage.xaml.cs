@@ -67,20 +67,34 @@ public partial class DashboardPage
 
     private async void QuickClean_Click(object sender, RoutedEventArgs e)
     {
-        var quickCategories = new[] { "temp_files", "recycle_bin", "thumbnail_cache" };
-        foreach (var id in quickCategories)
+        try
         {
-            var cat = new CleaningCategory { Id = id };
-            await _cleaningService.CleanCategoryAsync(cat);
+            var quickCategories = new[] { "temp_files", "recycle_bin", "thumbnail_cache" };
+            foreach (var id in quickCategories)
+            {
+                var cat = new CleaningCategory { Id = id };
+                await _cleaningService.CleanCategoryAsync(cat);
+            }
+            _monitor.Refresh();
         }
-        _monitor.Refresh();
+        catch (Exception ex)
+        {
+            System.Diagnostics.Debug.WriteLine($"[Dashboard.QuickClean] {ex.Message}");
+        }
     }
 
     private async void EmptyRecycle_Click(object sender, RoutedEventArgs e)
     {
-        var cat = new CleaningCategory { Id = "recycle_bin" };
-        await _cleaningService.CleanCategoryAsync(cat);
-        _monitor.Refresh();
+        try
+        {
+            var cat = new CleaningCategory { Id = "recycle_bin" };
+            await _cleaningService.CleanCategoryAsync(cat);
+            _monitor.Refresh();
+        }
+        catch (Exception ex)
+        {
+            System.Diagnostics.Debug.WriteLine($"[Dashboard.EmptyRecycle] {ex.Message}");
+        }
     }
 
     private void Refresh_Click(object sender, RoutedEventArgs e)

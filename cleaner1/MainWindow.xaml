@@ -48,6 +48,8 @@
                                      Style="{StaticResource NavRadioStyle}" Margin="8,0,8,2"/>
                         <RadioButton x:Name="navStartup" Content="Startup" Tag="startup"
                                      Style="{StaticResource NavRadioStyle}" Margin="8,0,8,2"/>
+                        <RadioButton x:Name="navTweaks" Content="⚡ Tweaks" Tag="tweaks"
+                                     Style="{StaticResource NavRadioStyle}" Margin="8,0,8,2"/>
                         <TextBlock Text="TOOLS" Foreground="#FF666666" FontSize="11" FontWeight="Bold"
                                    Margin="16,16,16,8"/>
                         <RadioButton x:Name="navStats" Content="Statistics" Tag="stats"

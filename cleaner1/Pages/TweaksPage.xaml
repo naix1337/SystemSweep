@@ -1,0 +1,42 @@
+<Page x:Class="ModernFileCleaner.Pages.TweaksPage"
+      xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+      xmlns:ui="http://schemas.lepo.co/wpfui/2022/xaml"
+      Title="Tweaks">
+    <ScrollViewer VerticalScrollBarVisibility="Auto" Margin="24">
+        <StackPanel>
+            <StackPanel Orientation="Horizontal" Margin="0,0,0,6">
+                <TextBlock Text="⚡" FontSize="28" Margin="0,0,12,0" VerticalAlignment="Center"/>
+                <StackPanel>
+                    <TextBlock Text="Performance Tweaks" FontSize="22" FontWeight="SemiBold" Foreground="White"/>
+                    <TextBlock Text="Optimize Windows for gaming and speed" FontSize="13" Foreground="#FF888888"/>
+                </StackPanel>
+            </StackPanel>
+
+            <Border CornerRadius="10" Background="#1AFFAA00" Padding="16" Margin="0,16,0,24">
+                <StackPanel Orientation="Horizontal">
+                    <TextBlock Text="⚠️" FontSize="20" Margin="0,0,12,0" VerticalAlignment="Center"/>
+                    <TextBlock TextWrapping="Wrap" Foreground="#FFCCAA00" FontSize="13">
+                        Some tweaks modify registry and services. Create a restore point first.
+                    </TextBlock>
+                </StackPanel>
+            </Border>
+
+            <TextBlock Text="🎮 GAMING &amp; FPS" Foreground="#FF0078D4" FontSize="13" FontWeight="Bold" Margin="0,0,0,12"/>
+            <StackPanel x:Name="GamingPanel" Margin="0,0,0,24"/>
+
+            <TextBlock Text="⚡ SYSTEM" Foreground="#FF4CAF50" FontSize="13" FontWeight="Bold" Margin="0,0,0,12"/>
+            <StackPanel x:Name="SystemPanel" Margin="0,0,0,24"/>
+
+            <TextBlock Text="🌐 NETWORK" Foreground="#FFFFA500" FontSize="13" FontWeight="Bold" Margin="0,0,0,12"/>
+            <StackPanel x:Name="NetworkPanel" Margin="0,0,0,24"/>
+
+            <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Margin="0,8,0,24">
+                <ui:Button Content="✅ Apply All Recommended" Appearance="Primary" Width="200" Height="38" Margin="0,0,12,0" Click="ApplyRecommended_Click"/>
+                <ui:Button Content="↩️ Revert All" Appearance="Secondary" Width="140" Height="38" Click="RevertAll_Click"/>
+            </StackPanel>
+
+            <TextBlock x:Name="txtStatus" Text="Ready" Foreground="#FF888888" HorizontalAlignment="Center" FontSize="13" Margin="0,0,0,16"/>
+        </StackPanel>
+    </ScrollViewer>
+</Page>

@@ -12,8 +12,16 @@ public class CalculationService
         {
             foreach (var category in categories)
             {
-                progress?.Report($"Analysiere {category.Name}...");
-                category.SizeInBytes = CalculateCategory(category.Id);
+                try
+                {
+                    progress?.Report($"Analysing {category.Name}...");
+                    category.SizeInBytes = CalculateCategory(category.Id);
+                }
+                catch (Exception ex)
+                {
+                    Debug.WriteLine($"[CalcService] Error calculating {category.Id}: {ex.Message}");
+                    category.SizeInBytes = 0;
+                }
             }
         });
     }
