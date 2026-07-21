@@ -82,82 +82,105 @@ public partial class CleanPage
 
     private async void btnAnalyze_Click(object? sender, RoutedEventArgs? e)
     {
-        btnAnalyze.IsEnabled = false;
-        btnClean.IsEnabled = false;
-        ProgressBar.Visibility = Visibility.Visible;
-        ProgressBar.IsIndeterminate = true;
-        txtStatus.Text = "Analysing...";
+        try
+        {
+            btnAnalyze.IsEnabled = false;
+            btnClean.IsEnabled = false;
+            ProgressBar.Visibility = Visibility.Visible;
+            ProgressBar.IsIndeterminate = true;
+            txtStatus.Text = "Analysing...";
 
-        var progress = new Progress<string>(s => txtStatus.Text = s);
-        await _calculationService.CalculateAllAsync(_categories, progress);
+            var progress = new Progress<string>(s => txtStatus.Text = s);
+            await Task.Run(() => _calculationService.CalculateAllAsync(_categories, progress));
 
-        ProgressBar.IsIndeterminate = false;
-        ProgressBar.Visibility = Visibility.Collapsed;
-        btnAnalyze.IsEnabled = true;
-        btnClean.IsEnabled = true;
-        txtStatus.Text = "Analysis complete. Ready to clean.";
+            ProgressBar.IsIndeterminate = false;
+            ProgressBar.Visibility = Visibility.Collapsed;
+            btnAnalyze.IsEnabled = true;
+            btnClean.IsEnabled = true;
+            txtStatus.Text = "Analysis complete. Ready to clean.";
+        }
+        catch (Exception ex)
+        {
+            System.Diagnostics.Debug.WriteLine($"[CleanPage.Analyze] {ex}");
+            txtStatus.Text = $"Error: {ex.Message}";
+            ProgressBar.IsIndeterminate = false;
+            ProgressBar.Visibility = Visibility.Collapsed;
+            btnAnalyze.IsEnabled = true;
+            btnClean.IsEnabled = true;
+        }
     }
 
     private async void btnClean_Click(object? sender, RoutedEventArgs? e)
     {
-        var selected = _categories.Where(c => c.IsSelected).ToList();
-        if (selected.Count == 0)
+        try
         {
-            ShowMessage("Please select at least one category to clean.", "Info");
-            return;
-        }
-
-        // Confirm dangerous selections
-        var dangerous = selected.Where(c => c.Safety == SafetyLevel.Dangerous).ToList();
-        if (dangerous.Count > 0)
-        {
-            var names = string.Join(", ", dangerous.Select(d => d.Name));
-            var result = ShowConfirm(
-                $"⚠️ Dangerous items selected: {names}\n\nAre you sure you want to proceed? This cannot be undone.",
-                "Confirm Cleaning");
-            if (result != MessageBoxResult.Yes) return;
-        }
-
-        btnAnalyze.IsEnabled = false;
-        btnClean.IsEnabled = false;
-        ProgressBar.Visibility = Visibility.Visible;
-        ProgressBar.Maximum = selected.Count;
-        ProgressBar.Value = 0;
-        ProgressBar.IsIndeterminate = false;
-
-        long totalFreed = 0;
-        var cleanedCategories = new List<string>();
-
-        for (int i = 0; i < selected.Count; i++)
-        {
-            var cat = selected[i];
-            txtStatus.Text = $"🧹 Cleaning {cat.Name}...";
-            var progress = new Progress<string>(s => txtStatus.Text = s);
-            long freed = await _cleaningService.CleanCategoryAsync(cat, progress);
-            totalFreed += freed;
-            cleanedCategories.Add(cat.Name);
-            ProgressBar.Value = i + 1;
-        }
-
-        // Save history
-        if (totalFreed > 0)
-        {
-            await _historyService.AddEntryAsync(new CleanHistoryEntry
+            var selected = _categories.Where(c => c.IsSelected).ToList();
+            if (selected.Count == 0)
             {
-                Timestamp = DateTime.Now,
-                BytesFreed = totalFreed,
-                CategoriesCleaned = cleanedCategories
-            });
+                ShowMessage("Please select at least one category to clean.", "Info");
+                return;
+            }
+
+            // Confirm dangerous selections
+            var dangerous = selected.Where(c => c.Safety == SafetyLevel.Dangerous).ToList();
+            if (dangerous.Count > 0)
+            {
+                var names = string.Join(", ", dangerous.Select(d => d.Name));
+                var result = ShowConfirm(
+                    $"⚠️ Dangerous items selected: {names}\n\nAre you sure you want to proceed? This cannot be undone.",
+                    "Confirm Cleaning");
+                if (result != MessageBoxResult.Yes) return;
+            }
+
+            btnAnalyze.IsEnabled = false;
+            btnClean.IsEnabled = false;
+            ProgressBar.Visibility = Visibility.Visible;
+            ProgressBar.Maximum = selected.Count;
+            ProgressBar.Value = 0;
+            ProgressBar.IsIndeterminate = false;
+
+            long totalFreed = 0;
+            var cleanedCategories = new List<string>();
+
+            for (int i = 0; i < selected.Count; i++)
+            {
+                var cat = selected[i];
+                txtStatus.Text = $"🧹 Cleaning {cat.Name}...";
+                long freed = await _cleaningService.CleanCategoryAsync(cat);
+                totalFreed += freed;
+                cleanedCategories.Add(cat.Name);
+                ProgressBar.Value = i + 1;
+            }
+
+            // Save history
+            if (totalFreed > 0)
+            {
+                await _historyService.AddEntryAsync(new CleanHistoryEntry
+                {
+                    Timestamp = DateTime.Now,
+                    BytesFreed = totalFreed,
+                    CategoriesCleaned = cleanedCategories
+                });
+            }
+
+            AppSettings.Instance.LastCleaned = DateTime.Now;
+            AppSettings.Instance.Save();
+
+            ProgressBar.Visibility = Visibility.Collapsed;
+            btnAnalyze.IsEnabled = true;
+            btnClean.IsEnabled = true;
+            txtStatus.Text = $"✅ Cleaning complete! Freed {FormatBytes(totalFreed)}.";
+            ShowMessage($"✅ Cleaning complete!\n\nFreed: {FormatBytes(totalFreed)}\nCategories: {cleanedCategories.Count}", "Success");
         }
-
-        AppSettings.Instance.LastCleaned = DateTime.Now;
-        AppSettings.Instance.Save();
-
-        ProgressBar.Visibility = Visibility.Collapsed;
-        btnAnalyze.IsEnabled = true;
-        btnClean.IsEnabled = true;
-        txtStatus.Text = $"✅ Cleaning complete! Freed {FormatBytes(totalFreed)}.";
-        ShowMessage($"✅ Cleaning complete!\n\nFreed: {FormatBytes(totalFreed)}\nCategories: {cleanedCategories.Count}", "Success");
+        catch (Exception ex)
+        {
+            System.Diagnostics.Debug.WriteLine($"[CleanPage.Clean] {ex}");
+            txtStatus.Text = $"Error: {ex.Message}";
+            ProgressBar.Visibility = Visibility.Collapsed;
+            btnAnalyze.IsEnabled = true;
+            btnClean.IsEnabled = true;
+            ShowMessage($"Clean failed: {ex.Message}", "Error");
+        }
     }
 
     private string FormatBytes(long bytes)
