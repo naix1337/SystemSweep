@@ -83,6 +83,12 @@ public partial class MainWindow
                 _currentPage = "clean";
                 NavFrame.Navigate(_pages["clean"]);
                 break;
+            case "browsers":
+                if (!_pages.ContainsKey("browsers"))
+                    _pages["browsers"] = new BrowserCachePage();
+                _currentPage = "browsers";
+                NavFrame.Navigate(_pages["browsers"]);
+                break;
             case "stats":
                 if (!_pages.ContainsKey("stats"))
                     _pages["stats"] = new StatsPage(_historyService);

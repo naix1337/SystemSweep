@@ -1,4 +1,5 @@
 using System.Windows;
+using System.Windows.Controls;
 using ModernFileCleaner.Models;
 using ModernFileCleaner.Services;
 
@@ -9,6 +10,7 @@ public partial class CleanPage
     private readonly HistoryService _historyService;
     private readonly CalculationService _calculationService = new();
     private readonly CleaningService _cleaningService = new();
+    private int _lastPresetIndex = 0;
     private readonly List<CleaningCategory> _categories = new()
     {
         new() { Id = "temp_files", Name = "Temporary Files", Icon = "🗑️", Safety = SafetyLevel.Safe, Description = "Windows temp & user temp files" },
@@ -46,6 +48,36 @@ public partial class CleanPage
         bool isChecked = SelectAllToggle.IsChecked ?? true;
         foreach (var cat in _categories)
             cat.IsSelected = isChecked;
+    }
+
+    private void cmbPreset_SelectionChanged(object? sender, SelectionChangedEventArgs e)
+    {
+        var tag = (cmbPreset.SelectedItem as FrameworkElement)?.Tag?.ToString();
+        ApplyPreset(tag);
+    }
+
+    private void ApplyPreset(string? preset)
+    {
+        foreach (var cat in _categories)
+            cat.IsSelected = preset switch
+            {
+                "quick" => cat.Id is "temp_files" or "recycle_bin" or "thumbnail_cache",
+                "standard" => cat.Id is "temp_files" or "recycle_bin" or "thumbnail_cache"
+                    or "download_cache" or "error_reports" or "windows_logs",
+                "deep" => true, // all including dangerous
+                _ => cat.IsSelected // custom = keep current
+            };
+
+        if (preset == "deep")
+        {
+            var result = ShowConfirm("Deep Clean will remove ALL items including Windows.old and Memory Dumps. Continue?", "Deep Clean");
+            if (result != MessageBoxResult.Yes)
+            {
+                cmbPreset.SelectedIndex = _lastPresetIndex;
+                return;
+            }
+        }
+        _lastPresetIndex = cmbPreset.SelectedIndex;
     }
 
     private async void btnAnalyze_Click(object? sender, RoutedEventArgs? e)

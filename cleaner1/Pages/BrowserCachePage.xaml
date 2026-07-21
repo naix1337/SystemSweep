@@ -1,0 +1,119 @@
+<Page x:Class="ModernFileCleaner.Pages.BrowserCachePage"
+      xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+      xmlns:ui="http://schemas.lepo.co/wpfui/2022/xaml"
+      xmlns:services="clr-namespace:ModernFileCleaner.Services"
+      Title="Browser Cache">
+    <Grid Margin="24">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+
+        <!-- Header -->
+        <StackPanel Grid.Row="0" Orientation="Horizontal" Margin="0,0,0,16">
+            <TextBlock Text="&#xE8B7;" FontFamily="/Wpf.Ui;Component/Resources/Font/#Segoe Fluent Icons" FontSize="24" Margin="0,0,12,0" VerticalAlignment="Center"/>
+            <StackPanel>
+                <TextBlock Text="Browser Cache" FontSize="22" FontWeight="SemiBold" Foreground="White"/>
+                <TextBlock Text="Scan and clean browser cache files" FontSize="13" Foreground="#FF888888"/>
+            </StackPanel>
+        </StackPanel>
+
+        <!-- Browser Cards -->
+        <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto" Margin="0,0,0,16">
+            <ItemsControl x:Name="CardsContainer">
+                <ItemsControl.ItemsPanel>
+                    <ItemsPanelTemplate>
+                        <WrapPanel Orientation="Horizontal" />
+                    </ItemsPanelTemplate>
+                </ItemsControl.ItemsPanel>
+                <ItemsControl.ItemTemplate>
+                    <DataTemplate DataType="{x:Type services:BrowserCacheInfo}">
+                        <Border CornerRadius="12"
+                                Background="#FF2D2D2D"
+                                BorderBrush="#FF3D3D3D"
+                                BorderThickness="1"
+                                Padding="16"
+                                Margin="6"
+                                Width="260">
+                            <Grid>
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="Auto"/>
+                                    <RowDefinition Height="Auto"/>
+                                    <RowDefinition Height="Auto"/>
+                                </Grid.RowDefinitions>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="Auto"/>
+                                    <ColumnDefinition Width="*"/>
+                                </Grid.ColumnDefinitions>
+
+                                <!-- Browser Icon -->
+                                <TextBlock Grid.Row="0" Grid.Column="0" Grid.RowSpan="2"
+                                           Text="{Binding Icon}"
+                                           FontSize="28"
+                                           VerticalAlignment="Center" Margin="0,0,12,0"/>
+
+                                <!-- Browser Name -->
+                                <TextBlock Grid.Row="0" Grid.Column="1"
+                                           Text="{Binding Name}"
+                                           FontSize="15" FontWeight="SemiBold"
+                                           Foreground="White"
+                                           VerticalAlignment="Center"/>
+
+                                <!-- Cache Size -->
+                                <TextBlock Grid.Row="1" Grid.Column="1"
+                                           Text="{Binding SizeFormatted}"
+                                           FontSize="13"
+                                           Foreground="#FF888888"
+                                           VerticalAlignment="Center"
+                                           Margin="0,2,0,0">
+                                    <TextBlock.Style>
+                                        <Style TargetType="TextBlock">
+                                            <Setter Property="Foreground" Value="#FF888888"/>
+                                            <Style.Triggers>
+                                                <DataTrigger Binding="{Binding SizeBytes}" Value="0">
+                                                    <Setter Property="Text" Value="Not scanned yet"/>
+                                                </DataTrigger>
+                                            </Style.Triggers>
+                                        </Style>
+                                    </TextBlock.Style>
+                                </TextBlock>
+
+                                <!-- Toggle Switch -->
+                                <ui:ToggleSwitch Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="2"
+                                                 IsChecked="{Binding IsSelected}"
+                                                 Margin="0,10,0,0"
+                                                 Height="24"/>
+                            </Grid>
+                        </Border>
+                    </DataTemplate>
+                </ItemsControl.ItemTemplate>
+            </ItemsControl>
+        </ScrollViewer>
+
+        <!-- Action Buttons -->
+        <StackPanel Grid.Row="2" Orientation="Horizontal" Margin="0,0,0,16" HorizontalAlignment="Center">
+            <ui:Button x:Name="btnScan"
+                       Content="📡  Scan"
+                       Appearance="Primary"
+                       Margin="0,0,10,0"
+                       Width="140" Height="38"
+                       Click="Scan_Click"/>
+            <ui:Button x:Name="btnClean"
+                       Content="🧹  Clean Selected"
+                       Appearance="Danger"
+                       Width="140" Height="38"
+                       Click="Clean_Click"/>
+        </StackPanel>
+
+        <!-- Status Text -->
+        <TextBlock x:Name="txtStatus"
+                   Grid.Row="3"
+                   Text="Click Scan to check browser cache sizes"
+                   Foreground="#FF888888"
+                   HorizontalAlignment="Center"
+                   FontSize="13"/>
+    </Grid>
+</Page>

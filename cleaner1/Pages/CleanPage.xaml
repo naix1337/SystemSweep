@@ -8,6 +8,7 @@
     <Grid Margin="24">
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
             <RowDefinition Height="*"/>
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="Auto"/>
@@ -23,8 +24,20 @@
             </StackPanel>
         </StackPanel>
 
+        <!-- Preset Selector -->
+        <StackPanel Grid.Row="1" Orientation="Horizontal" Margin="0,0,0,16" HorizontalAlignment="Center">
+            <TextBlock Text="Preset:" Foreground="#FF888888" VerticalAlignment="Center" Margin="0,0,10,0"/>
+            <ComboBox x:Name="cmbPreset" Width="200"
+                         SelectionChanged="cmbPreset_SelectionChanged">
+                <ComboBoxItem Content="🧹 Quick Clean" Tag="quick"/>
+                <ComboBoxItem Content="🧹 Standard Clean" Tag="standard"/>
+                <ComboBoxItem Content="🧹 Deep Clean" Tag="deep"/>
+                <ComboBoxItem Content="✋ Custom" Tag="custom"/>
+            </ComboBox>
+        </StackPanel>
+
         <!-- Category Cards Grid -->
-        <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto" Margin="0,0,0,16">
+        <ScrollViewer Grid.Row="2" VerticalScrollBarVisibility="Auto" Margin="0,0,0,16">
             <ItemsControl x:Name="CardsContainer">
                 <ItemsControl.ItemsPanel>
                     <ItemsPanelTemplate>
@@ -40,7 +53,7 @@
         </ScrollViewer>
 
         <!-- Action Buttons -->
-        <StackPanel Grid.Row="2" Orientation="Horizontal" Margin="0,0,0,16" HorizontalAlignment="Center">
+        <StackPanel Grid.Row="3" Orientation="Horizontal" Margin="0,0,0,16" HorizontalAlignment="Center">
             <ui:ToggleSwitch x:Name="SelectAllToggle"
                              Content="Select All"
                              Margin="0,0,20,0"
@@ -61,7 +74,7 @@
 
         <!-- Progress Bar -->
         <ProgressBar x:Name="ProgressBar"
-                     Grid.Row="3"
+                     Grid.Row="4"
                      Style="{StaticResource SmoothProgressBar}"
                      Margin="0,0,0,8"
                      Visibility="Collapsed"
@@ -69,7 +82,7 @@
 
         <!-- Status Text -->
         <TextBlock x:Name="txtStatus"
-                   Grid.Row="4"
+                   Grid.Row="5"
                    Text="Ready"
                    Foreground="#FF888888"
                    HorizontalAlignment="Center"
