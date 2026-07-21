@@ -18,8 +18,15 @@ public partial class MainWindow
         // Workaround: Navigate to first page after load
         Loaded += (_, _) =>
         {
-            NavFrame.Navigate(new CleanPage(_historyService));
+            var cleanPage = new CleanPage(_historyService);
+            NavFrame.Navigate(cleanPage);
             NavFrame.Visibility = Visibility.Visible;
+
+            // Auto-analyze if enabled
+            if (AppSettings.Instance.AutoAnalyze)
+            {
+                cleanPage.RunAutoAnalyze();
+            }
         };
     }
 
