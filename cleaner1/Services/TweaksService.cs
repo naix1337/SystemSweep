@@ -1,4 +1,5 @@
 using System.Diagnostics;
+using System.IO;
 using Microsoft.Win32;
 
 namespace ModernFileCleaner.Services;
@@ -19,24 +20,55 @@ public class TweaksService
 {
     public List<TweakItem> GetAllTweaks() => new()
     {
-        // === Gaming ===
-        new() { Id = "gpu_scheduling", Name = "Hardware-Accelerated GPU Scheduling", Description = "Reduces latency and improves FPS by letting GPU manage its memory directly", Category = "Gaming", Icon = "🎮", IsRecommended = true },
-        new() { Id = "game_mode", Name = "Game Mode", Description = "Prioritizes游戏 performance by background process management", Category = "Gaming", Icon = "🎮", IsRecommended = true },
-        new() { Id = "xbox_dvr", Name = "Disable Xbox Game Bar/DVR", Description = "Disables background recording that can cost 5-15% FPS in games", Category = "Gaming", Icon = "🎮", IsRecommended = true, WarningMessage = "Disables Xbox Game Bar recording" },
-        new() { Id = "fullscreen_opt", Name = "Disable Fullscreen Optimizations", Description = "Prevents Windows from overriding your games' fullscreen mode", Category = "Gaming", Icon = "🎮" },
+        // ============== GAMING & FPS ==============
+        new() { Id = "gpu_scheduling", Name = "Hardware-Accelerated GPU Scheduling", Description = "Reduces input lag and improves FPS by letting GPU manage its own memory", Category = "Gaming", Icon = "🎮", IsRecommended = true },
+        new() { Id = "game_mode", Name = "Enable Game Mode", Description = "Prioritizes game performance by limiting background processes", Category = "Gaming", Icon = "🎮", IsRecommended = true },
+        new() { Id = "xbox_dvr", Name = "Disable Xbox Game Bar & DVR", Description = "Stops background recording saving 5-15% FPS in games", Category = "Gaming", Icon = "🎮", IsRecommended = true, WarningMessage = "Disables Xbox overlay and recording" },
+        new() { Id = "disable_hpet", Name = "Disable HPET Timer", Description = "Reduces input lag in games by using faster system timers", Category = "Gaming", Icon = "🎮", WarningMessage = "Requires admin + reboot" },
+        new() { Id = "core_parking", Name = "Disable CPU Core Parking", Description = "Keeps all CPU cores active for max gaming performance", Category = "Gaming", Icon = "🎮", IsRecommended = true, WarningMessage = "Slightly increases power usage" },
+        new() { Id = "mouse_accel", Name = "Disable Mouse Acceleration", Description = "Removes pointer smoothing for raw, precise aiming in FPS games", Category = "Gaming", Icon = "🎮" },
+        new() { Id = "usb_suspend", Name = "Disable USB Selective Suspend", Description = "Prevents game controllers and USB devices from disconnecting", Category = "Gaming", Icon = "🎮" },
+        new() { Id = "gpu_maxperf", Name = "GPU Maximum Performance Mode", Description = "Forces GPU to run at max clock speeds instead of power-saving", Category = "Gaming", Icon = "🎮", IsRecommended = true, WarningMessage = "Higher power consumption" },
+        new() { Id = "focus_assist", Name = "Enable Gaming Focus Assist", Description = "Auto-disable notifications during games for zero distractions", Category = "Gaming", Icon = "🎮", IsRecommended = true },
 
-        // === System ===
-        new() { Id = "power_high", Name = "High Performance Power Plan", Description = "Ensures CPU runs at max speed instead of throttling down", Category = "System", Icon = "⚡", IsRecommended = true },
-        new() { Id = "visual_effects", Name = "Disable Visual Effects", Description = "Turn off animations, shadows, and transparency for snappier UI", Category = "System", Icon = "⚡", IsRecommended = true },
-        new() { Id = "sysmain", Name = "Disable SysMain (Superfetch)", Description = "Can reduce background disk activity on SSDs", Category = "System", Icon = "⚡", WarningMessage = "May increase app load times on HDDs" },
-        new() { Id = "indexing", Name = "Disable Windows Search Indexing", Description = "Disables background file indexing to reduce disk usage", Category = "System", Icon = "⚡", WarningMessage = "Windows search will be slower" },
-        new() { Id = "background_apps", Name = "Disable Background Apps", Description = "Prevents apps from running in background and using resources", Category = "System", Icon = "⚡", IsRecommended = true },
-        new() { Id = "cortana", Name = "Disable Cortana", Description = "Disables Cortana assistant to free up RAM and CPU", Category = "System", Icon = "⚡" },
+        // ============== SYSTEM BOOST ==============
+        new() { Id = "power_high", Name = "High Performance Power Plan", Description = "Forces CPU to run at max speed, no throttling", Category = "System", Icon = "⚡", IsRecommended = true },
+        new() { Id = "visual_effects", Name = "Disable All Visual Effects", Description = "Turns off animations, shadows, transparency for instant UI feel", Category = "System", Icon = "⚡", IsRecommended = true },
+        new() { Id = "sysmain", Name = "Disable SysMain (Superfetch)", Description = "Reduces background disk/CPU activity on SSDs", Category = "System", Icon = "⚡", IsRecommended = true, WarningMessage = "HDD users may see slower app loading" },
+        new() { Id = "indexing", Name = "Disable Windows Search Indexing", Description = "Stops background file indexing eating disk and CPU", Category = "System", Icon = "⚡", WarningMessage = "Windows search becomes slower" },
+        new() { Id = "background_apps", Name = "Disable All Background Apps", Description = "Stops Store apps from running in background and using resources", Category = "System", Icon = "⚡", IsRecommended = true },
+        new() { Id = "cortana", Name = "Disable Cortana", Description = "Disables Cortana assistant to free 200-500MB RAM", Category = "System", Icon = "⚡" },
+        new() { Id = "startup_delay", Name = "Disable Startup Delay", Description = "Removes the 10s boot delay Windows adds to startup processes", Category = "System", Icon = "⚡", IsRecommended = true },
+        new() { Id = "notification_tray", Name = "Disable Notification Tray", Description = "Stops background apps from cluttering system tray", Category = "System", Icon = "⚡" },
+        new() { Id = "error_reporting", Name = "Disable Windows Error Reporting", Description = "Prevents background error reporting that uses CPU and disk", Category = "System", Icon = "⚡" },
+        new() { Id = "transparency", Name = "Disable Transparency Effects", Description = "Disables acrylic/blur effects freeing GPU resources", Category = "System", Icon = "⚡", IsRecommended = true },
+        new() { Id = "disk_defrag_schedule", Name = "Disable Auto Disk Defrag", Description = "Disables scheduled defragmentation on SSDs (not needed)", Category = "System", Icon = "⚡", IsRecommended = true },
+        new() { Id = "tips_suggestions", Name = "Disable Tips & Suggestions", Description = "Stops Windows from showing tips and ads in the OS", Category = "System", Icon = "⚡" },
 
-        // === Network ===
-        new() { Id = "dns_flush", Name = "Flush DNS Cache", Description = "Clears outdated DNS entries for faster internet", Category = "Network", Icon = "🌐" },
-        new() { Id = "nagle", Name = "Disable Nagle's Algorithm", Description = "Reduces network latency for real-time applications (TCP)", Category = "Network", Icon = "🌐" },
-        new() { Id = "tcp_autotuning", Name = "Optimize TCP Auto-Tuning", Description = "Improves network throughput for downloads and streaming", Category = "Network", Icon = "🌐" },
+        // ============== DISK & MEMORY ==============
+        new() { Id = "hibernation", Name = "Disable Hibernation", Description = "Frees disk space equal to RAM size (e.g. 16GB+) and reduces disk writes", Category = "Disk", Icon = "💾", IsRecommended = true, WarningMessage = "Fast Startup will be disabled" },
+        new() { Id = "ntfs_last_access", Name = "Disable NTFS Last Access Time", Description = "Reduces disk writes by stopping NTFS from updating file timestamps", Category = "Disk", Icon = "💾", IsRecommended = true },
+        new() { Id = "ntfs_83names", Name = "Disable 8.3 Filename Creation", Description = "Speeds up NTFS by not generating legacy short filenames", Category = "Disk", Icon = "💾" },
+        new() { Id = "large_cache", Name = "Disable Large System Cache", Description = "Frees RAM by not caching large file operations unnecessarily", Category = "Disk", Icon = "💾" },
+        new() { Id = "memory_compression", Name = "Disable Memory Compression", Description = "Disables RAM compression to reduce CPU overhead (more RAM = snappier)", Category = "Disk", Icon = "💾", WarningMessage = "Only on systems with 16GB+ RAM" },
+        new() { Id = "pagefile_cleanup", Name = "Clear Page File on Shutdown", Description = "Reduces page file size and clears it on each shutdown", Category = "Disk", Icon = "💾" },
+        new() { Id = "thumbnail_cache_off", Name = "Disable Thumbnail Cache", Description = "Prevents Windows from caching thumbnails saving disk space", Category = "Disk", Icon = "💾" },
+
+        // ============== NETWORK ==============
+        new() { Id = "dns_flush", Name = "Flush DNS Cache", Description = "Clears outdated DNS entries for faster domain resolution", Category = "Network", Icon = "🌐" },
+        new() { Id = "nagle", Name = "Disable Nagle's Algorithm", Description = "Reduces network lag in games and real-time apps by disabling TCP buffering", Category = "Network", Icon = "🌐", IsRecommended = true },
+        new() { Id = "tcp_autotuning", Name = "Enable TCP Auto-Tuning", Description = "Optimizes receive window for faster downloads and streaming", Category = "Network", Icon = "🌐", IsRecommended = true },
+        new() { Id = "qos_limit", Name = "Disable QoS Bandwidth Limit", Description = "Removes the 20% reserved bandwidth limit for full network speed", Category = "Network", Icon = "🌐", IsRecommended = true },
+        new() { Id = "ipv6", Name = "Disable IPv6", Description = "Disables IPv6 to reduce network overhead (use if only IPv4 needed)", Category = "Network", Icon = "🌐", WarningMessage = "IPv6 will be unavailable" },
+        new() { Id = "rss", Name = "Enable RSS (Receive Side Scaling)", Description = "Distributes network processing across multiple CPU cores", Category = "Network", Icon = "🌐" },
+        new() { Id = "tcp_chimney", Name = "Disable TCP Chimney Offload", Description = "Fixes network stutters in some games by disabling hardware offloading", Category = "Network", Icon = "🌐" },
+        new() { Id = "mtu_optimize", Name = "Set Optimal MTU (1492)", Description = "Sets MTU to optimal size for reduced packet fragmentation", Category = "Network", Icon = "🌐" },
+
+        // ============== CLEANUP ==============
+        new() { Id = "prefetch_clean", Name = "Clear Prefetch Files", Description = "Deletes Windows prefetch files that accumulate over time", Category = "Cleanup", Icon = "🧹" },
+        new() { Id = "update_cache", Name = "Clear Windows Update Cache", Description = "Deletes old Windows Update installation files (can free 2-10GB)", Category = "Cleanup", Icon = "🧹", IsRecommended = true },
+        new() { Id = "font_cache", Name = "Clear Font Cache", Description = "Deletes Windows font cache to fix font issues and free space", Category = "Cleanup", Icon = "🧹" },
+        new() { Id = "recent_files", Name = "Clear Recent Files List", Description = "Clears the jump list and recent files history", Category = "Cleanup", Icon = "🧹" },
     };
 
     public async Task ApplyTweakAsync(TweakItem tweak, IProgress<string>? progress = null)
@@ -46,8 +78,9 @@ public class TweaksService
             progress?.Report($"Applying {tweak.Name}...");
             switch (tweak.Id)
             {
+                // == Gaming ==
                 case "gpu_scheduling":
-                    SetRegistry(@"SYSTEM\CurrentControlSet\Control\GraphicsDrivers", "HwSchMode", 2);
+                    SetRegistryLocal(@"SYSTEM\CurrentControlSet\Control\GraphicsDrivers", "HwSchMode", 2);
                     break;
                 case "game_mode":
                     SetRegistry(@"Software\Microsoft\GameBar", "AllowAutoGameMode", 1);
@@ -57,10 +90,30 @@ public class TweaksService
                     SetRegistry(@"Software\Microsoft\Windows\CurrentVersion\GameDVR", "AppCaptureEnabled", 0);
                     SetRegistry(@"Software\Microsoft\GameBar", "AllowAutoGameBar", 0);
                     break;
-                case "fullscreen_opt":
-                    // Per-application setting would need to be set per-game
-                    // This sets the system-level behavior
+                case "disable_hpet":
+                    RunPowerShell("bcdedit /deletevalue useplatformclock");
+                    RunPowerShell("bcdedit /set tscsyncpolicy Enhanced");
                     break;
+                case "core_parking":
+                    RunPowerShell("powercfg -setacvalueindex SCHEME_CURRENT SUB_PROCESSOR CPMINCORES 100");
+                    RunPowerShell("powercfg -setacvalueindex SCHEME_CURRENT SUB_PROCESSOR CPMAXCORES 100");
+                    break;
+                case "mouse_accel":
+                    SetRegistry(@"Control Panel\Mouse", "MouseSpeed", "0");
+                    SetRegistry(@"Control Panel\Mouse", "MouseThreshold1", "0");
+                    SetRegistry(@"Control Panel\Mouse", "MouseThreshold2", "0");
+                    break;
+                case "usb_suspend":
+                    RunPowerShell("powercfg -setacvalueindex SCHEME_CURRENT SUB_USB USBSELECTIVESUSPEND 0");
+                    break;
+                case "gpu_maxperf":
+                    SetRegistryLocal(@"SYSTEM\CurrentControlSet\Control\GraphicsDrivers", "DmCacheSize", 0);
+                    break;
+                case "focus_assist":
+                    SetRegistry(@"Software\Microsoft\Windows\CurrentVersion\Notifications\Settings", "NOC_GLOBAL_SETTING_TOASTS_ENABLED", 0);
+                    break;
+
+                // == System ==
                 case "power_high":
                     RunPowerShell("powercfg /setactive 8c5e7fda-e8bf-4a96-9a85-a6e23a8c635c");
                     break;
@@ -77,8 +130,52 @@ public class TweaksService
                     SetRegistry(@"Software\Microsoft\Windows\CurrentVersion\BackgroundAccessApplications", "GlobalUserDisabled", 1);
                     break;
                 case "cortana":
-                    SetRegistry(@"Software\Policies\Microsoft\Windows\Windows Search", "AllowCortana", 0);
+                    RunPowerShell("Set-ItemProperty -Path 'HKLM:\\SOFTWARE\\Policies\\Microsoft\\Windows\\Windows Search' -Name AllowCortana -Value 0 -Type DWord -Force");
                     break;
+                case "startup_delay":
+                    RunPowerShell("Set-ItemProperty -Path 'HKCU:\\Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Serialize' -Name StartupDelayInMSec -Value 0 -Type DWord -Force");
+                    break;
+                case "notification_tray":
+                    SetRegistry(@"Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced", "EnableAutoTray", 0);
+                    break;
+                case "error_reporting":
+                    RunPowerShell("Set-ItemProperty -Path 'HKLM:\\SOFTWARE\\Microsoft\\Windows\\Windows Error Reporting' -Name Disabled -Value 1 -Type DWord -Force");
+                    break;
+                case "transparency":
+                    SetRegistry(@"Software\Microsoft\Windows\CurrentVersion\Themes\Personalize", "EnableTransparency", 0);
+                    break;
+                case "disk_defrag_schedule":
+                    RunPowerShell("Disable-MMAgent -AutomaticDefragmentation");
+                    break;
+                case "tips_suggestions":
+                    SetRegistry(@"Software\Microsoft\Windows\CurrentVersion\ContentDeliveryManager", "SoftLandingEnabled", 0);
+                    SetRegistry(@"Software\Microsoft\Windows\CurrentVersion\ContentDeliveryManager", "SubscribedContent-338393Enabled", 0);
+                    break;
+
+                // == Disk & Memory ==
+                case "hibernation":
+                    RunPowerShell("powercfg /hibernate off");
+                    break;
+                case "ntfs_last_access":
+                    RunPowerShell("fsutil behavior set disablelastaccess 1");
+                    break;
+                case "ntfs_83names":
+                    RunPowerShell("fsutil behavior set disable8dot3 1");
+                    break;
+                case "large_cache":
+                    SetRegistryLocal(@"SYSTEM\CurrentControlSet\Control\Session Manager\Memory Management", "LargeSystemCache", 0);
+                    break;
+                case "memory_compression":
+                    RunPowerShell("Disable-MMAgent -MemoryCompression");
+                    break;
+                case "pagefile_cleanup":
+                    SetRegistryLocal(@"SYSTEM\CurrentControlSet\Control\Session Manager\Memory Management", "ClearPageFileAtShutdown", 1);
+                    break;
+                case "thumbnail_cache_off":
+                    SetRegistry(@"Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced", "DisableThumbnailCache", 1);
+                    break;
+
+                // == Network ==
                 case "dns_flush":
                     RunPowerShell("ipconfig /flushdns");
                     break;
@@ -87,6 +184,39 @@ public class TweaksService
                     break;
                 case "tcp_autotuning":
                     RunPowerShell("netsh int tcp set global autotuninglevel=normal");
+                    break;
+                case "qos_limit":
+                    SetRegistryLocal(@"SOFTWARE\Policies\Microsoft\Windows\Psched", "NonBestEffortLimit", 0);
+                    break;
+                case "ipv6":
+                    RunPowerShell("Get-NetAdapterBinding -ComponentID ms_tcpip6 | Disable-NetAdapterBinding -ComponentID ms_tcpip6");
+                    break;
+                case "rss":
+                    RunPowerShell("netsh int tcp set global rss=enabled");
+                    break;
+                case "tcp_chimney":
+                    RunPowerShell("netsh int tcp set global chimney=disabled");
+                    break;
+                case "mtu_optimize":
+                    RunPowerShell("netsh interface ipv4 set subinterface \"Ethernet\" mtu=1492 store=persistent");
+                    RunPowerShell("netsh interface ipv4 set subinterface \"Wi-Fi\" mtu=1492 store=persistent");
+                    break;
+
+                // == Cleanup ==
+                case "prefetch_clean":
+                    CleanDirectory(Environment.GetFolderPath(Environment.SpecialFolder.Windows) + "\\Prefetch");
+                    break;
+                case "update_cache":
+                    RunPowerShell("Stop-Service wuauserv -Force");
+                    CleanDirectory(Environment.GetFolderPath(Environment.SpecialFolder.Windows) + "\\SoftwareDistribution\\Download");
+                    RunPowerShell("Start-Service wuauserv");
+                    break;
+                case "font_cache":
+                    RunPowerShell("Stop-Service FontCache -Force");
+                    CleanDirectory(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData) + "\\FontCache");
+                    break;
+                case "recent_files":
+                    CleanDirectory(Environment.GetFolderPath(Environment.SpecialFolder.Recent));
                     break;
             }
             tweak.IsEnabled = true;
@@ -101,7 +231,7 @@ public class TweaksService
             switch (tweak.Id)
             {
                 case "gpu_scheduling":
-                    SetRegistry(@"SYSTEM\CurrentControlSet\Control\GraphicsDrivers", "HwSchMode", 0);
+                    SetRegistryLocal(@"SYSTEM\CurrentControlSet\Control\GraphicsDrivers", "HwSchMode", 0);
                     break;
                 case "game_mode":
                     SetRegistry(@"Software\Microsoft\GameBar", "AllowAutoGameMode", 0);
@@ -111,8 +241,27 @@ public class TweaksService
                     SetRegistry(@"Software\Microsoft\Windows\CurrentVersion\GameDVR", "AppCaptureEnabled", 1);
                     SetRegistry(@"Software\Microsoft\GameBar", "AllowAutoGameBar", 1);
                     break;
+                case "disable_hpet":
+                    RunPowerShell("bcdedit /set useplatformclock Yes");
+                    break;
+                case "core_parking":
+                    RunPowerShell("powercfg -setacvalueindex SCHEME_CURRENT SUB_PROCESSOR CPMINCORES 0");
+                    RunPowerShell("powercfg -setacvalueindex SCHEME_CURRENT SUB_PROCESSOR CPMAXCORES 0");
+                    break;
+                case "mouse_accel":
+                    SetRegistry(@"Control Panel\Mouse", "MouseSpeed", "1");
+                    break;
+                case "usb_suspend":
+                    RunPowerShell("powercfg -setacvalueindex SCHEME_CURRENT SUB_USB USBSELECTIVESUSPEND 1");
+                    break;
+                case "gpu_maxperf":
+                    SetRegistryLocal(@"SYSTEM\CurrentControlSet\Control\GraphicsDrivers", "DmCacheSize", 256);
+                    break;
+                case "focus_assist":
+                    SetRegistry(@"Software\Microsoft\Windows\CurrentVersion\Notifications\Settings", "NOC_GLOBAL_SETTING_TOASTS_ENABLED", 1);
+                    break;
                 case "power_high":
-                    RunPowerShell("powercfg /setactive 381b4222-f694-41f0-9685-ff5bb260df2f"); // Balanced
+                    RunPowerShell("powercfg /setactive 381b4222-f694-41f0-9685-ff5bb260df2f");
                     break;
                 case "visual_effects":
                     SetSystemPerformanceToDefault();
@@ -127,17 +276,82 @@ public class TweaksService
                     SetRegistry(@"Software\Microsoft\Windows\CurrentVersion\BackgroundAccessApplications", "GlobalUserDisabled", 0);
                     break;
                 case "cortana":
-                    SetRegistry(@"Software\Policies\Microsoft\Windows\Windows Search", "AllowCortana", 1);
+                    RunPowerShell("Remove-ItemProperty -Path 'HKLM:\\SOFTWARE\\Policies\\Microsoft\\Windows\\Windows Search' -Name AllowCortana -Force -ErrorAction SilentlyContinue");
                     break;
-                case "nagle":
-                    RunPowerShell("netsh int tcp set global autotuninglevel=normal");
+                case "startup_delay":
+                    RunPowerShell("Remove-ItemProperty -Path 'HKCU:\\Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Serialize' -Name StartupDelayInMSec -Force -ErrorAction SilentlyContinue");
                     break;
-                case "tcp_autotuning":
-                    RunPowerShell("netsh int tcp set global autotuninglevel=normal");
+                case "notification_tray":
+                    SetRegistry(@"Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced", "EnableAutoTray", 1);
+                    break;
+                case "error_reporting":
+                    RunPowerShell("Set-ItemProperty -Path 'HKLM:\\SOFTWARE\\Microsoft\\Windows\\Windows Error Reporting' -Name Disabled -Value 0 -Type DWord -Force");
+                    break;
+                case "transparency":
+                    SetRegistry(@"Software\Microsoft\Windows\CurrentVersion\Themes\Personalize", "EnableTransparency", 1);
+                    break;
+                case "disk_defrag_schedule":
+                    RunPowerShell("Enable-MMAgent -AutomaticDefragmentation");
+                    break;
+                case "tips_suggestions":
+                    SetRegistry(@"Software\Microsoft\Windows\CurrentVersion\ContentDeliveryManager", "SoftLandingEnabled", 1);
+                    break;
+                case "hibernation":
+                    RunPowerShell("powercfg /hibernate on");
+                    break;
+                case "ntfs_last_access":
+                    RunPowerShell("fsutil behavior set disablelastaccess 0");
+                    break;
+                case "ntfs_83names":
+                    RunPowerShell("fsutil behavior set disable8dot3 0");
+                    break;
+                case "large_cache":
+                    SetRegistryLocal(@"SYSTEM\CurrentControlSet\Control\Session Manager\Memory Management", "LargeSystemCache", 1);
+                    break;
+                case "memory_compression":
+                    RunPowerShell("Enable-MMAgent -MemoryCompression");
+                    break;
+                case "pagefile_cleanup":
+                    SetRegistryLocal(@"SYSTEM\CurrentControlSet\Control\Session Manager\Memory Management", "ClearPageFileAtShutdown", 0);
+                    break;
+                case "thumbnail_cache_off":
+                    SetRegistry(@"Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced", "DisableThumbnailCache", 0);
+                    break;
+                case "qos_limit":
+                    SetRegistryLocal(@"SOFTWARE\Policies\Microsoft\Windows\Psched", "NonBestEffortLimit", 80);
+                    break;
+                case "ipv6":
+                    RunPowerShell("Get-NetAdapterBinding -ComponentID ms_tcpip6 | Enable-NetAdapterBinding -ComponentID ms_tcpip6");
+                    break;
+                case "mtu_optimize":
+                    RunPowerShell("netsh interface ipv4 set subinterface \"Ethernet\" mtu=1500 store=persistent");
+                    break;
+                case "prefetch_clean":
+                    break; // No revert for cleanup operations
+                case "update_cache":
+                    break;
+                case "font_cache":
+                    break;
+                case "recent_files":
                     break;
             }
             tweak.IsEnabled = false;
         });
+    }
+
+    private static void CleanDirectory(string path)
+    {
+        try
+        {
+            if (Directory.Exists(path))
+            {
+                foreach (var file in Directory.GetFiles(path))
+                    try { File.Delete(file); } catch { }
+                foreach (var dir in Directory.GetDirectories(path))
+                    try { Directory.Delete(dir, true); } catch { }
+            }
+        }
+        catch (Exception ex) { Debug.WriteLine($"[Tweaks] CleanDir: {ex.Message}"); }
     }
 
     private static void SetRegistry(string path, string name, object value)
@@ -147,7 +361,17 @@ public class TweaksService
             using var key = Registry.CurrentUser.OpenSubKey(path, true) ?? Registry.CurrentUser.CreateSubKey(path);
             key?.SetValue(name, value);
         }
-        catch (Exception ex) { Debug.WriteLine($"[Tweaks] Registry: {ex.Message}"); }
+        catch (Exception ex) { Debug.WriteLine($"[Tweaks] Reg: {ex.Message}"); }
+    }
+
+    private static void SetRegistryLocal(string path, string name, object value)
+    {
+        try
+        {
+            using var key = Registry.LocalMachine.OpenSubKey(path, true) ?? Registry.LocalMachine.CreateSubKey(path);
+            key?.SetValue(name, value);
+        }
+        catch (Exception ex) { Debug.WriteLine($"[Tweaks] RegLM: {ex.Message}"); }
     }
 
     private static void RunPowerShell(string command)
@@ -160,28 +384,20 @@ public class TweaksService
                 UseShellExecute = false
             };
             using var process = Process.Start(psi);
-            process?.WaitForExit(10000);
+            process?.WaitForExit(15000);
         }
-        catch (Exception ex) { Debug.WriteLine($"[Tweaks] PowerShell: {ex.Message}"); }
+        catch (Exception ex) { Debug.WriteLine($"[Tweaks] PS: {ex.Message}"); }
     }
 
     private static void SetSystemPerformanceToMaximum()
     {
         try
         {
-            var key = Registry.CurrentUser.OpenSubKey(@"Software\Microsoft\Windows\CurrentVersion\Explorer\VisualEffects", true);
-            if (key == null)
-            {
-                key = Registry.CurrentUser.CreateSubKey(@"Software\Microsoft\Windows\CurrentVersion\Explorer\VisualEffects");
-            }
-            // Set VisualFX setting to "Adjust for best performance" (value 2)
+            var key = Registry.CurrentUser.OpenSubKey(@"Software\Microsoft\Windows\CurrentVersion\Explorer\VisualEffects", true)
+                      ?? Registry.CurrentUser.CreateSubKey(@"Software\Microsoft\Windows\CurrentVersion\Explorer\VisualEffects");
             key.SetValue("VisualFXSetting", 2);
-
-            // Disable specific visual effects
-            var perfKey = Registry.CurrentUser.OpenSubKey(@"Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced", true);
-            perfKey?.SetValue("TaskbarAnimations", 0);
         }
-        catch (Exception ex) { Debug.WriteLine($"[Tweaks] VisualEffects: {ex.Message}"); }
+        catch (Exception ex) { Debug.WriteLine($"[Tweaks] VFX: {ex.Message}"); }
     }
 
     private static void SetSystemPerformanceToDefault()
@@ -189,9 +405,9 @@ public class TweaksService
         try
         {
             var key = Registry.CurrentUser.OpenSubKey(@"Software\Microsoft\Windows\CurrentVersion\Explorer\VisualEffects", true);
-            key?.SetValue("VisualFXSetting", 0); // Let Windows choose
+            key?.SetValue("VisualFXSetting", 0);
         }
-        catch (Exception ex) { Debug.WriteLine($"[Tweaks] VisualEffects: {ex.Message}"); }
+        catch (Exception ex) { Debug.WriteLine($"[Tweaks] VFX: {ex.Message}"); }
     }
 
     private static void DisableNagle()
