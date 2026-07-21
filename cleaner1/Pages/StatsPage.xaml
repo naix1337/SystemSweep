@@ -1,16 +1,91 @@
 <Page x:Class="ModernFileCleaner.Pages.StatsPage"
       xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
       xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-      xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-      xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-      mc:Ignorable="d"
       Title="Statistics">
+    <Grid Margin="24">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
 
-    <Grid>
-        <TextBlock Text="Statistics Page"
-                   HorizontalAlignment="Center"
-                   VerticalAlignment="Center"
-                   FontSize="24"
-                   Foreground="White" />
+        <!-- Header -->
+        <StackPanel Grid.Row="0" Orientation="Horizontal" Margin="0,0,0,24">
+            <TextBlock Text="📊" FontSize="28" Margin="0,0,12,0" VerticalAlignment="Center"/>
+            <StackPanel>
+                <TextBlock Text="Statistics" FontSize="22" FontWeight="SemiBold" Foreground="White"/>
+                <TextBlock Text="Your cleaning history overview" FontSize="13" Foreground="#FF888888"/>
+            </StackPanel>
+        </StackPanel>
+
+        <!-- Stat Cards -->
+        <WrapPanel Grid.Row="1" Margin="0,0,0,24">
+            <Border CornerRadius="12" Background="#FF2D2D2D"
+                    Width="200" Height="100" Margin="0,0,12,0" Padding="20">
+                <StackPanel VerticalAlignment="Center">
+                    <TextBlock Text="Total Freed" FontSize="12" Foreground="#FF888888"/>
+                    <TextBlock x:Name="txtTotalFreed" Text="0 B"
+                               FontSize="24" FontWeight="SemiBold" Foreground="#FF4CAF50"
+                               Margin="0,4,0,0"/>
+                </StackPanel>
+            </Border>
+            <Border CornerRadius="12" Background="#FF2D2D2D"
+                    Width="200" Height="100" Margin="0,0,12,0" Padding="20">
+                <StackPanel VerticalAlignment="Center">
+                    <TextBlock Text="Sessions" FontSize="12" Foreground="#FF888888"/>
+                    <TextBlock x:Name="txtSessions" Text="0"
+                               FontSize="24" FontWeight="SemiBold" Foreground="#FF0078D4"
+                               Margin="0,4,0,0"/>
+                </StackPanel>
+            </Border>
+            <Border CornerRadius="12" Background="#FF2D2D2D"
+                    Width="200" Height="100" Padding="20">
+                <StackPanel VerticalAlignment="Center">
+                    <TextBlock Text="Last Cleaned" FontSize="12" Foreground="#FF888888"/>
+                    <TextBlock x:Name="txtLastCleaned" Text="Never"
+                               FontSize="16" FontWeight="SemiBold" Foreground="White"
+                               Margin="0,4,0,0"/>
+                </StackPanel>
+            </Border>
+        </WrapPanel>
+
+        <!-- History List -->
+        <Grid Grid.Row="2">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="*"/>
+            </Grid.RowDefinitions>
+            <TextBlock Grid.Row="0" Text="Clean History"
+                       FontSize="16" FontWeight="SemiBold" Foreground="White"
+                       Margin="0,0,0,12"/>
+            <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto">
+                <ItemsControl x:Name="HistoryList">
+                    <ItemsControl.ItemTemplate>
+                        <DataTemplate>
+                            <Border CornerRadius="8" Background="#FF2D2D2D"
+                                    Padding="12" Margin="0,0,0,6">
+                                <StackPanel>
+                                    <StackPanel Orientation="Horizontal"
+                                                HorizontalAlignment="Stretch">
+                                        <TextBlock Text="{Binding Timestamp, StringFormat={}{0:g}}"
+                                                   Foreground="White" FontWeight="SemiBold"/>
+                                        <TextBlock Text="{Binding CategoriesCleaned.Count, StringFormat=' — {0} categories'}"
+                                                   Foreground="#FF888888"
+                                                   Margin="6,0,0,0"/>
+                                        <TextBlock Text="{Binding BytesFormatted}"
+                                                   Foreground="#FF4CAF50" FontWeight="SemiBold"
+                                                   HorizontalAlignment="Right"/>
+                                    </StackPanel>
+                                    <TextBlock Text="{Binding CategoriesCleaned, StringFormat='{}{0}'}"
+                                               Foreground="#FF666666" FontSize="11"
+                                               Margin="0,4,0,0"
+                                               TextTrimming="CharacterEllipsis"/>
+                                </StackPanel>
+                            </Border>
+                        </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                </ItemsControl>
+            </ScrollViewer>
+        </Grid>
     </Grid>
 </Page>
