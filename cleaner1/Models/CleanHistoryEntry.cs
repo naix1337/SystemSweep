@@ -6,6 +6,8 @@ public class CleanHistoryEntry
     public long BytesFreed { get; set; }
     public List<string> CategoriesCleaned { get; set; } = new();
 
+    public string CategoriesDisplay => string.Join(", ", CategoriesCleaned);
+
     public string BytesFormatted
     {
         get

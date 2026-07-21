@@ -1,3 +1,4 @@
+using System.Diagnostics;
 using System.IO;
 using Newtonsoft.Json;
 using ModernFileCleaner.Models;
@@ -26,7 +27,7 @@ public class HistoryService
             var entries = JsonConvert.DeserializeObject<List<CleanHistoryEntry>>(json);
             if (entries != null) _entries = entries;
         }
-        catch { }
+        catch (Exception ex) { Debug.WriteLine($"[HistoryService] {ex.Message}"); }
     }
 
     public async Task AddEntryAsync(CleanHistoryEntry entry)
@@ -42,6 +43,6 @@ public class HistoryService
             string json = JsonConvert.SerializeObject(_entries, Formatting.Indented);
             await File.WriteAllTextAsync(HistoryPath, json);
         }
-        catch { }
+        catch (Exception ex) { Debug.WriteLine($"[HistoryService] {ex.Message}"); }
     }
 }

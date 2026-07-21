@@ -76,7 +76,7 @@
                                                    Foreground="#FF4CAF50" FontWeight="SemiBold"
                                                    HorizontalAlignment="Right"/>
                                     </StackPanel>
-                                    <TextBlock Text="{Binding CategoriesCleaned, StringFormat='{}{0}'}"
+                                    <TextBlock Text="{Binding CategoriesDisplay}"
                                                Foreground="#FF666666" FontSize="11"
                                                Margin="0,4,0,0"
                                                TextTrimming="CharacterEllipsis"/>

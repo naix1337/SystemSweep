@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using System.Windows;
 using System.Windows.Navigation;
 using ModernFileCleaner.Pages;
@@ -8,6 +9,7 @@ namespace ModernFileCleaner;
 public partial class MainWindow
 {
     private readonly HistoryService _historyService = new();
+    private readonly Dictionary<string, object> _pages = new();
 
     public MainWindow()
     {
@@ -19,6 +21,7 @@ public partial class MainWindow
         Loaded += (_, _) =>
         {
             var cleanPage = new CleanPage(_historyService);
+            _pages["clean"] = cleanPage;
             NavFrame.Navigate(cleanPage);
             NavFrame.Visibility = Visibility.Visible;
 
@@ -32,7 +35,9 @@ public partial class MainWindow
 
     public void NavigateToCleanPage()
     {
-        NavFrame.Navigate(new CleanPage(_historyService));
+        if (!_pages.ContainsKey("clean"))
+            _pages["clean"] = new CleanPage(_historyService);
+        NavFrame.Navigate(_pages["clean"]);
     }
 
     private void OnSelectionChanged(object? sender, RoutedEventArgs e)
@@ -42,16 +47,24 @@ public partial class MainWindow
         switch (tag)
         {
             case "clean":
-                NavFrame.Navigate(new CleanPage(_historyService));
+                if (!_pages.ContainsKey("clean"))
+                    _pages["clean"] = new CleanPage(_historyService);
+                NavFrame.Navigate(_pages["clean"]);
                 break;
             case "stats":
-                NavFrame.Navigate(new StatsPage(_historyService));
+                if (!_pages.ContainsKey("stats"))
+                    _pages["stats"] = new StatsPage(_historyService);
+                NavFrame.Navigate(_pages["stats"]);
                 break;
             case "settings":
-                NavFrame.Navigate(new SettingsPage());
+                if (!_pages.ContainsKey("settings"))
+                    _pages["settings"] = new SettingsPage();
+                NavFrame.Navigate(_pages["settings"]);
                 break;
             case "about":
-                NavFrame.Navigate(new AboutPage());
+                if (!_pages.ContainsKey("about"))
+                    _pages["about"] = new AboutPage();
+                NavFrame.Navigate(_pages["about"]);
                 break;
         }
     }

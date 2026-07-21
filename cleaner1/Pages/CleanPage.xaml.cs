@@ -1,5 +1,4 @@
 using System.Windows;
-using ModernFileCleaner.Controls;
 using ModernFileCleaner.Models;
 using ModernFileCleaner.Services;
 
@@ -33,7 +32,13 @@ public partial class CleanPage
 
     public void RunAutoAnalyze()
     {
-        btnAnalyze_Click(null, null);
+        try
+        {
+            btnAnalyze_Click(null, null);
+        }
+        catch
+        {
+        }
     }
 
     private void SelectAllToggle_Click(object sender, RoutedEventArgs e)
@@ -95,7 +100,8 @@ public partial class CleanPage
         {
             var cat = selected[i];
             txtStatus.Text = $"🧹 Cleaning {cat.Name}...";
-            long freed = await _cleaningService.CleanCategoryAsync(cat);
+            var progress = new Progress<string>(s => txtStatus.Text = s);
+            long freed = await _cleaningService.CleanCategoryAsync(cat, progress);
             totalFreed += freed;
             cleanedCategories.Add(cat.Name);
             ProgressBar.Value = i + 1;

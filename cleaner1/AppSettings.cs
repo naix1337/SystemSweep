@@ -1,5 +1,6 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using Newtonsoft.Json;
 
@@ -44,7 +45,7 @@ namespace ModernFileCleaner
                         LastCleaned = settings.LastCleaned;
                     }
                 }
-                catch { }
+                catch (Exception ex) { Debug.WriteLine($"[AppSettings] {ex.Message}"); }
             }
         }
 
@@ -55,7 +56,7 @@ namespace ModernFileCleaner
                 string json = JsonConvert.SerializeObject(this, Formatting.Indented);
                 File.WriteAllText(SettingsPath, json);
             }
-            catch { }
+            catch (Exception ex) { Debug.WriteLine($"[AppSettings] {ex.Message}"); }
         }
     }
 }
