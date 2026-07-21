@@ -23,6 +23,11 @@ public partial class MainWindow
         };
     }
 
+    public void NavigateToCleanPage()
+    {
+        NavFrame.Navigate(new CleanPage(_historyService));
+    }
+
     private void OnSelectionChanged(object? sender, RoutedEventArgs e)
     {
         if (NavView.SelectedItem is not Wpf.Ui.Controls.NavigationViewItem item) return;
