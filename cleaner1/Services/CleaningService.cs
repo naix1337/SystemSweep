@@ -1,5 +1,6 @@
 using System.Diagnostics;
 using System.IO;
+using System.Security.Principal;
 using ModernFileCleaner.Models;
 
 namespace ModernFileCleaner.Services;
@@ -34,7 +35,7 @@ public class CleaningService
                         "Microsoft", "Windows", "RecycleBin");
                     if (Directory.Exists(recyclePath)) CleanDirectory(recyclePath);
                 }
-                catch { }
+                catch (Exception ex) { Debug.WriteLine($"[CleaningService] {ex.Message}"); }
                 break;
             case "download_cache":
                 string downloads = Path.Combine(
@@ -48,7 +49,7 @@ public class CleaningService
                 if (Directory.Exists(thumbCache))
                 {
                     foreach (var f in Directory.GetFiles(thumbCache, "thumbcache_*.db"))
-                        try { File.Delete(f); } catch { }
+                        try { File.Delete(f); } catch (Exception ex) { Debug.WriteLine($"[CleaningService] {ex.Message}"); }
                 }
                 break;
             case "error_reports":
@@ -63,7 +64,7 @@ public class CleaningService
                 if (Directory.Exists(installer))
                 {
                     foreach (var f in Directory.GetFiles(installer, "*.tmp"))
-                        try { File.Delete(f); } catch { }
+                        try { File.Delete(f); } catch (Exception ex) { Debug.WriteLine($"[CleaningService] {ex.Message}"); }
                 }
                 break;
             case "store_cache":
@@ -79,17 +80,19 @@ public class CleaningService
                 if (Directory.Exists(winDir))
                 {
                     foreach (var f in Directory.GetFiles(winDir, "*.log", SearchOption.AllDirectories))
-                        try { File.Delete(f); } catch { }
+                        try { File.Delete(f); } catch (Exception ex) { Debug.WriteLine($"[CleaningService] {ex.Message}"); }
                 }
                 break;
             case "windows_old":
+                if (!IsAdmin()) return;
                 string winOld = Path.Combine(
                     Environment.GetFolderPath(Environment.SpecialFolder.Windows), "..", "Windows.old");
-                if (Directory.Exists(winOld)) { CleanDirectory(winOld); try { Directory.Delete(winOld, true); } catch { } }
+                if (Directory.Exists(winOld)) { CleanDirectory(winOld); try { Directory.Delete(winOld, true); } catch (Exception ex) { Debug.WriteLine($"[CleaningService] {ex.Message}"); } }
                 break;
             case "memory_dumps":
+                if (!IsAdmin()) return;
                 string dump = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Windows), "MEMORY.DMP");
-                if (File.Exists(dump)) try { File.Delete(dump); } catch { }
+                if (File.Exists(dump)) try { File.Delete(dump); } catch (Exception ex) { Debug.WriteLine($"[CleaningService] {ex.Message}"); }
                 string minidump = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Windows), "Minidump");
                 if (Directory.Exists(minidump)) CleanDirectory(minidump);
                 break;
@@ -102,10 +105,17 @@ public class CleaningService
         try
         {
             foreach (var file in Directory.GetFiles(path, searchPattern))
-                try { File.Delete(file); } catch { }
+                try { File.Delete(file); } catch (Exception ex) { Debug.WriteLine($"[CleaningService] {ex.Message}"); }
             foreach (var dir in Directory.GetDirectories(path))
-                try { Directory.Delete(dir, true); } catch { }
+                try { Directory.Delete(dir, true); } catch (Exception ex) { Debug.WriteLine($"[CleaningService] {ex.Message}"); }
         }
-        catch { }
+        catch (Exception ex) { Debug.WriteLine($"[CleaningService] {ex.Message}"); }
+    }
+
+    private static bool IsAdmin()
+    {
+        using var identity = WindowsIdentity.GetCurrent();
+        var principal = new WindowsPrincipal(identity);
+        return principal.IsInRole(WindowsBuiltInRole.Administrator);
     }
 }

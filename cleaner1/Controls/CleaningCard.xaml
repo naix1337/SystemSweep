@@ -11,10 +11,10 @@
         <Border.Style>
             <Style TargetType="Border">
                 <Style.Triggers>
-                    <DataTrigger Binding="{Binding Safety}" Value="Dangerous">
+                    <DataTrigger Binding="{Binding SafetyName}" Value="Dangerous">
                         <Setter Property="BorderBrush" Value="#44FF4444"/>
                     </DataTrigger>
-                    <DataTrigger Binding="{Binding Safety}" Value="Caution">
+                    <DataTrigger Binding="{Binding SafetyName}" Value="Caution">
                         <Setter Property="BorderBrush" Value="#44FFAA00"/>
                     </DataTrigger>
                 </Style.Triggers>
@@ -48,7 +48,7 @@
             <TextBlock Grid.Row="1" Grid.Column="1"
                        Text="{Binding SizeFormatted}"
                        FontSize="13"
-                       Foreground="{Binding SizeForeground}"
+                       Foreground="#FF888888"
                        VerticalAlignment="Center"
                        Margin="0,2,0,0">
                 <TextBlock.Style>

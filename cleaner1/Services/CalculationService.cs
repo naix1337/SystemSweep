@@ -1,3 +1,4 @@
+using System.Diagnostics;
 using System.IO;
 using ModernFileCleaner.Models;
 
@@ -49,7 +50,7 @@ public class CalculationService
         if (!Directory.Exists(windowsPath)) return size;
         foreach (var file in Directory.GetFiles(windowsPath, "*.log", SearchOption.AllDirectories))
         {
-            try { size += new FileInfo(file).Length; } catch { }
+            try { size += new FileInfo(file).Length; } catch (Exception ex) { Debug.WriteLine($"[CalculationService] {ex.Message}"); }
         }
         return size;
     }
@@ -58,7 +59,7 @@ public class CalculationService
     {
         long size = 0;
         string dumpPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Windows), "MEMORY.DMP");
-        if (File.Exists(dumpPath)) { try { size += new FileInfo(dumpPath).Length; } catch { } }
+        if (File.Exists(dumpPath)) { try { size += new FileInfo(dumpPath).Length; } catch (Exception ex) { Debug.WriteLine($"[CalculationService] {ex.Message}"); } }
         string minidumpPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Windows), "Minidump");
         if (Directory.Exists(minidumpPath)) size += GetDirectorySize(minidumpPath);
         return size;
@@ -71,11 +72,11 @@ public class CalculationService
         try
         {
             foreach (var file in Directory.GetFiles(path, searchPattern))
-                try { size += new FileInfo(file).Length; } catch { }
+                try { size += new FileInfo(file).Length; } catch (Exception ex) { Debug.WriteLine($"[CalculationService] {ex.Message}"); }
             foreach (var dir in Directory.GetDirectories(path))
-                try { size += GetDirectorySize(dir, searchPattern); } catch { }
+                try { size += GetDirectorySize(dir, searchPattern); } catch (Exception ex) { Debug.WriteLine($"[CalculationService] {ex.Message}"); }
         }
-        catch { }
+        catch (Exception ex) { Debug.WriteLine($"[CalculationService] {ex.Message}"); }
         return size;
     }
 }
