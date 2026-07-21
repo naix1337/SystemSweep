@@ -44,7 +44,11 @@ public class UpdateService
     {
         try
         {
-            Process.Start(new ProcessStartInfo(url) { UseShellExecute = true });
+            // Security: Only allow HTTPS URLs to prevent argument injection
+            if (!Uri.TryCreate(url, UriKind.Absolute, out var uri) ||
+                !uri.Scheme.Equals("https", StringComparison.OrdinalIgnoreCase))
+                return;
+            Process.Start(new ProcessStartInfo(uri.AbsoluteUri) { UseShellExecute = true });
         }
         catch { }
     }

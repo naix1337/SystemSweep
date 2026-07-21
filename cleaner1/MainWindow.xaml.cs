@@ -26,6 +26,7 @@ public partial class MainWindow
         navStats.Click += NavButton_Click;
         navSettings.Click += NavButton_Click;
         navAbout.Click += NavButton_Click;
+        navLicense.Click += NavButton_Click;
 
         // Navigate to Dashboard on load
         Loaded += (_, _) =>
@@ -108,6 +109,12 @@ public partial class MainWindow
                     _pages["about"] = new AboutPage();
                 _currentPage = "about";
                 NavFrame.Navigate(_pages["about"]);
+                break;
+            case "license":
+                if (!_pages.ContainsKey("license"))
+                    _pages["license"] = new LicensePage();
+                _currentPage = "license";
+                NavFrame.Navigate(_pages["license"]);
                 break;
         }
     }

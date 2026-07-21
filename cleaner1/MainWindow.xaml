@@ -58,6 +58,9 @@
                                      Style="{StaticResource NavRadioStyle}" Margin="8,0,8,2"/>
                         <RadioButton x:Name="navAbout" Content="About" Tag="about"
                                      Style="{StaticResource NavRadioStyle}" Margin="8,0,8,2"/>
+                        <Border Height="1" Background="#FF333333" Margin="16,8"/>
+                        <RadioButton x:Name="navLicense" Content="🔐 License" Tag="license"
+                                     Style="{StaticResource NavRadioStyle}" Margin="8,0,8,2"/>
                     </StackPanel>
                 </ScrollViewer>
 

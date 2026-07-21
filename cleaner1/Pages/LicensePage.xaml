@@ -1,0 +1,63 @@
+<Page x:Class="ModernFileCleaner.Pages.LicensePage"
+      xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+      xmlns:ui="http://schemas.lepo.co/wpfui/2022/xaml"
+      Title="License">
+    <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalAlignment="Center" VerticalAlignment="Center">
+        <StackPanel Margin="40" MaxWidth="500" HorizontalAlignment="Center">
+            <!-- Lock Icon -->
+            <Border CornerRadius="24" Background="#FF0078D4" Width="80" Height="80" Margin="0,0,0,20" HorizontalAlignment="Center">
+                <TextBlock Text="🔐" FontSize="36" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+            </Border>
+
+            <TextBlock Text="Activate System Sweep" FontSize="26" FontWeight="Bold" Foreground="White" HorizontalAlignment="Center"/>
+            <TextBlock x:Name="txtStatus" Text="Enter your license key to unlock all features" FontSize="14" Foreground="#FF888888" HorizontalAlignment="Center" Margin="0,8,0,24"/>
+
+            <!-- Status Card -->
+            <Border x:Name="StatusCard" CornerRadius="12" Background="#FF2D2D2D" Padding="20" Margin="0,0,0,16">
+                <StackPanel>
+                    <TextBlock x:Name="txtLicenseStatus" Text="Checking..." FontSize="18" FontWeight="Bold" HorizontalAlignment="Center"/>
+                    <TextBlock x:Name="txtLicenseDetail" Text="" FontSize="13" Foreground="#FF888888" HorizontalAlignment="Center" Margin="0,8,0,0"/>
+                </StackPanel>
+            </Border>
+
+            <!-- Activation Form -->
+            <Border CornerRadius="12" Background="#FF2D2D2D" Padding="20" Margin="0,0,0,12">
+                <StackPanel>
+                    <TextBlock Text="License Key" FontSize="14" FontWeight="SemiBold" Foreground="White" Margin="0,0,0,12"/>
+                    <TextBox x:Name="txtLicenseKey" FontSize="20" Height="44"
+                             HorizontalAlignment="Stretch"
+                             Padding="12,0"
+                             BorderBrush="#FF444444" BorderThickness="1"
+                             Background="#FF1E1E1E" Foreground="White"
+                             CaretBrush="White"/>
+                    <TextBlock Text="Format: XXXXX-XXXXX-XXXXX-XXXXX" FontSize="11" Foreground="#FF666666" Margin="0,6,0,12"/>
+
+                    <ui:Button x:Name="btnActivate" Content="🔑 Activate License" Appearance="Primary"
+                               Width="200" Height="40" HorizontalAlignment="Center"
+                               Click="Activate_Click"/>
+                </StackPanel>
+            </Border>
+
+            <!-- Machine Info -->
+            <Border CornerRadius="12" Background="#FF2D2D2D" Padding="20" Margin="0,0,0,12">
+                <StackPanel>
+                    <TextBlock Text="Device Information" FontSize="13" Foreground="#FF888888" Margin="0,0,0,8"/>
+                    <TextBlock x:Name="txtFingerprint" Text="Loading..." FontSize="11" Foreground="#FF555555"/>
+                </StackPanel>
+            </Border>
+
+            <!-- Buy Link -->
+            <Border CornerRadius="12" Background="#1A0078D4" Padding="16" Margin="0,0,0,16">
+                <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+                    <TextBlock Text="No license yet?" Foreground="#FF888888" FontSize="13" VerticalAlignment="Center" Margin="0,0,8,0"/>
+                    <ui:Button Content="🛒 Purchase License" Appearance="Primary" FontSize="13"
+                               Height="32" Padding="16,0" Click="BuyLicense_Click"/>
+                </StackPanel>
+            </Border>
+
+            <ui:Button Content="Continue in Trial Mode" Appearance="Secondary" Width="200" Height="36"
+                       HorizontalAlignment="Center" Click="ContinueTrial_Click"/>
+        </StackPanel>
+    </ScrollViewer>
+</Page>
