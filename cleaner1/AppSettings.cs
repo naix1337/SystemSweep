@@ -1,5 +1,5 @@
-﻿// AppSettings.cs
-using System;
+﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using Newtonsoft.Json;
 
@@ -13,16 +13,17 @@ namespace ModernFileCleaner
         public bool AutoAnalyze { get; set; }
         public bool AutoClean { get; set; }
         public bool ShowNotifications { get; set; }
+        public bool SafetyBackup { get; set; } = true;
         public DateTime LastCleaned { get; set; }
 
         private static readonly string SettingsPath = "settings.json";
 
         private AppSettings()
         {
-            // Standardwerte
             AutoAnalyze = false;
             AutoClean = false;
             ShowNotifications = true;
+            SafetyBackup = true;
             LastCleaned = DateTime.MinValue;
         }
 
@@ -39,10 +40,11 @@ namespace ModernFileCleaner
                         AutoAnalyze = settings.AutoAnalyze;
                         AutoClean = settings.AutoClean;
                         ShowNotifications = settings.ShowNotifications;
+                        SafetyBackup = settings.SafetyBackup;
                         LastCleaned = settings.LastCleaned;
                     }
                 }
-                catch { /* Fehler ignorieren */ }
+                catch { }
             }
         }
 
@@ -50,10 +52,10 @@ namespace ModernFileCleaner
         {
             try
             {
-                string json = JsonConvert.SerializeObject(this);
+                string json = JsonConvert.SerializeObject(this, Formatting.Indented);
                 File.WriteAllText(SettingsPath, json);
             }
-            catch { /* Fehler ignorieren */ }
+            catch { }
         }
     }
 }
