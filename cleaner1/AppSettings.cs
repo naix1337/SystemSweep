@@ -17,6 +17,7 @@ namespace ModernFileCleaner
         public bool ShowNotifications { get; set; }
         public bool SafetyBackup { get; set; } = true;
         public DateTime LastCleaned { get; set; }
+        public List<long> DiskHistory { get; set; } = new();
 
         private static readonly string SettingsPath = "settings.json";
 
@@ -28,6 +29,7 @@ namespace ModernFileCleaner
             ShowNotifications = true;
             SafetyBackup = true;
             LastCleaned = DateTime.MinValue;
+            DiskHistory = new List<long>();
         }
 
         public void Load()
@@ -46,6 +48,7 @@ namespace ModernFileCleaner
                         ShowNotifications = settings.ShowNotifications;
                         SafetyBackup = settings.SafetyBackup;
                         LastCleaned = settings.LastCleaned;
+                        DiskHistory = settings.DiskHistory ?? new List<long>();
                     }
                 }
                 catch (Exception ex) { Debug.WriteLine($"[AppSettings] {ex.Message}"); }
