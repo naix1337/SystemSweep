@@ -17,6 +17,33 @@
             <Style TargetType="ScrollViewer">
                 <Setter Property="PanningMode" Value="Both"/>
             </Style>
+
+            <!-- Sidebar Navigation RadioButton Style -->
+            <Style x:Key="NavRadioStyle" TargetType="RadioButton">
+                <Setter Property="Background" Value="Transparent"/>
+                <Setter Property="Foreground" Value="#FFCCCCCC"/>
+                <Setter Property="FontSize" Value="14"/>
+                <Setter Property="Height" Value="38"/>
+                <Setter Property="Cursor" Value="Hand"/>
+                <Setter Property="Template">
+                    <Setter.Value>
+                        <ControlTemplate TargetType="RadioButton">
+                            <Border x:Name="bg" CornerRadius="6" Background="Transparent" Padding="12,0">
+                                <ContentPresenter VerticalAlignment="Center"/>
+                            </Border>
+                            <ControlTemplate.Triggers>
+                                <Trigger Property="IsMouseOver" Value="True">
+                                    <Setter TargetName="bg" Property="Background" Value="#FF2A2A2A"/>
+                                </Trigger>
+                                <Trigger Property="IsChecked" Value="True">
+                                    <Setter TargetName="bg" Property="Background" Value="#FF0078D4"/>
+                                    <Setter Property="Foreground" Value="White"/>
+                                </Trigger>
+                            </ControlTemplate.Triggers>
+                        </ControlTemplate>
+                    </Setter.Value>
+                </Setter>
+            </Style>
         </ResourceDictionary>
     </Application.Resources>
 </Application>

@@ -1,7 +1,6 @@
 using System.Collections.Generic;
 using System.Windows;
-using System.Windows.Media.Animation;
-using System.Windows.Navigation;
+using System.Windows.Controls.Primitives;
 using ModernFileCleaner.Pages;
 using ModernFileCleaner.Services;
 
@@ -17,54 +16,38 @@ public partial class MainWindow
     {
         InitializeComponent();
         _historyService.Load();
-        NavView.SelectionChanged += OnSelectionChanged;
 
-        // Page fade transition animation
-        NavFrame.Navigated += (_, _) =>
-        {
-            if (NavFrame.Content is FrameworkElement element)
-            {
-                element.Opacity = 0;
-                var storyboard = new Storyboard();
-                var animation = new DoubleAnimation
-                {
-                    From = 0,
-                    To = 1,
-                    Duration = new Duration(TimeSpan.FromMilliseconds(200)),
-                    EasingFunction = new QuadraticEase { EasingMode = EasingMode.EaseOut }
-                };
-                Storyboard.SetTarget(animation, element);
-                Storyboard.SetTargetProperty(animation, new PropertyPath("Opacity"));
-                storyboard.Children.Add(animation);
-                storyboard.Begin();
-            }
-        };
+        navDashboard.Click += NavButton_Click;
+        navClean.Click += NavButton_Click;
+        navBrowser.Click += NavButton_Click;
+        navDuplicates.Click += NavButton_Click;
+        navStartup.Click += NavButton_Click;
+        navStats.Click += NavButton_Click;
+        navSettings.Click += NavButton_Click;
+        navAbout.Click += NavButton_Click;
 
         // Navigate to Dashboard on load
         Loaded += (_, _) =>
         {
-            var dashPage = new DashboardPage();
-            _pages["dashboard"] = dashPage;
-            _currentPage = "dashboard";
-            NavFrame.Navigate(dashPage);
-            NavFrame.Visibility = Visibility.Visible;
-            dashPage.OnPageVisible();
+            NavigateTo("dashboard");
         };
+    }
+
+    private void NavButton_Click(object sender, RoutedEventArgs e)
+    {
+        if (sender is not System.Windows.Controls.Primitives.ToggleButton btn) return;
+        if (btn.Tag is string tag)
+            NavigateTo(tag);
     }
 
     public void NavigateToCleanPage()
     {
-        if (!_pages.ContainsKey("clean"))
-            _pages["clean"] = new CleanPage(_historyService);
-        NavFrame.Navigate(_pages["clean"]);
+        NavigateTo("clean");
     }
 
-    private void OnSelectionChanged(object? sender, RoutedEventArgs e)
+    private void NavigateTo(string tag)
     {
-        if (NavView.SelectedItem is not Wpf.Ui.Controls.NavigationViewItem item) return;
-        var tag = item.Tag?.ToString();
-
-        // Notify previous page that it's hidden
+        // Notify previous dashboard page it's hidden
         if (_currentPage == "dashboard" && _pages.TryGetValue("dashboard", out var prevDash))
             ((DashboardPage)prevDash).OnPageHidden();
 
@@ -83,17 +66,17 @@ public partial class MainWindow
                 _currentPage = "clean";
                 NavFrame.Navigate(_pages["clean"]);
                 break;
-            case "duplicates":
-                if (!_pages.ContainsKey("duplicates"))
-                    _pages["duplicates"] = new DuplicatesPage();
-                _currentPage = "duplicates";
-                NavFrame.Navigate(_pages["duplicates"]);
-                break;
             case "browsers":
                 if (!_pages.ContainsKey("browsers"))
                     _pages["browsers"] = new BrowserCachePage();
                 _currentPage = "browsers";
                 NavFrame.Navigate(_pages["browsers"]);
+                break;
+            case "duplicates":
+                if (!_pages.ContainsKey("duplicates"))
+                    _pages["duplicates"] = new DuplicatesPage();
+                _currentPage = "duplicates";
+                NavFrame.Navigate(_pages["duplicates"]);
                 break;
             case "startup":
                 if (!_pages.ContainsKey("startup"))
@@ -119,22 +102,17 @@ public partial class MainWindow
                 _currentPage = "about";
                 NavFrame.Navigate(_pages["about"]);
                 break;
-            case "theme":
-                ThemeService.Toggle();
-                AppSettings.Instance.Theme = ThemeService.CurrentTheme;
-                AppSettings.Instance.Save();
-                navTheme.Content = ThemeService.CurrentTheme == "Dark" ? "Dark Mode" : "Light Mode";
-                navTheme.Icon = new Wpf.Ui.Controls.SymbolIcon(
-                    ThemeService.CurrentTheme == "Dark"
-                        ? Wpf.Ui.Controls.SymbolRegular.DarkTheme24
-                        : Wpf.Ui.Controls.SymbolRegular.BrightnessHigh24);
-                // Navigate to Dashboard
-                if (!_pages.ContainsKey("dashboard"))
-                    _pages["dashboard"] = new DashboardPage();
-                _currentPage = "dashboard";
-                NavFrame.Navigate(_pages["dashboard"]);
-                ((DashboardPage)_pages["dashboard"]).OnPageVisible();
-                break;
         }
+    }
+
+    private void btnTheme_Click(object sender, RoutedEventArgs e)
+    {
+        ThemeService.Toggle();
+        AppSettings.Instance.Theme = ThemeService.CurrentTheme;
+        AppSettings.Instance.Save();
+        bool isDark = ThemeService.CurrentTheme == "Dark";
+        txtThemeLabel.Text = isDark ? "Dark Mode" : "Light Mode";
+        txtThemeIcon.Text = isDark ? "&#xE706;" : "&#xE707;";
+        NavigateTo("dashboard");
     }
 }

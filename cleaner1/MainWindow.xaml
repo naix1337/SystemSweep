@@ -11,28 +11,72 @@
                   WindowBackdropType="Mica">
 
     <Grid>
-        <ui:NavigationView x:Name="NavView"
-                           PaneDisplayMode="Left"
-                           OpenPaneLength="220"
-                           CompactPaneLength="48"
-                           IsPaneToggleVisible="False">
-            <ui:NavigationView.MenuItems>
-                <ui:NavigationViewItem Content="Dashboard" Icon="GridDots24" Tag="dashboard" IsActive="True" />
-                <ui:NavigationViewItem Content="Clean" Icon="Wrench24" Tag="clean" />
-                <ui:NavigationViewItem Content="Browser Cache" Icon="Globe24" Tag="browsers" />
-                <ui:NavigationViewItem Content="Duplicates" Icon="Copy24" Tag="duplicates" />
-                <ui:NavigationViewItem Content="Startup" Icon="PlayCircle24" Tag="startup" />
-                <ui:NavigationViewItem Content="Statistics" Icon="DataBarVertical24" Tag="stats" />
-                <ui:NavigationViewItem Content="Settings" Icon="Settings24" Tag="settings" />
-                <ui:NavigationViewItem Content="About" Icon="Info24" Tag="about" />
-            </ui:NavigationView.MenuItems>
-            <ui:NavigationView.FooterMenuItems>
-                <ui:NavigationViewItem x:Name="navTheme" Content="Dark Mode" Icon="DarkTheme24" Tag="theme" />
-            </ui:NavigationView.FooterMenuItems>
-        </ui:NavigationView>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="220"/>
+            <ColumnDefinition Width="*"/>
+        </Grid.ColumnDefinitions>
 
-        <Frame x:Name="NavFrame"
-               Visibility="Collapsed"
-               NavigationUIVisibility="Hidden"/>
+        <!-- Sidebar -->
+        <Border Grid.Column="0" Background="#FF1E1E1E">
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="*"/>
+                    <RowDefinition Height="Auto"/>
+                </Grid.RowDefinitions>
+
+                <!-- App Logo -->
+                <StackPanel Grid.Row="0" Orientation="Horizontal" Margin="16,20,16,20">
+                    <Border CornerRadius="8" Background="#FF0078D4" Width="32" Height="32" Margin="0,0,10,0">
+                        <TextBlock Text="&#xE8B7;" FontFamily="/Wpf.Ui;Component/Resources/Font/#Segoe Fluent Icons"
+                                   FontSize="16" Foreground="White" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                    </Border>
+                    <TextBlock Text="System Sweep" FontSize="16" FontWeight="SemiBold" Foreground="White" VerticalAlignment="Center"/>
+                </StackPanel>
+
+                <!-- Nav Items -->
+                <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto">
+                    <StackPanel>
+                        <RadioButton x:Name="navDashboard" Content="Dashboard" Tag="dashboard"
+                                     Style="{StaticResource NavRadioStyle}" IsChecked="True"
+                                     Margin="8,0,8,2"/>
+                        <RadioButton x:Name="navClean" Content="Clean" Tag="clean"
+                                     Style="{StaticResource NavRadioStyle}" Margin="8,0,8,2"/>
+                        <RadioButton x:Name="navBrowser" Content="Browser Cache" Tag="browsers"
+                                     Style="{StaticResource NavRadioStyle}" Margin="8,0,8,2"/>
+                        <RadioButton x:Name="navDuplicates" Content="Duplicates" Tag="duplicates"
+                                     Style="{StaticResource NavRadioStyle}" Margin="8,0,8,2"/>
+                        <RadioButton x:Name="navStartup" Content="Startup" Tag="startup"
+                                     Style="{StaticResource NavRadioStyle}" Margin="8,0,8,2"/>
+                        <TextBlock Text="TOOLS" Foreground="#FF666666" FontSize="11" FontWeight="Bold"
+                                   Margin="16,16,16,8"/>
+                        <RadioButton x:Name="navStats" Content="Statistics" Tag="stats"
+                                     Style="{StaticResource NavRadioStyle}" Margin="8,0,8,2"/>
+                        <RadioButton x:Name="navSettings" Content="Settings" Tag="settings"
+                                     Style="{StaticResource NavRadioStyle}" Margin="8,0,8,2"/>
+                        <RadioButton x:Name="navAbout" Content="About" Tag="about"
+                                     Style="{StaticResource NavRadioStyle}" Margin="8,0,8,2"/>
+                    </StackPanel>
+                </ScrollViewer>
+
+                <!-- Theme Toggle Footer -->
+                <Border Grid.Row="2" BorderBrush="#FF333333" BorderThickness="0,1,0,0" Padding="16,12">
+                    <StackPanel>
+                        <Button x:Name="btnTheme" Background="Transparent" BorderThickness="0"
+                                Foreground="#FF888888" HorizontalAlignment="Left"
+                                Click="btnTheme_Click">
+                            <StackPanel Orientation="Horizontal">
+                                <TextBlock x:Name="txtThemeIcon" Text="&#xE706;"
+                                           FontFamily="/Wpf.Ui;Component/Resources/Font/#Segoe Fluent Icons" FontSize="16" Margin="0,0,10,0"/>
+                                <TextBlock x:Name="txtThemeLabel" Text="Dark Mode" FontSize="13"/>
+                            </StackPanel>
+                        </Button>
+                    </StackPanel>
+                </Border>
+            </Grid>
+        </Border>
+
+        <!-- Content Area -->
+        <Frame x:Name="NavFrame" Grid.Column="1" NavigationUIVisibility="Hidden"/>
     </Grid>
 </ui:FluentWindow>
