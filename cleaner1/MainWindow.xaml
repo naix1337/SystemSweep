@@ -8,15 +8,14 @@
                   Width="1100"
                   WindowStartupLocation="CenterScreen"
                   ExtendsContentIntoTitleBar="True"
-                  WindowBackdropType="Acrylic">
+                  WindowBackdropType="Mica">
 
     <Grid>
         <ui:NavigationView x:Name="NavView"
                            PaneDisplayMode="Left"
-                           OpenPaneLength="200"
+                           OpenPaneLength="220"
                            CompactPaneLength="48"
-                           IsPaneToggleVisible="False"
-                           HeaderVisibility="Collapsed">
+                           IsPaneToggleVisible="False">
             <ui:NavigationView.MenuItems>
                 <ui:NavigationViewItem Content="Dashboard" Icon="GridDots24" Tag="dashboard" IsActive="True" />
                 <ui:NavigationViewItem Content="Clean" Icon="Wrench24" Tag="clean" />
