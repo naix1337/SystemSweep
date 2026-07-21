@@ -1,0 +1,445 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>System Sweep Professional – Windows Optimization Toolkit</title>
+  <meta name="description" content="System Sweep Professional - The ultimate Windows optimization toolkit. Clean, tweak, monitor, and supercharge your PC.">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🧹</text></svg>">
+  <style>
+    /* ===== Reset & Base ===== */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+      background: #0d0d0d;
+      color: #e0e0e0;
+      line-height: 1.6;
+      overflow-x: hidden;
+    }
+    a { color: #0078D4; text-decoration: none; }
+    a:hover { text-decoration: underline; }
+    img { max-width: 100%; height: auto; }
+    .container { max-width: 1100px; margin: 0 auto; padding: 0 24px; }
+
+    /* ===== Navigation ===== */
+    nav {
+      position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+      background: rgba(13, 13, 13, 0.85);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border-bottom: 1px solid #222;
+      padding: 0 24px;
+    }
+    nav .container {
+      display: flex; align-items: center; justify-content: space-between;
+      height: 64px;
+    }
+    nav .logo { font-size: 20px; font-weight: 700; color: #fff; display: flex; align-items: center; gap: 10px; }
+    nav .logo-icon { background: #0078D4; border-radius: 8px; width: 32px; height: 32px; display: flex; align-items: center; justify-content: center; font-size: 18px; }
+    nav .links { display: flex; gap: 24px; align-items: center; }
+    nav .links a { color: #999; font-size: 14px; font-weight: 500; transition: color .2s; }
+    nav .links a:hover { color: #fff; text-decoration: none; }
+    .btn {
+      display: inline-flex; align-items: center; gap: 8px;
+      padding: 10px 24px; border-radius: 8px; font-size: 14px; font-weight: 600;
+      border: none; cursor: pointer; transition: all .2s; text-decoration: none;
+    }
+    .btn-primary { background: #0078D4; color: #fff; }
+    .btn-primary:hover { background: #0086e0; transform: translateY(-1px); text-decoration: none; }
+    .btn-secondary { background: #222; color: #ccc; }
+    .btn-secondary:hover { background: #333; text-decoration: none; }
+    .btn-large { padding: 14px 32px; font-size: 16px; }
+
+    /* ===== Hero ===== */
+    .hero {
+      padding: 160px 0 100px;
+      text-align: center;
+      background: radial-gradient(ellipse at 50% 0%, #1a1a2e 0%, #0d0d0d 70%);
+      position: relative;
+      overflow: hidden;
+    }
+    .hero::before {
+      content: ''; position: absolute; top: -50%; left: -50%; width: 200%; height: 200%;
+      background: radial-gradient(circle at 50% 50%, rgba(0,120,212,0.03) 0%, transparent 50%);
+      animation: pulse 8s ease-in-out infinite;
+    }
+    @keyframes pulse { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.1); } }
+    .hero-content { position: relative; z-index: 1; }
+    .hero-badge {
+      display: inline-block; background: rgba(0,120,212,0.15); color: #0078D4;
+      padding: 6px 16px; border-radius: 20px; font-size: 13px; font-weight: 600;
+      margin-bottom: 24px; border: 1px solid rgba(0,120,212,0.2);
+    }
+    .hero h1 { font-size: clamp(40px, 7vw, 72px); font-weight: 800; color: #fff; margin-bottom: 16px; letter-spacing: -1px; }
+    .hero h1 span { background: linear-gradient(135deg, #0078D4, #00bfff); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+    .hero p { font-size: 18px; color: #888; max-width: 600px; margin: 0 auto 32px; }
+    .hero-actions { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; }
+    .hero-stats {
+      display: flex; justify-content: center; gap: 48px; margin-top: 60px; flex-wrap: wrap;
+    }
+    .hero-stat { text-align: center; }
+    .hero-stat-num { font-size: 32px; font-weight: 800; color: #fff; }
+    .hero-stat-label { font-size: 13px; color: #666; margin-top: 4px; }
+
+    /* ===== Screenshots ===== */
+    .screenshots {
+      padding: 100px 0;
+      background: #0d0d0d;
+    }
+    .screenshots h2 { text-align: center; font-size: 36px; font-weight: 700; color: #fff; margin-bottom: 12px; }
+    .screenshots > .container > p { text-align: center; color: #666; margin-bottom: 48px; }
+    .screenshot-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+      gap: 24px;
+    }
+    .screenshot-card {
+      background: #1a1a1a;
+      border-radius: 16px;
+      border: 1px solid #222;
+      overflow: hidden;
+      transition: transform .3s, border-color .3s;
+    }
+    .screenshot-card:hover { transform: translateY(-4px); border-color: #333; }
+    .screenshot-card .preview {
+      aspect-ratio: 16/10;
+      background: linear-gradient(135deg, #1a1a2e, #0a0a1a);
+      display: flex; align-items: center; justify-content: center;
+      position: relative; overflow: hidden;
+    }
+    .screenshot-card .preview .placeholder-icon { font-size: 64px; opacity: 0.3; }
+    .screenshot-card .preview .mock-ui {
+      position: absolute; inset: 0;
+      display: grid; grid-template-columns: 60px 1fr; gap: 0;
+    }
+    .screenshot-card .preview .mock-sidebar { background: #1a1a1a; border-right: 1px solid #222; }
+    .screenshot-card .preview .mock-content { padding: 16px; }
+    .screenshot-card .preview .mock-bar {
+      height: 6px; background: #222; border-radius: 3px; margin-bottom: 8px;
+    }
+    .screenshot-card .preview .mock-card {
+      background: #1a1a1a; border-radius: 8px; height: 60px; margin-bottom: 8px;
+      display: flex; align-items: center; padding: 0 12px; gap: 8px;
+    }
+    .screenshot-card .preview .mock-dot {
+      width: 24px; height: 24px; border-radius: 6px; background: #222; flex-shrink: 0;
+    }
+    .screenshot-card .preview .mock-card-bar {
+      height: 8px; background: #222; border-radius: 4px; flex: 1;
+    }
+    .screenshot-card .caption {
+      padding: 16px 20px;
+    }
+    .screenshot-card .caption h3 { font-size: 15px; font-weight: 600; color: #fff; margin-bottom: 4px; }
+    .screenshot-card .caption p { font-size: 13px; color: #666; }
+
+    /* ===== Features ===== */
+    .features { padding: 100px 0; background: #111; }
+    .features h2 { text-align: center; font-size: 36px; font-weight: 700; color: #fff; margin-bottom: 48px; }
+    .features-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 24px; }
+    .feature-card {
+      background: #1a1a1a; border-radius: 16px; padding: 32px;
+      border: 1px solid #222; transition: transform .3s, border-color .3s;
+    }
+    .feature-card:hover { transform: translateY(-4px); border-color: #333; }
+    .feature-icon { font-size: 36px; margin-bottom: 16px; display: block; }
+    .feature-card h3 { font-size: 18px; font-weight: 600; color: #fff; margin-bottom: 8px; }
+    .feature-card p { font-size: 14px; color: #777; line-height: 1.7; }
+    .feature-tag {
+      display: inline-block; padding: 3px 10px; border-radius: 6px;
+      font-size: 11px; font-weight: 600; margin-top: 12px;
+    }
+    .tag-green { background: rgba(76,175,80,0.15); color: #4CAF50; }
+    .tag-blue { background: rgba(0,120,212,0.15); color: #0078D4; }
+    .tag-orange { background: rgba(255,170,0,0.15); color: #FFAA00; }
+
+    /* ===== Video Section ===== */
+    .video-section {
+      padding: 100px 0;
+      background: #0d0d0d;
+      text-align: center;
+    }
+    .video-section h2 { font-size: 36px; font-weight: 700; color: #fff; margin-bottom: 12px; }
+    .video-section > .container > p { color: #666; margin-bottom: 40px; }
+    .video-placeholder {
+      max-width: 800px; margin: 0 auto;
+      aspect-ratio: 16/9;
+      background: linear-gradient(135deg, #1a1a2e, #0d0d0d);
+      border-radius: 16px; border: 1px solid #222;
+      display: flex; flex-direction: column;
+      align-items: center; justify-content: center;
+      gap: 16px; position: relative; overflow: hidden;
+    }
+    .video-placeholder .play-btn {
+      width: 80px; height: 80px; border-radius: 50%;
+      background: rgba(0,120,212,0.2); border: 2px solid rgba(0,120,212,0.3);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 32px; cursor: pointer; transition: all .3s;
+    }
+    .video-placeholder .play-btn:hover { background: rgba(0,120,212,0.4); transform: scale(1.05); }
+    .video-placeholder .video-label { font-size: 14px; color: #555; }
+
+    /* ===== CTA ===== */
+    .cta {
+      padding: 80px 0;
+      text-align: center;
+      background: radial-gradient(ellipse at 50% 100%, #1a1a2e 0%, #0d0d0d 70%);
+    }
+    .cta h2 { font-size: 36px; font-weight: 700; color: #fff; margin-bottom: 12px; }
+    .cta p { color: #666; margin-bottom: 32px; }
+
+    /* ===== Footer ===== */
+    footer {
+      padding: 40px 0;
+      border-top: 1px solid #1a1a1a;
+      text-align: center;
+    }
+    footer p { font-size: 13px; color: #444; }
+    footer .social { display: flex; justify-content: center; gap: 16px; margin-bottom: 16px; }
+    footer .social a { color: #555; font-size: 20px; transition: color .2s; }
+    footer .social a:hover { color: #0078D4; }
+
+    /* ===== Responsive ===== */
+    @media (max-width: 768px) {
+      .hero { padding: 120px 0 60px; }
+      .hero-stats { gap: 24px; }
+      .hero-stat-num { font-size: 24px; }
+      nav .links a:not(.btn) { display: none; }
+      .screenshot-grid { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- ===== Navigation ===== -->
+<nav>
+  <div class="container">
+    <div class="logo">
+      <div class="logo-icon">🧹</div>
+      System Sweep
+    </div>
+    <div class="links">
+      <a href="#features">Features</a>
+      <a href="#screenshots">Screenshots</a>
+      <a href="#video">Video</a>
+      <a href="https://github.com/naix1337/SystemSweep/releases" class="btn btn-primary" target="_blank">⬇ Download</a>
+      <a href="https://github.com/naix1337/SystemSweep" target="_blank">
+        <svg width="20" height="20" viewBox="0 0 16 16" fill="currentColor"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"/></svg>
+      </a>
+    </div>
+  </div>
+</nav>
+
+<!-- ===== Hero ===== -->
+<section class="hero">
+  <div class="hero-content container">
+    <div class="hero-badge">⚡ v2.0 Professional Edition</div>
+    <h1>Clean.<br/><span>Tweak. Supercharge.</span></h1>
+    <p>The ultimate Windows optimization toolkit. Clean junk files, apply 30+ performance tweaks, monitor system health, and boost gaming FPS — all in a modern Fluent Design interface.</p>
+    <div class="hero-actions">
+      <a href="https://github.com/naix1337/SystemSweep/releases" class="btn btn-primary btn-large" target="_blank">⬇ Download 7 MB</a>
+      <a href="https://github.com/naix1337/SystemSweep" class="btn btn-secondary btn-large" target="_blank">View on GitHub</a>
+    </div>
+    <div class="hero-stats">
+      <div class="hero-stat">
+        <div class="hero-stat-num">30+</div>
+        <div class="hero-stat-label">Performance Tweaks</div>
+      </div>
+      <div class="hero-stat">
+        <div class="hero-stat-num">10</div>
+        <div class="hero-stat-label">Cleaning Categories</div>
+      </div>
+      <div class="hero-stat">
+        <div class="hero-stat-num">8</div>
+        <div class="hero-stat-label">Tool Modules</div>
+      </div>
+      <div class="hero-stat">
+        <div class="hero-stat-num">7 MB</div>
+        <div class="hero-stat-label">Single File</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== Screenshots ===== -->
+<section class="screenshots" id="screenshots">
+  <div class="container">
+    <h2>📸 Screenshots</h2>
+    <p>See System Sweep in action — click to zoom</p>
+    <div class="screenshot-grid">
+
+      <!-- Dashboard -->
+      <div class="screenshot-card">
+        <div class="preview">
+          <div class="mock-ui">
+            <div class="mock-sidebar"></div>
+            <div class="mock-content">
+              <div class="mock-bar" style="width: 40%"></div>
+              <div class="mock-card"><div class="mock-dot" style="background:#0078D4"></div><div class="mock-card-bar" style="width: 80%"></div></div>
+              <div class="mock-card"><div class="mock-dot" style="background:#4CAF50"></div><div class="mock-card-bar" style="width: 60%"></div></div>
+              <div class="mock-card"><div class="mock-dot" style="background:#FFAA00"></div><div class="mock-card-bar" style="width: 50%"></div></div>
+              <div class="mock-card"><div class="mock-dot" style="background:#FF4444"></div><div class="mock-card-bar" style="width: 30%"></div></div>
+            </div>
+          </div>
+        </div>
+        <div class="caption">
+          <h3>📊 Live Dashboard</h3>
+          <p>Real-time CPU, RAM, Disk monitoring with Health Score</p>
+        </div>
+      </div>
+
+      <!-- Tweaks -->
+      <div class="screenshot-card">
+        <div class="preview">
+          <div class="mock-ui">
+            <div class="mock-sidebar" style="background:#111"></div>
+            <div class="mock-content">
+              <div class="mock-bar" style="width: 30%"></div>
+              <div style="display:flex;gap:6px;margin-bottom:12px">
+                <span style="padding:3px 10px;border-radius:6px;background:rgba(0,120,212,0.15);color:#0078D4;font-size:11px">🎮 Gaming</span>
+                <span style="padding:3px 10px;border-radius:6px;background:rgba(76,175,80,0.15);color:#4CAF50;font-size:11px">⚡ System</span>
+              </div>
+              <div class="mock-card"><div class="mock-dot" style="background:#0078D4"></div><div class="mock-card-bar" style="width: 90%"></div></div>
+              <div class="mock-card"><div class="mock-dot" style="background:#4CAF50"></div><div class="mock-card-bar" style="width: 75%"></div></div>
+              <div class="mock-card"><div class="mock-dot" style="background:#FFAA00"></div><div class="mock-card-bar" style="width: 65%"></div></div>
+            </div>
+          </div>
+        </div>
+        <div class="caption">
+          <h3>⚡ Performance Tweaks</h3>
+          <p>30+ proven optimizations for gaming and speed</p>
+        </div>
+      </div>
+
+      <!-- Cleaner -->
+      <div class="screenshot-card">
+        <div class="preview">
+          <div class="mock-ui">
+            <div class="mock-sidebar"></div>
+            <div class="mock-content">
+              <div class="mock-bar" style="width: 25%"></div>
+              <div style="display:flex;gap:8px;flex-wrap:wrap">
+                <span style="padding:8px 12px;background:#222;border-radius:8px;font-size:20px">🗑️</span>
+                <span style="padding:8px 12px;background:#222;border-radius:8px;font-size:20px">♻️</span>
+                <span style="padding:8px 12px;background:#222;border-radius:8px;font-size:20px">📥</span>
+                <span style="padding:8px 12px;background:#222;border-radius:8px;font-size:20px">📦</span>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="caption">
+          <h3>🧹 System Cleaning</h3>
+          <p>10 categories with safety levels and presets</p>
+        </div>
+      </div>
+
+    </div>
+    <p style="text-align:center;margin-top:32px;color:#555;font-size:13px">
+      💡 Replace the mockups with real screenshots! See below how.
+    </p>
+  </div>
+</section>
+
+<!-- ===== Video ===== -->
+<section class="video-section" id="video">
+  <div class="container">
+    <h2>🎥 Watch the Demo</h2>
+    <p>See System Sweep in action — from cleaning to tweaking</p>
+    <div class="video-placeholder">
+      <div class="play-btn">▶</div>
+      <div class="video-label">Upload your video to YouTube and paste the link in <code style="color:#0078D4">docs/index.html</code></div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== Features ===== -->
+<section class="features" id="features">
+  <div class="container">
+    <h2>🚀 Everything You Need</h2>
+    <div class="features-grid">
+      <div class="feature-card">
+        <span class="feature-icon">📊</span>
+        <h3>Live Dashboard</h3>
+        <p>Real-time system monitoring with CPU, RAM, Disk usage, uptime tracking, and a weighted Health Score algorithm.</p>
+        <span class="feature-tag tag-blue">New</span>
+      </div>
+      <div class="feature-card">
+        <span class="feature-icon">🧹</span>
+        <h3>Deep System Cleaner</h3>
+        <p>10 cleaning categories with safety levels, cleaning presets (Quick/Standard/Deep), and detailed history.</p>
+        <span class="feature-tag tag-green">Core</span>
+      </div>
+      <div class="feature-card">
+        <span class="feature-icon">⚡</span>
+        <h3>30+ Performance Tweaks</h3>
+        <p>Proven Windows optimizations for gaming FPS, system speed, network latency, disk performance, and memory.</p>
+        <span class="feature-tag tag-green">Core</span>
+      </div>
+      <div class="feature-card">
+        <span class="feature-icon">🎮</span>
+        <h3>Gaming FPS Boost</h3>
+        <p>GPU Scheduling, Core Parking, Xbox DVR off, HPET off, Mouse Accel off — all proven to increase FPS.</p>
+        <span class="feature-tag tag-orange">Popular</span>
+      </div>
+      <div class="feature-card">
+        <span class="feature-icon">🌐</span>
+        <h3>Browser Cache Cleaner</h3>
+        <p>Clear cache for Chrome, Edge, Firefox, and Brave with one click. Recovers gigabytes of disk space.</p>
+        <span class="feature-tag tag-blue">New</span>
+      </div>
+      <div class="feature-card">
+        <span class="feature-icon">🗂️</span>
+        <h3>Duplicate File Finder</h3>
+        <p>SHA256-based duplicate detection. Find and remove identical files to reclaim valuable disk space.</p>
+        <span class="feature-tag tag-blue">New</span>
+      </div>
+      <div class="feature-card">
+        <span class="feature-icon">🚀</span>
+        <h3>Startup Manager</h3>
+        <p>Manage autostart programs from Registry and Startup folder. Speed up boot times with one click.</p>
+        <span class="feature-tag tag-blue">New</span>
+      </div>
+      <div class="feature-card">
+        <span class="feature-icon">🔐</span>
+        <h3>RSA License System</h3>
+        <p>2048-bit RSA signed license keys with hardware fingerprint binding. Offline activation supported.</p>
+        <span class="feature-tag tag-blue">New</span>
+      </div>
+      <div class="feature-card">
+        <span class="feature-icon">🎨</span>
+        <h3>Fluent Design UI</h3>
+        <p>Modern Fluent Design with Mica backdrop, dark/light theme toggle, smooth transitions, and hover effects.</p>
+        <span class="feature-tag tag-green">Core</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== CTA ===== -->
+<section class="cta">
+  <div class="container">
+    <h2>Ready to Supercharge Your PC?</h2>
+    <p>7 MB single-file executable. No install needed. Run as Admin.</p>
+    <div class="hero-actions">
+      <a href="https://github.com/naix1337/SystemSweep/releases" class="btn btn-primary btn-large" target="_blank">⬇ Download Now</a>
+      <a href="https://github.com/naix1337/SystemSweep" class="btn btn-secondary btn-large" target="_blank">⭐ Star on GitHub</a>
+    </div>
+  </div>
+</section>
+
+<!-- ===== Footer ===== -->
+<footer>
+  <div class="container">
+    <div class="social">
+      <a href="https://github.com/naix1337/SystemSweep" target="_blank" title="GitHub">
+        <svg width="20" height="20" viewBox="0 0 16 16" fill="currentColor"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"/></svg>
+      </a>
+    </div>
+    <p>© 2026 <a href="https://github.com/naix1337">naix</a>. MIT License.</p>
+    <p style="margin-top:8px;font-size:12px;color:#333">System Sweep Professional — Made with ❤️</p>
+  </div>
+</section>
+
+</body>
+</html>
