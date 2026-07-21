@@ -1,16 +1,57 @@
 <Page x:Class="ModernFileCleaner.Pages.SettingsPage"
       xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
       xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-      xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-      xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-      mc:Ignorable="d"
+      xmlns:ui="http://schemas.lepo.co/wpfui/2022/xaml"
       Title="Settings">
+    <Grid Margin="24">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
 
-    <Grid>
-        <TextBlock Text="Settings Page"
-                   HorizontalAlignment="Center"
-                   VerticalAlignment="Center"
-                   FontSize="24"
-                   Foreground="White" />
+        <!-- Header -->
+        <StackPanel Grid.Row="0" Orientation="Horizontal" Margin="0,0,0,24">
+            <TextBlock Text="⚙️" FontSize="28" Margin="0,0,12,0" VerticalAlignment="Center"/>
+            <StackPanel>
+                <TextBlock Text="Settings" FontSize="22" FontWeight="SemiBold" Foreground="White"/>
+                <TextBlock Text="Configure app behavior" FontSize="13" Foreground="#FF888888"/>
+            </StackPanel>
+        </StackPanel>
+
+        <!-- Settings Cards -->
+        <StackPanel Grid.Row="1">
+            <!-- General Section -->
+            <Border CornerRadius="12" Background="#FF2D2D2D" Padding="20" Margin="0,0,0,12">
+                <StackPanel>
+                    <TextBlock Text="General" FontSize="16" FontWeight="SemiBold" Foreground="White" Margin="0,0,0,16"/>
+                    <ui:ToggleSwitch x:Name="chkAutoAnalyze" Content="Auto-analyze on startup" Margin="0,0,0,12"/>
+                    <ui:ToggleSwitch x:Name="chkAutoClean" Content="Auto-clean on exit" Margin="0,0,0,12"/>
+                </StackPanel>
+            </Border>
+
+            <!-- Notifications Section -->
+            <Border CornerRadius="12" Background="#FF2D2D2D" Padding="20" Margin="0,0,0,12">
+                <StackPanel>
+                    <TextBlock Text="Notifications" FontSize="16" FontWeight="SemiBold" Foreground="White" Margin="0,0,0,16"/>
+                    <ui:ToggleSwitch x:Name="chkNotifications" Content="Show notifications after cleaning"/>
+                </StackPanel>
+            </Border>
+
+            <!-- Safety Section -->
+            <Border CornerRadius="12" Background="#FF2D2D2D" Padding="20" Margin="0,0,0,12">
+                <StackPanel>
+                    <TextBlock Text="Safety" FontSize="16" FontWeight="SemiBold" Foreground="White" Margin="0,0,0,16"/>
+                    <ui:ToggleSwitch x:Name="chkSafetyBackup" Content="Enable safety backup before delete"/>
+                </StackPanel>
+            </Border>
+
+            <!-- Save Button -->
+            <ui:Button x:Name="btnSave" Content="💾 Save Settings"
+                       Appearance="Primary"
+                       HorizontalAlignment="Right"
+                       Width="160" Height="38"
+                       Margin="0,8,0,0"
+                       Click="btnSave_Click"/>
+        </StackPanel>
     </Grid>
 </Page>

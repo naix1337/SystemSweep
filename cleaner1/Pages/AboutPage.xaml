@@ -1,16 +1,57 @@
 <Page x:Class="ModernFileCleaner.Pages.AboutPage"
       xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
       xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-      xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-      xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-      mc:Ignorable="d"
+      xmlns:ui="http://schemas.lepo.co/wpfui/2022/xaml"
       Title="About">
+    <Grid Margin="24">
+        <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center">
+            <!-- App Icon -->
+            <Border CornerRadius="20" Background="#FF2D2D2D"
+                    Width="96" Height="96" Margin="0,0,0,20"
+                    HorizontalAlignment="Center">
+                <TextBlock Text="🧹" FontSize="48"
+                           HorizontalAlignment="Center"
+                           VerticalAlignment="Center"/>
+            </Border>
 
-    <Grid>
-        <TextBlock Text="About Page"
-                   HorizontalAlignment="Center"
-                   VerticalAlignment="Center"
-                   FontSize="24"
-                   Foreground="White" />
+            <!-- App Name -->
+            <TextBlock Text="System Sweep"
+                       FontSize="28" FontWeight="SemiBold"
+                       Foreground="White"
+                       HorizontalAlignment="Center"
+                       Margin="0,0,0,8"/>
+
+            <!-- Version -->
+            <Border CornerRadius="8" Background="#1A0078D4"
+                    Padding="12,4" Margin="0,0,0,20"
+                    HorizontalAlignment="Center">
+                <TextBlock Text="Version 2.0 — Fluent Edition"
+                           FontSize="13" Foreground="#FF0078D4"
+                           FontWeight="SemiBold"/>
+            </Border>
+
+            <!-- Description -->
+            <TextBlock Text="A modern system cleaning tool for Windows 11"
+                       FontSize="14" Foreground="#FF888888"
+                       HorizontalAlignment="Center"
+                       Margin="0,0,0,8"/>
+            <TextBlock Text="Built with WPF UI • .NET 8 • Fluent Design"
+                       FontSize="12" Foreground="#FF666666"
+                       HorizontalAlignment="Center"
+                       Margin="0,0,0,40"/>
+
+            <!-- Developer -->
+            <TextBlock Text="Developed by naix"
+                       FontSize="14" Foreground="#FF888888"
+                       HorizontalAlignment="Center"
+                       Margin="0,0,0,30"/>
+
+            <!-- Close button -->
+            <ui:Button Content="✖  Close"
+                       Appearance="Secondary"
+                       Width="120" Height="36"
+                       HorizontalAlignment="Center"
+                       Click="Button_Click"/>
+        </StackPanel>
     </Grid>
 </Page>
