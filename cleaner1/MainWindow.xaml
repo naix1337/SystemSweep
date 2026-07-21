@@ -24,6 +24,9 @@
                 <ui:NavigationViewItem Content="Settings" Icon="Settings24" Tag="settings" />
                 <ui:NavigationViewItem Content="About" Icon="Info24" Tag="about" />
             </ui:NavigationView.MenuItems>
+            <ui:NavigationView.FooterMenuItems>
+                <ui:NavigationViewItem x:Name="navTheme" Content="Dark Mode" Icon="DarkTheme24" Tag="theme" />
+            </ui:NavigationView.FooterMenuItems>
         </ui:NavigationView>
 
         <Frame x:Name="NavFrame"
