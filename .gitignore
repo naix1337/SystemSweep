@@ -12,6 +12,7 @@ video-frames/
 # Runtime generated
 settings.json
 history.json
+keyzy-config.json
 license.key
 trial.dat
 
