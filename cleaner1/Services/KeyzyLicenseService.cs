@@ -44,8 +44,7 @@ public class KeyzyLicenseService
 
         if (!HasCredentials)
         {
-            // Allow offline validation if no API credentials configured
-            ErrorMessage = "KEYZY_NOT_CONFIGURED";
+            ErrorMessage = "License system not configured by developer";
             return false;
         }
 

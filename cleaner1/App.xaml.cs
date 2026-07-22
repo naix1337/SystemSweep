@@ -26,21 +26,25 @@ namespace ModernFileCleaner
             // Create main window (but don't show yet)
             AppMainWindow = new MainWindow();
 
-            // === STEP 1: Activation Dialog (if not activated) ===
-            if (!IsLicenseActivated())
+            // === STEP 1: Activation Dialog ===
+            // Only show if Keyzy is configured and no valid license exists
+            var keyzyCheck = new KeyzyLicenseService();
+            bool keyzyConfigured = keyzyCheck.HasCredentials;
+            keyzyCheck.Dispose();
+
+            if (keyzyConfigured && !IsLicenseActivated())
             {
                 var activationDialog = new ActivationDialog();
                 bool? actResult = activationDialog.ShowDialog();
 
-                if (actResult == true && activationDialog.IsActivated)
+                bool canProceed = actResult == true &&
+                    (activationDialog.IsActivated || activationDialog.StartedTrial);
+
+                if (!canProceed)
                 {
-                    // User activated - proceed
+                    Current.Shutdown();
+                    return;
                 }
-                else if (actResult == true && activationDialog.StartedTrial)
-                {
-                    // User chose trial - proceed
-                }
-                // else: dialog closed unexpectedly - still proceed
             }
 
             // === STEP 2: Restore Point Dialog (always) ===
