@@ -26,7 +26,7 @@
                      HorizontalAlignment="Stretch" Padding="12,0"
                      BorderBrush="#FF444444" BorderThickness="1"
                      Background="#FF111111" Foreground="White" CaretBrush="White"
-                     Text="DZAF-BYMG-W533-FIE2-1NRR" Margin="0,0,0,6"/>
+                     Text="" Margin="0,0,0,6"/>
             <TextBlock Text="Paste your Keyzy.io license key here" FontSize="11" Foreground="#FF666666" Margin="0,0,0,16"/>
 
             <!-- Buttons -->

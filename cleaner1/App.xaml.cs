@@ -17,6 +17,15 @@ namespace ModernFileCleaner
             // Run anti-tamper checks
             ProtectionPassed = ProtectionService.RunStartupChecks();
 
+            // CRITICAL: If protection checks fail, don't start
+            if (!ProtectionPassed)
+            {
+                MessageBox.Show("Security checks failed. The application may be tampered with.\n\nPlease download a fresh copy from the official source.",
+                    "Security Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                Current.Shutdown();
+                return;
+            }
+
             // Load settings
             AppSettings.Instance.Load();
 
