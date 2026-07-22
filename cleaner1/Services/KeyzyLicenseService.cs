@@ -1,6 +1,5 @@
 using System.Diagnostics;
 using System.Net.Http;
-using System.Text;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
@@ -15,22 +14,21 @@ public class KeyzyLicenseService
     private const string ApiUrl = "https://api.keyzy.io/v2/licenses/valid";
     private readonly HttpClient _client;
 
-    // Keyzy.io API credentials (loaded from config or hardcoded fallback)
     private static readonly string AppId;
     private static readonly string ApiKey;
     private static readonly string ProductCode;
 
     static KeyzyLicenseService()
     {
-        // Try loading from config file first
-        try
+        // Load credentials ONLY from config file (security: no hardcoded fallback)
+        var configPath = System.IO.Path.Combine(
+            System.AppContext.BaseDirectory, "keyzy-config.json");
+        if (System.IO.File.Exists(configPath))
         {
-            var configPath = System.IO.Path.Combine(
-                System.AppContext.BaseDirectory, "keyzy-config.json");
-            if (System.IO.File.Exists(configPath))
+            try
             {
                 var json = System.IO.File.ReadAllText(configPath);
-                var config = Newtonsoft.Json.JsonConvert.DeserializeObject<Dictionary<string, string>>(json);
+                var config = JsonConvert.DeserializeObject<Dictionary<string, string>>(json);
                 if (config != null)
                 {
                     AppId = config.GetValueOrDefault("app_id", "") ?? "";
@@ -39,20 +37,18 @@ public class KeyzyLicenseService
                     return;
                 }
             }
+            catch { }
         }
-        catch { }
-
-        // Hardcoded fallback
-        AppId = "Ch1e1nvH";
-        ApiKey = "JhbqmDJuUYNCzQxceMsbnL1WqMXT3IYvVQLEZfWn";
-        ProductCode = "c23de390-859e-11f1-85d7-4bbaf11272a1";
+        // No config found - credentials stay empty, HasCredentials returns false
+        AppId = "";
+        ApiKey = "";
+        ProductCode = "";
     }
 
     public string? LicenseKey { get; private set; }
     public bool IsValid { get; private set; }
     public string? LicensedTo { get; private set; }
     public string? LicenseeEmail { get; private set; }
-    public string? ProductName { get; private set; }
     public string? ErrorMessage { get; private set; }
 
     public bool HasCredentials => !string.IsNullOrEmpty(AppId) && !string.IsNullOrEmpty(ApiKey);
@@ -60,6 +56,7 @@ public class KeyzyLicenseService
     public KeyzyLicenseService()
     {
         _client = new HttpClient { Timeout = TimeSpan.FromSeconds(15) };
+        _client.DefaultRequestHeaders.TryAddWithoutValidation("Content-Type", "application/x-www-form-urlencoded");
     }
 
     public async Task<bool> ValidateKeyAsync(string serial, string? hostId = null)
@@ -72,7 +69,7 @@ public class KeyzyLicenseService
 
         if (!HasCredentials)
         {
-            ErrorMessage = "License system not configured by developer";
+            ErrorMessage = "License system not configured";
             return false;
         }
 
@@ -80,59 +77,59 @@ public class KeyzyLicenseService
 
         try
         {
-            var payload = new Dictionary<string, object?>
+            // Build form-urlencoded data (Keyzy API expects this format)
+            var formData = new Dictionary<string, string>
             {
                 ["app_id"] = AppId,
                 ["api_key"] = ApiKey,
                 ["code"] = ProductCode,
                 ["serial"] = LicenseKey,
-                ["version"] = "2.0",
+                ["version"] = "2",
                 ["host_id"] = hostId ?? GetHostId(),
                 ["device_tag"] = $"Windows_{Environment.OSVersion.Version}__{(Environment.Is64BitOperatingSystem ? "64bits" : "32bits")}"
             };
 
-            var json = JsonConvert.SerializeObject(payload);
-            var content = new StringContent(json, Encoding.UTF8, "application/json");
-
-            Debug.WriteLine($"[Keyzy] Validating: {LicenseKey[..Math.Min(8, LicenseKey.Length)]}...");
+            var content = new FormUrlEncodedContent(formData);
+            Debug.WriteLine($"[Keyzy] Validating {LicenseKey[..Math.Min(8, LicenseKey.Length)]}...");
 
             var response = await _client.PostAsync(ApiUrl, content);
             var responseBody = await response.Content.ReadAsStringAsync();
 
-            Debug.WriteLine($"[Keyzy] Status: {response.StatusCode}, Body: {responseBody}");
+            Debug.WriteLine($"[Keyzy] HTTP {(int)response.StatusCode}: {responseBody}");
 
             if (!response.IsSuccessStatusCode)
             {
-                ErrorMessage = $"API error: {response.StatusCode}";
-                if (response.StatusCode == System.Net.HttpStatusCode.Forbidden)
-                    ErrorMessage = "Invalid API credentials. Check app_id and api_key.";
-                else if (response.StatusCode == System.Net.HttpStatusCode.NotFound)
-                    ErrorMessage = "Product not found. Check product code.";
+                ErrorMessage = $"License server error ({response.StatusCode})";
+                if (responseBody.Contains("credentials", StringComparison.OrdinalIgnoreCase)
+                    || responseBody.Contains("invalid", StringComparison.OrdinalIgnoreCase))
+                    ErrorMessage = "Invalid API credentials - check Keyzy.io config";
+                else if ((int)response.StatusCode == 403)
+                    ErrorMessage = "Access denied - verify API credentials in keyzy-config.json";
                 return false;
             }
 
-            var result = JsonConvert.DeserializeObject<KeyzyResponseV2>(responseBody);
-            if (result?.Data == null)
-            {
-                ErrorMessage = "Invalid API response format";
-                return false;
-            }
+            // Parse response (could be JSON or XML)
+            var result = JObject.Parse(responseBody);
+            var message = result["data"]?["message"]?.ToString()?.ToLower()
+                       ?? result["message"]?.ToString()?.ToLower()
+                       ?? "";
 
-            if (result.Data.Message?.ToLower() == "valid")
+            if (message == "valid")
             {
                 IsValid = true;
-                LicensedTo = result.Data.LicenseeName ?? "Licensed User";
-                LicenseeEmail = result.Data.LicenseeEmail;
-                ProductName = result.Data.SkuNumber ?? result.Data.ProductCode;
+                LicensedTo = result["data"]?["licensee_name"]?.ToString()
+                           ?? result["licensee_name"]?.ToString()
+                           ?? "Licensed User";
+                LicenseeEmail = result["data"]?["licensee_email"]?.ToString();
                 return true;
             }
 
-            ErrorMessage = $"License status: {result.Data.Message}";
+            ErrorMessage = $"License status: {message}";
             return false;
         }
         catch (TaskCanceledException)
         {
-            ErrorMessage = "Connection timed out. Check your internet connection.";
+            ErrorMessage = "Connection timed out";
             return false;
         }
         catch (HttpRequestException ex)
@@ -155,9 +152,7 @@ public class KeyzyLicenseService
             using var mc = new System.Management.ManagementClass("Win32_Processor");
             using var items = mc.GetInstances();
             foreach (var item in items)
-            {
                 return item["ProcessorId"]?.ToString() ?? Environment.MachineName;
-            }
         }
         catch { }
         return Environment.MachineName;
@@ -167,34 +162,4 @@ public class KeyzyLicenseService
     {
         _client?.Dispose();
     }
-}
-
-/// <summary>
-/// Keyzy.io v2 API response (wrapped in "data" object)
-/// </summary>
-public class KeyzyResponseV2
-{
-    [JsonProperty("data")]
-    public KeyzyData? Data { get; set; }
-}
-
-public class KeyzyData
-{
-    [JsonProperty("message")]
-    public string? Message { get; set; }
-
-    [JsonProperty("licensee_name")]
-    public string? LicenseeName { get; set; }
-
-    [JsonProperty("licensee_email")]
-    public string? LicenseeEmail { get; set; }
-
-    [JsonProperty("sku_number")]
-    public string? SkuNumber { get; set; }
-
-    [JsonProperty("product_code")]
-    public string? ProductCode { get; set; }
-
-    [JsonProperty("version_code")]
-    public string? VersionCode { get; set; }
 }
