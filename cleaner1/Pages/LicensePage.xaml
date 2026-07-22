@@ -3,65 +3,105 @@
       xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
       xmlns:ui="http://schemas.lepo.co/wpfui/2022/xaml"
       Title="License">
-    <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalAlignment="Center" VerticalAlignment="Center">
-        <StackPanel Margin="40" MaxWidth="500" HorizontalAlignment="Center">
-            <!-- Lock Icon -->
+    <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalAlignment="Center">
+        <StackPanel Margin="40" MaxWidth="520" HorizontalAlignment="Center">
             <Border CornerRadius="24" Background="#FF0078D4" Width="80" Height="80" Margin="0,0,0,20" HorizontalAlignment="Center">
-                <TextBlock Text="🔐" FontSize="36" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                <TextBlock x:Name="txtIcon" Text="🔐" FontSize="36" HorizontalAlignment="Center" VerticalAlignment="Center"/>
             </Border>
 
-            <TextBlock Text="Activate System Sweep" FontSize="26" FontWeight="Bold" Foreground="White" HorizontalAlignment="Center"/>
-            <TextBlock x:Name="txtStatus" Text="Enter your license key to unlock all features" FontSize="14" Foreground="#FF888888" HorizontalAlignment="Center" Margin="0,8,0,24"/>
+            <TextBlock x:Name="txtTitle" Text="License &amp; Activation" FontSize="26" FontWeight="Bold" Foreground="White" HorizontalAlignment="Center"/>
+            <TextBlock x:Name="txtSubtitle" Text="Manage your license and device information" FontSize="13" Foreground="#FF888888" HorizontalAlignment="Center" Margin="0,4,0,24"/>
 
-            <!-- Status Card -->
-            <Border x:Name="StatusCard" CornerRadius="12" Background="#FF2D2D2D" Padding="20" Margin="0,0,0,16">
+            <!-- Status Banner -->
+            <Border x:Name="StatusCard" CornerRadius="12" Padding="20" Margin="0,0,0,16" BorderThickness="1">
                 <StackPanel>
-                    <TextBlock x:Name="txtLicenseStatus" Text="Checking..." FontSize="18" FontWeight="Bold" HorizontalAlignment="Center"/>
-                    <TextBlock x:Name="txtLicenseDetail" Text="" FontSize="13" Foreground="#FF888888" HorizontalAlignment="Center" Margin="0,8,0,0"/>
+                    <TextBlock x:Name="txtLicenseStatus" Text="Loading..." FontSize="20" FontWeight="Bold" HorizontalAlignment="Center"/>
+                    <TextBlock x:Name="txtLicenseDetail" Text="" FontSize="13" Foreground="#FF999999" HorizontalAlignment="Center" Margin="0,6,0,0"/>
                 </StackPanel>
             </Border>
 
-            <!-- Activation Form -->
-            <Border CornerRadius="12" Background="#FF2D2D2D" Padding="20" Margin="0,0,0,12">
+            <!-- License Info (when activated) -->
+            <Border x:Name="InfoCard" CornerRadius="12" Background="#FF252525" Padding="20" Margin="0,0,0,12">
                 <StackPanel>
-                    <TextBlock Text="License Key" FontSize="14" FontWeight="SemiBold" Foreground="White" Margin="0,0,0,12"/>
-                    <TextBox x:Name="txtLicenseKey" FontSize="20" Height="44"
+                    <TextBlock Text="License Details" FontSize="15" FontWeight="SemiBold" Foreground="White" Margin="0,0,0,16"/>
+
+                    <Grid Margin="0,0,0,10">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="120"/>
+                            <ColumnDefinition Width="*"/>
+                        </Grid.ColumnDefinitions>
+                        <TextBlock Grid.Column="0" Text="Status" Foreground="#FF888888" FontSize="13"/>
+                        <TextBlock x:Name="txtLicStatus" Grid.Column="1" Text="—" Foreground="White" FontSize="13" FontWeight="SemiBold"/>
+                    </Grid>
+                    <Grid Margin="0,0,0,10">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="120"/>
+                            <ColumnDefinition Width="*"/>
+                        </Grid.ColumnDefinitions>
+                        <TextBlock Grid.Column="0" Text="License Key" Foreground="#FF888888" FontSize="13"/>
+                        <TextBlock x:Name="txtLicKey" Grid.Column="1" Text="—" Foreground="#FFCCCCCC" FontSize="13" FontFamily="Consolas"/>
+                    </Grid>
+                    <Grid Margin="0,0,0,10">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="120"/>
+                            <ColumnDefinition Width="*"/>
+                        </Grid.ColumnDefinitions>
+                        <TextBlock Grid.Column="0" Text="Licensed To" Foreground="#FF888888" FontSize="13"/>
+                        <TextBlock x:Name="txtLicUser" Grid.Column="1" Text="—" Foreground="White" FontSize="13"/>
+                    </Grid>
+                    <Grid Margin="0,0,0,10">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="120"/>
+                            <ColumnDefinition Width="*"/>
+                        </Grid.ColumnDefinitions>
+                        <TextBlock Grid.Column="0" Text="Expiry" Foreground="#FF888888" FontSize="13"/>
+                        <TextBlock x:Name="txtLicExpiry" Grid.Column="1" Text="Never (Perpetual)" Foreground="#FF4CAF50" FontSize="13"/>
+                    </Grid>
+                    <Grid Margin="0,0,0,10">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="120"/>
+                            <ColumnDefinition Width="*"/>
+                        </Grid.ColumnDefinitions>
+                        <TextBlock Grid.Column="0" Text="Trial Days Left" Foreground="#FF888888" FontSize="13"/>
+                        <TextBlock x:Name="txtTrialDays" Grid.Column="1" Text="—" Foreground="#FFFFAA00" FontSize="13"/>
+                    </Grid>
+                    <Rectangle Height="1" Fill="#FF333333" Margin="0,4,0,12"/>
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="120"/>
+                            <ColumnDefinition Width="*"/>
+                        </Grid.ColumnDefinitions>
+                        <TextBlock Grid.Column="0" Text="Device HWID" Foreground="#FF888888" FontSize="13"/>
+                        <TextBlock x:Name="txtHwid" Grid.Column="1" Text="Loading..." Foreground="#FF666666" FontSize="11" FontFamily="Consolas" TextWrapping="Wrap"/>
+                    </Grid>
+                </StackPanel>
+            </Border>
+
+            <!-- Activation Form (only shown when not activated) -->
+            <Border x:Name="ActivationCard" CornerRadius="12" Background="#FF252525" Padding="20" Margin="0,0,0,12">
+                <StackPanel>
+                    <TextBlock Text="Activate" FontSize="15" FontWeight="SemiBold" Foreground="White" Margin="0,0,0,12"/>
+                    <TextBox x:Name="txtLicenseKey" FontSize="18" Height="40"
                              HorizontalAlignment="Stretch" Padding="12,0"
                              BorderBrush="#FF444444" BorderThickness="1"
                              Background="#FF1E1E1E" Foreground="White" CaretBrush="White"/>
-                    <TextBlock Text="Paste your Keyzy.io license key here" FontSize="11" Foreground="#FF666666" Margin="0,6,0,12"/>
-
-                    <ui:Button x:Name="btnActivate" Content="🔑 Activate via Keyzy.io" Appearance="Primary"
-                               Width="240" Height="40" HorizontalAlignment="Center" Margin="0,0,0,8"
-                               Click="ActivateKeyzy_Click"/>
-
-                    <TextBlock Text="or" FontSize="12" Foreground="#FF555555" HorizontalAlignment="Center" Margin="0,4,0,4"/>
-
-                    <ui:Button x:Name="btnOfflineActivate" Content="📋 Offline Activation" Appearance="Secondary"
-                               Width="200" Height="34" HorizontalAlignment="Center"
-                               Click="ActivateOffline_Click"/>
+                    <TextBlock Text="Enter your Keyzy.io license key" FontSize="11" Foreground="#FF666666" Margin="0,6,0,12"/>
+                    <ui:Button x:Name="btnActivate" Content="🔑  Activate License" Appearance="Primary"
+                               Width="220" Height="38" HorizontalAlignment="Left" Click="ActivateKeyzy_Click"/>
                 </StackPanel>
             </Border>
 
-            <!-- Machine Info -->
-            <Border CornerRadius="12" Background="#FF2D2D2D" Padding="20" Margin="0,0,0,12">
-                <StackPanel>
-                    <TextBlock Text="Device Information" FontSize="13" Foreground="#FF888888" Margin="0,0,0,8"/>
-                    <TextBlock x:Name="txtFingerprint" Text="Loading..." FontSize="11" Foreground="#FF555555"/>
-                </StackPanel>
-            </Border>
-
-            <!-- Buy Link -->
+            <!-- Buy / Support -->
             <Border CornerRadius="12" Background="#1A0078D4" Padding="16" Margin="0,0,0,16">
                 <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
-                    <TextBlock Text="No license yet?" Foreground="#FF888888" FontSize="13" VerticalAlignment="Center" Margin="0,0,8,0"/>
-                    <ui:Button Content="🛒 Purchase License" Appearance="Primary" FontSize="13"
+                    <TextBlock Text="Need a license?" Foreground="#FF888888" FontSize="13" VerticalAlignment="Center" Margin="0,0,8,0"/>
+                    <ui:Button Content="🛒  Purchase" Appearance="Primary" FontSize="13"
                                Height="32" Padding="16,0" Click="BuyLicense_Click"/>
                 </StackPanel>
             </Border>
 
-            <ui:Button Content="Continue in Trial Mode" Appearance="Secondary" Width="200" Height="36"
-                       HorizontalAlignment="Center" Click="ContinueTrial_Click"/>
+            <ui:Button x:Name="btnContinue" Content="⏭  Continue" Appearance="Secondary"
+                       Width="160" Height="34" HorizontalAlignment="Center" Click="ContinueTrial_Click"/>
         </StackPanel>
     </ScrollViewer>
 </Page>
