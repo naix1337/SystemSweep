@@ -1,6 +1,0 @@
-{
-  "version": "2.0.0",
-  "downloadUrl": "https://github.com/nix1337/SystemSweep/releases/latest",
-  "changelog": "- Complete Fluent Design UI overhaul\n- New Dashboard with system health monitoring\n- Performance Tweaks (30+ optimizations)\n- Browser Cache Cleaner\n- Duplicate File Finder\n- Startup Manager\n- Cleaning Reports\n- Dark/Light theme toggle",
-  "releaseDate": "2026-07-21"
-}
