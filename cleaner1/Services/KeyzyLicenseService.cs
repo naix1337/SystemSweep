@@ -1,92 +1,106 @@
 using System.Diagnostics;
 using System.Net.Http;
-using System.Net.Http.Headers;
 using System.Text;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 
 namespace ModernFileCleaner.Services;
 
 /// <summary>
-/// Keyzy.io License Validation Service
-/// API: https://keyzy.io/docs/developers/rest-api/licenses-validate/
+/// Keyzy.io v2 License Validation Service
+/// API: POST https://api.keyzy.io/v2/licenses/valid
 /// </summary>
 public class KeyzyLicenseService
 {
-    private const string ApiBaseUrl = "https://api.keyzy.io/v1";
+    private const string ApiUrl = "https://api.keyzy.io/v2/licenses/valid";
     private readonly HttpClient _client;
+
+    // TODO: Replace with your Keyzy.io app credentials
+    private const string AppId = "";      // Your Keyzy.io app_id
+    private const string ApiKey = "";     // Your Keyzy.io api_key
+    private const string ProductCode = ""; // Your product code from Keyzy
 
     public string? LicenseKey { get; private set; }
     public bool IsValid { get; private set; }
     public string? LicensedTo { get; private set; }
-    public DateTime? ExpiresAt { get; private set; }
+    public string? LicenseeEmail { get; private set; }
     public string? ProductName { get; private set; }
     public string? ErrorMessage { get; private set; }
 
+    public bool HasCredentials => !string.IsNullOrEmpty(AppId) && !string.IsNullOrEmpty(ApiKey);
+
     public KeyzyLicenseService()
     {
-        _client = new HttpClient
-        {
-            Timeout = TimeSpan.FromSeconds(10)
-        };
-        _client.DefaultRequestHeaders.UserAgent.Add(
-            new ProductInfoHeaderValue("SystemSweep", "2.0"));
-        _client.DefaultRequestHeaders.Accept.Add(
-            new MediaTypeWithQualityHeaderValue("application/json"));
+        _client = new HttpClient { Timeout = TimeSpan.FromSeconds(15) };
     }
 
-    /// <summary>
-    /// Validates a license key against Keyzy.io API.
-    /// </summary>
-    public async Task<bool> ValidateKeyAsync(string licenseKey, string? machineCode = null)
+    public async Task<bool> ValidateKeyAsync(string serial, string? hostId = null)
     {
-        if (string.IsNullOrWhiteSpace(licenseKey))
+        if (string.IsNullOrWhiteSpace(serial))
         {
             ErrorMessage = "License key is empty";
             return false;
         }
 
-        LicenseKey = licenseKey.Trim();
+        if (!HasCredentials)
+        {
+            // Allow offline validation if no API credentials configured
+            ErrorMessage = "KEYZY_NOT_CONFIGURED";
+            return false;
+        }
+
+        LicenseKey = serial.Trim();
 
         try
         {
             var payload = new Dictionary<string, object?>
             {
-                ["license_key"] = LicenseKey,
-                ["machine_code"] = machineCode ?? GetDefaultMachineCode(),
-                ["product"] = "system-sweep"
+                ["app_id"] = AppId,
+                ["api_key"] = ApiKey,
+                ["code"] = ProductCode,
+                ["serial"] = LicenseKey,
+                ["version"] = "2.0",
+                ["host_id"] = hostId ?? GetHostId(),
+                ["device_tag"] = $"Windows_{Environment.OSVersion.Version}__{(Environment.Is64BitOperatingSystem ? "64bits" : "32bits")}"
             };
 
             var json = JsonConvert.SerializeObject(payload);
             var content = new StringContent(json, Encoding.UTF8, "application/json");
 
-            var response = await _client.PostAsync($"{ApiBaseUrl}/licenses/validate", content);
+            Debug.WriteLine($"[Keyzy] Validating: {LicenseKey[..Math.Min(8, LicenseKey.Length)]}...");
+
+            var response = await _client.PostAsync(ApiUrl, content);
             var responseBody = await response.Content.ReadAsStringAsync();
 
-            Debug.WriteLine($"[Keyzy] Response: {responseBody}");
+            Debug.WriteLine($"[Keyzy] Status: {response.StatusCode}, Body: {responseBody}");
 
             if (!response.IsSuccessStatusCode)
             {
                 ErrorMessage = $"API error: {response.StatusCode}";
+                if (response.StatusCode == System.Net.HttpStatusCode.Forbidden)
+                    ErrorMessage = "Invalid API credentials. Check app_id and api_key.";
+                else if (response.StatusCode == System.Net.HttpStatusCode.NotFound)
+                    ErrorMessage = "Product not found. Check product code.";
                 return false;
             }
 
-            var result = JsonConvert.DeserializeObject<KeyzyResponse>(responseBody);
-            if (result == null)
+            var result = JsonConvert.DeserializeObject<KeyzyResponseV2>(responseBody);
+            if (result?.Data == null)
             {
-                ErrorMessage = "Invalid API response";
+                ErrorMessage = "Invalid API response format";
                 return false;
             }
 
-            if (result.Status == "valid" || result.Valid == true)
+            if (result.Data.Message?.ToLower() == "valid")
             {
                 IsValid = true;
-                LicensedTo = result.Licensee ?? result.CustomerName ?? "Licensed User";
-                ExpiresAt = result.ExpiresAt;
-                ProductName = result.ProductName;
+                LicensedTo = result.Data.LicenseeName ?? "Licensed User";
+                LicenseeEmail = result.Data.LicenseeEmail;
+                ProductName = result.Data.SkuNumber ?? result.Data.ProductCode;
                 return true;
             }
 
-            ErrorMessage = result.Message ?? "License key is not valid";
+            ErrorMessage = $"License status: {result.Data.Message}";
             return false;
         }
         catch (TaskCanceledException)
@@ -101,16 +115,13 @@ public class KeyzyLicenseService
         }
         catch (Exception ex)
         {
-            ErrorMessage = $"Validation error: {ex.Message}";
+            ErrorMessage = $"Error: {ex.Message}";
             Debug.WriteLine($"[Keyzy] {ex}");
             return false;
         }
     }
 
-    /// <summary>
-    /// Returns the default machine identifier for license binding.
-    /// </summary>
-    private static string GetDefaultMachineCode()
+    private static string GetHostId()
     {
         try
         {
@@ -132,35 +143,31 @@ public class KeyzyLicenseService
 }
 
 /// <summary>
-/// Keyzy.io API response model.
-/// Adjust properties based on actual API response.
+/// Keyzy.io v2 API response (wrapped in "data" object)
 /// </summary>
-public class KeyzyResponse
+public class KeyzyResponseV2
 {
-    [JsonProperty("status")]
-    public string? Status { get; set; }
+    [JsonProperty("data")]
+    public KeyzyData? Data { get; set; }
+}
 
-    [JsonProperty("valid")]
-    public bool? Valid { get; set; }
-
+public class KeyzyData
+{
     [JsonProperty("message")]
     public string? Message { get; set; }
 
-    [JsonProperty("licensee")]
-    public string? Licensee { get; set; }
+    [JsonProperty("licensee_name")]
+    public string? LicenseeName { get; set; }
 
-    [JsonProperty("customer_name")]
-    public string? CustomerName { get; set; }
+    [JsonProperty("licensee_email")]
+    public string? LicenseeEmail { get; set; }
 
-    [JsonProperty("product_name")]
-    public string? ProductName { get; set; }
+    [JsonProperty("sku_number")]
+    public string? SkuNumber { get; set; }
 
-    [JsonProperty("expires_at")]
-    public DateTime? ExpiresAt { get; set; }
+    [JsonProperty("product_code")]
+    public string? ProductCode { get; set; }
 
-    [JsonProperty("license_type")]
-    public string? LicenseType { get; set; }
-
-    [JsonProperty("max_machines")]
-    public int MaxMachines { get; set; } = 1;
+    [JsonProperty("version_code")]
+    public string? VersionCode { get; set; }
 }
