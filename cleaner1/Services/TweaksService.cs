@@ -64,6 +64,28 @@ public class TweaksService
         new() { Id = "tcp_chimney", Name = "Disable TCP Chimney Offload", Description = "Fixes network stutters in some games by disabling hardware offloading", Category = "Network", Icon = "🌐" },
         new() { Id = "mtu_optimize", Name = "Set Optimal MTU (1492)", Description = "Sets MTU to optimal size for reduced packet fragmentation", Category = "Network", Icon = "🌐" },
 
+        // ============== ADVANCED ==============
+        new() { Id = "disable_windows_update", Name = "Disable Automatic Windows Updates", Description = "Stops Windows from automatically downloading and installing updates", Category = "Advanced", Icon = "🛡️", WarningMessage = "System won't receive security updates automatically" },
+        new() { Id = "disable_telemetry", Name = "Disable Windows Telemetry", Description = "Blocks Microsoft from collecting usage data and diagnostics", Category = "Advanced", Icon = "🛡️", IsRecommended = true },
+        new() { Id = "disable_copilot", Name = "Disable CoPilot AI (Win11)", Description = "Removes Microsoft CoPilot AI from taskbar and Edge", Category = "Advanced", Icon = "🛡️", IsRecommended = true },
+        new() { Id = "disable_office_telemetry", Name = "Disable Office Telemetry", Description = "Stops Microsoft Office from sending usage data (Office 2016+)", Category = "Advanced", Icon = "🛡️" },
+        new() { Id = "disable_onedrive", Name = "Disable OneDrive", Description = "Stops OneDrive from auto-starting and syncing in background", Category = "Advanced", Icon = "🛡️" },
+        new() { Id = "enable_utc_time", Name = "Enable UTC Time Globally", Description = "Fixes dual-boot time conflicts between Windows and Linux", Category = "Advanced", Icon = "🛡️" },
+        new() { Id = "hosts_block_tracking", Name = "Block Tracking via HOSTS File", Description = "Adds known tracking/malware domains to HOSTS file", Category = "Advanced", Icon = "🛡️", IsRecommended = true },
+        new() { Id = "fix_registry_issues", Name = "Fix Common Registry Issues", Description = "Repairs broken file associations, COM errors, and shell issues", Category = "Advanced", Icon = "🛡️" },
+        new() { Id = "disable_uwp_apps", Name = "Uninstall UWP Bloatware Apps", Description = "Removes pre-installed Windows Store apps (Xbox, Bing, etc.)", Category = "Advanced", Icon = "🛡️", WarningMessage = "Removes built-in Windows apps" },
+        new() { Id = "disable_unused_services", Name = "Disable Unnecessary Services", Description = "Stops 15+ background services: Xbox, Print, Bluetooth, Fax, etc.", Category = "Advanced", Icon = "🛡️", IsRecommended = true },
+        new() { Id = "dns_cloudflare", Name = "Set DNS to Cloudflare (1.1.1.1)", Description = "Changes network DNS to Cloudflare for faster, more private browsing", Category = "Advanced", Icon = "🛡️", IsRecommended = true },
+        new() { Id = "disable_error_sound", Name = "Disable Windows Error Sound", Description = "Stops the annoying error beep sound in Windows", Category = "Advanced", Icon = "🔊" },
+        new() { Id = "enable_long_paths", Name = "Enable Long File Paths", Description = "Removes the 260-character path limit in Windows", Category = "Advanced", Icon = "🛡️", IsRecommended = true },
+        new() { Id = "disable_sticky_keys", Name = "Disable Sticky Keys Prompt", Description = "Stops the 'Press Shift 5 times' accessibility popup", Category = "Advanced", Icon = "🔊" },
+        new() { Id = "disable_auto_restart", Name = "Disable Auto-Restart on Update", Description = "Prevents Windows from forcibly restarting after updates", Category = "Advanced", Icon = "🛡️", IsRecommended = true },
+        new() { Id = "disable_timedate_sync", Name = "Disable Time Sync with Internet", Description = "Stops Windows from automatically syncing system time", Category = "Advanced", Icon = "🛡️" },
+        new() { Id = "disable_biometric", Name = "Disable Windows Hello/Biometrics", Description = "Disables fingerprint, face, and PIN login requirements", Category = "Advanced", Icon = "🛡️" },
+        new() { Id = "disable_maps", Name = "Disable Windows Maps Service", Description = "Stops the background maps service (saves data and battery)", Category = "Advanced", Icon = "🛡️" },
+        new() { Id = "disable_xbox_services", Name = "Disable Xbox Services", Description = "Disables all Xbox-related background services", Category = "Advanced", Icon = "🎮", IsRecommended = true },
+        new() { Id = "disable_autorun", Name = "Disable AutoRun for USB Drives", Description = "Prevents automatic execution of programs from USB drives", Category = "Advanced", Icon = "🛡️", IsRecommended = true },
+
         // ============== CLEANUP ==============
         new() { Id = "prefetch_clean", Name = "Clear Prefetch Files", Description = "Deletes Windows prefetch files that accumulate over time", Category = "Cleanup", Icon = "🧹" },
         new() { Id = "update_cache", Name = "Clear Windows Update Cache", Description = "Deletes old Windows Update installation files (can free 2-10GB)", Category = "Cleanup", Icon = "🧹", IsRecommended = true },
@@ -203,6 +225,75 @@ public class TweaksService
                     break;
 
                 // == Cleanup ==
+                // == Advanced ==
+                case "disable_windows_update":
+                    SetRegistryLocal(@"SOFTWARE\Policies\Microsoft\Windows\WindowsUpdate\AU", "NoAutoUpdate", 1);
+                    RunPowerShell("Stop-Service wuauserv -Force; Set-Service wuauserv -StartupType Disabled");
+                    break;
+                case "disable_telemetry":
+                    SetRegistryLocal(@"SOFTWARE\Policies\Microsoft\Windows\DataCollection", "AllowTelemetry", 0);
+                    SetRegistryLocal(@"SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\DataCollection", "AllowTelemetry", 0);
+                    RunPowerShell("Set-ItemProperty -Path 'HKLM:\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Device Metadata' -Name PreventDeviceMetadataFromNetwork -Value 1 -Type DWord -Force -ErrorAction SilentlyContinue");
+                    break;
+                case "disable_copilot":
+                    SetRegistryLocal(@"SOFTWARE\Policies\Microsoft\Windows\WindowsCopilot", "TurnOffWindowsCopilot", 1);
+                    SetRegistry(@"Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced", "ShowCopilotButton", 0);
+                    break;
+                case "disable_office_telemetry":
+                    SetRegistryLocal(@"SOFTWARE\Policies\Microsoft\office\16.0\common", "sendtelemetry", 0);
+                    SetRegistryLocal(@"SOFTWARE\Policies\Microsoft\office\16.0\common", "updatereliabilitydata", 0);
+                    break;
+                case "disable_onedrive":
+                    RunPowerShell("Stop-Process -Name OneDrive -Force -ErrorAction SilentlyContinue");
+                    RunPowerShell("Set-ItemProperty -Path 'HKCU:\\SOFTWARE\\Microsoft\\OneDrive' -Name DisableFileSyncNGSC -Value 1 -Type DWord -Force -ErrorAction SilentlyContinue");
+                    break;
+                case "enable_utc_time":
+                    SetRegistryLocal(@"SYSTEM\CurrentControlSet\Control\TimeZoneInformation", "RealTimeIsUniversal", 1);
+                    break;
+                case "hosts_block_tracking":
+                    BlockHostsTracking();
+                    break;
+                case "fix_registry_issues":
+                    RunPowerShell("Get-ChildItem 'HKLM:\\SOFTWARE\\Classes\\CLSID' -ErrorAction SilentlyContinue | Where-Object { (Get-ItemProperty -Path $_.PsPath -Name '(default)' -ErrorAction SilentlyContinue).'(default)' -eq '' } | Remove-Item -Force -ErrorAction SilentlyContinue");
+                    break;
+                case "disable_uwp_apps":
+                    RunPowerShell("Get-AppxPackage -AllUsers | Where-Object { $_.Name -match 'xbox|bing|news|sports|zune|officehub|people|skype|solitaire|mixedreality|WindowsCamera' } | Remove-AppxPackage -AllUsers -ErrorAction SilentlyContinue");
+                    break;
+                case "disable_unused_services":
+                    foreach (var svc in new[] { "XblAuthManager","XboxNetApiSvc","XboxGipSvc","XboxGip","PrintNotify","Spooler","Fax","MapsBroker","lfsvc","wisvc","WMPNetworkSvc","WSearch","stisvc","SharedRealitySvc","PcaSvc","WpnService","PushNotifications" })
+                        RunPowerShell($"Stop-Service {svc} -Force -ErrorAction SilentlyContinue; Set-Service {svc} -StartupType Disabled -ErrorAction SilentlyContinue");
+                    break;
+                case "dns_cloudflare":
+                    RunPowerShell("Set-DnsClientServerAddress -InterfaceIndex (Get-NetAdapter | Where-Object {$_.Status -eq 'Up'}).InterfaceIndex -ServerAddresses ('1.1.1.1','1.0.0.1')");
+                    break;
+                case "disable_error_sound":
+                    SetRegistry(@"AppEvents\Schemes\Apps\.Default\.Default\.Default", "(Default)", "");
+                    break;
+                case "enable_long_paths":
+                    SetRegistryLocal(@"SYSTEM\CurrentControlSet\Control\FileSystem", "LongPathsEnabled", 1);
+                    break;
+                case "disable_sticky_keys":
+                    SetRegistry(@"Control Panel\Accessibility\StickyKeys", "Flags", "506");
+                    break;
+                case "disable_auto_restart":
+                    SetRegistryLocal(@"SOFTWARE\Policies\Microsoft\Windows\WindowsUpdate\AU", "NoAutoRebootWithLoggedOnUsers", 1);
+                    break;
+                case "disable_timedate_sync":
+                    RunPowerShell("Set-ItemProperty -Path 'HKLM:\\SYSTEM\\CurrentControlSet\\Services\\W32Time\\TimeProviders\\NtpClient' -Name Enabled -Value 0 -Type DWord -Force");
+                    break;
+                case "disable_biometric":
+                    SetRegistryLocal(@"SOFTWARE\Policies\Microsoft\Biometrics", "Enabled", 0);
+                    break;
+                case "disable_maps":
+                    RunPowerShell("Stop-Service MapsBroker -Force -ErrorAction SilentlyContinue; Set-Service MapsBroker -StartupType Disabled -ErrorAction SilentlyContinue");
+                    break;
+                case "disable_xbox_services":
+                    foreach (var svc in new[] { "XblAuthManager","XboxNetApiSvc","XboxGipSvc","XboxGip" })
+                        RunPowerShell($"Stop-Service {svc} -Force; Set-Service {svc} -StartupType Disabled");
+                    break;
+                case "disable_autorun":
+                    SetRegistryLocal(@"SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\Explorer", "NoDriveTypeAutoRun", 255);
+                    break;
                 case "prefetch_clean":
                     CleanDirectory(Environment.GetFolderPath(Environment.SpecialFolder.Windows) + "\\Prefetch");
                     break;
@@ -326,6 +417,57 @@ public class TweaksService
                 case "mtu_optimize":
                     RunPowerShell("netsh interface ipv4 set subinterface \"Ethernet\" mtu=1500 store=persistent");
                     break;
+                // == Advanced Reverts ==
+                case "disable_windows_update":
+                    SetRegistryLocal(@"SOFTWARE\Policies\Microsoft\Windows\WindowsUpdate\AU", "NoAutoUpdate", 0);
+                    RunPowerShell("Set-Service wuauserv -StartupType Automatic; Start-Service wuauserv");
+                    break;
+                case "disable_telemetry":
+                    SetRegistryLocal(@"SOFTWARE\Policies\Microsoft\Windows\DataCollection", "AllowTelemetry", 1);
+                    SetRegistryLocal(@"SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\DataCollection", "AllowTelemetry", 1);
+                    break;
+                case "disable_copilot":
+                    SetRegistryLocal(@"SOFTWARE\Policies\Microsoft\Windows\WindowsCopilot", "TurnOffWindowsCopilot", 0);
+                    SetRegistry(@"Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced", "ShowCopilotButton", 1);
+                    break;
+                case "disable_office_telemetry":
+                    SetRegistryLocal(@"SOFTWARE\Policies\Microsoft\office\16.0\common", "sendtelemetry", 1);
+                    break;
+                case "disable_onedrive":
+                    RunPowerShell("Set-ItemProperty -Path 'HKCU:\\SOFTWARE\\Microsoft\\OneDrive' -Name DisableFileSyncNGSC -Value 0 -Type DWord -Force -ErrorAction SilentlyContinue");
+                    break;
+                case "enable_utc_time":
+                    SetRegistryLocal(@"SYSTEM\CurrentControlSet\Control\TimeZoneInformation", "RealTimeIsUniversal", 0);
+                    break;
+                case "hosts_block_tracking":
+                    UnblockHostsTracking();
+                    break;
+                case "disable_unused_services":
+                    foreach (var svc in new[] { "Spooler","WSearch","WpnService" })
+                        RunPowerShell($"Set-Service {svc} -StartupType Automatic; Start-Service {svc} -ErrorAction SilentlyContinue");
+                    break;
+                case "dns_cloudflare":
+                    RunPowerShell("Set-DnsClientServerAddress -InterfaceIndex (Get-NetAdapter | Where-Object {$_.Status -eq 'Up'}).InterfaceIndex -ResetServerAddresses");
+                    break;
+                case "enable_long_paths":
+                    SetRegistryLocal(@"SYSTEM\CurrentControlSet\Control\FileSystem", "LongPathsEnabled", 0);
+                    break;
+                case "disable_auto_restart":
+                    SetRegistryLocal(@"SOFTWARE\Policies\Microsoft\Windows\WindowsUpdate\AU", "NoAutoRebootWithLoggedOnUsers", 0);
+                    break;
+                case "disable_timedate_sync":
+                    RunPowerShell("Set-ItemProperty -Path 'HKLM:\\SYSTEM\\CurrentControlSet\\Services\\W32Time\\TimeProviders\\NtpClient' -Name Enabled -Value 1 -Type DWord -Force");
+                    break;
+                case "disable_biometric":
+                    SetRegistryLocal(@"SOFTWARE\Policies\Microsoft\Biometrics", "Enabled", 1);
+                    break;
+                case "disable_xbox_services":
+                    foreach (var svc in new[] { "XblAuthManager","XboxNetApiSvc" })
+                        RunPowerShell($"Set-Service {svc} -StartupType Manual; Start-Service {svc} -ErrorAction SilentlyContinue");
+                    break;
+                case "disable_autorun":
+                    SetRegistryLocal(@"SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\Explorer", "NoDriveTypeAutoRun", 145);
+                    break;
                 case "prefetch_clean":
                     break; // No revert for cleanup operations
                 case "update_cache":
@@ -408,6 +550,46 @@ public class TweaksService
             key?.SetValue("VisualFXSetting", 0);
         }
         catch (Exception ex) { Debug.WriteLine($"[Tweaks] VFX: {ex.Message}"); }
+    }
+
+    private static void BlockHostsTracking()
+    {
+        try
+        {
+            var hostsPath = Environment.GetFolderPath(Environment.SpecialFolder.Windows) + "\\System32\\drivers\\etc\\hosts";
+            if (!File.Exists(hostsPath)) return;
+            var hosts = File.ReadAllLines(hostsPath).ToList();
+            var tracking = new[] {
+                "0.0.0.0 doubleclick.net","0.0.0.0 googleadservices.com",
+                "0.0.0.0 googlesyndication.com","0.0.0.0 facebook.com/tr",
+                "0.0.0.0 ads.twitter.com","0.0.0.0 bat.bing.com",
+                "0.0.0.0 pixel.quantserve.com","0.0.0.0 scorecardresearch.com"
+            };
+            bool changed = false;
+            foreach (var entry in tracking)
+            {
+                if (!hosts.Any(l => l.Trim().Equals(entry, StringComparison.OrdinalIgnoreCase)))
+                { hosts.Add(entry); changed = true; }
+            }
+            if (changed) File.WriteAllLines(hostsPath, hosts);
+        }
+        catch (Exception ex) { Debug.WriteLine($"[Tweaks] HOSTS: {ex.Message}"); }
+    }
+
+    private static void UnblockHostsTracking()
+    {
+        try
+        {
+            var hostsPath = Environment.GetFolderPath(Environment.SpecialFolder.Windows) + "\\System32\\drivers\\etc\\hosts";
+            if (!File.Exists(hostsPath)) return;
+            var hosts = File.ReadAllLines(hostsPath).Where(l =>
+                !l.Contains("doubleclick") && !l.Contains("googlead") &&
+                !l.Contains("googlesyndication") && !l.Contains("facebook.com/tr") &&
+                !l.Contains("ads.twitter") && !l.Contains("bat.bing") &&
+                !l.Contains("quantserve") && !l.Contains("scorecardresearch")).ToList();
+            File.WriteAllLines(hostsPath, hosts);
+        }
+        catch (Exception ex) { Debug.WriteLine($"[Tweaks] HOSTS: {ex.Message}"); }
     }
 
     private static void DisableNagle()
