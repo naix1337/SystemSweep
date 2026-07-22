@@ -7,6 +7,7 @@ namespace ModernFileCleaner
     {
         public static string[] StartupArgs = Array.Empty<string>();
         public static bool ProtectionPassed { get; private set; } = true;
+        public static MainWindow? AppMainWindow { get; private set; }
 
         protected override void OnStartup(StartupEventArgs e)
         {
@@ -22,15 +23,13 @@ namespace ModernFileCleaner
             // Apply theme
             ThemeService.SetTheme(AppSettings.Instance.Theme);
 
-            // === SHOW RESTORE POINT DIALOG (every time) ===
+            // Create main window first
+            AppMainWindow = new MainWindow();
+            AppMainWindow.WindowStartupLocation = WindowStartupLocation.CenterScreen;
+
+            // Show restore point dialog
             var restoreDialog = new RestoreDialog();
             bool? result = restoreDialog.ShowDialog();
-
-            if (result == true && restoreDialog.RestorePointCreated)
-            {
-                // User created restore point - proceed
-            }
-            // else: user skipped or closed - still proceed
 
             // Handle command-line arguments
             if (e.Args.Length > 0)
@@ -39,9 +38,10 @@ namespace ModernFileCleaner
                 bool clean = Array.Exists(e.Args, a => a.Equals("--clean", StringComparison.OrdinalIgnoreCase));
             }
 
-            // Create and show main window
-            var mainWindow = new MainWindow();
-            mainWindow.Show();
+            // Show main window
+            AppMainWindow.Show();
+            AppMainWindow.Activate();
+            AppMainWindow.Focus();
         }
     }
 }
