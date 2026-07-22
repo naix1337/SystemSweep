@@ -1,14 +1,15 @@
 using System.Diagnostics;
 using System.Net.Http;
-using System.Text;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
 namespace ModernFileCleaner.Services;
 
 /// <summary>
-/// Keyzy.io v2 License Validation Service
-/// API: POST https://api.keyzy.io/v2/licenses/valid
+/// Keyzy.io License Validation Service
+/// GET https://api.keyzy.io/v2/licenses/validate?app_id=...&api_key=...&code=...&serial=...&version=1.0
+/// HTTP 200 (empty body) = License is valid
+/// HTTP 404 = Serial does not exist or not registered
 /// </summary>
 public class KeyzyLicenseService
 {
@@ -20,7 +21,6 @@ public class KeyzyLicenseService
 
     static KeyzyLicenseService()
     {
-        // Load credentials ONLY from config file (security: no hardcoded fallback)
         var configPath = System.IO.Path.Combine(
             System.AppContext.BaseDirectory, "keyzy-config.json");
         if (System.IO.File.Exists(configPath))
@@ -39,114 +39,81 @@ public class KeyzyLicenseService
             }
             catch { }
         }
-        // No config found - credentials stay empty, HasCredentials returns false
-        AppId = "";
-        ApiKey = "";
-        ProductCode = "";
+        AppId = ""; ApiKey = ""; ProductCode = "";
     }
 
     public string? LicenseKey { get; private set; }
     public bool IsValid { get; private set; }
     public string? LicensedTo { get; private set; }
-    public string? LicenseeEmail { get; private set; }
     public string? ErrorMessage { get; private set; }
-
     public bool HasCredentials => !string.IsNullOrEmpty(AppId) && !string.IsNullOrEmpty(ApiKey);
 
     public KeyzyLicenseService()
     {
-        _client = new HttpClient { Timeout = TimeSpan.FromSeconds(15) };
+        _client = new HttpClient { Timeout = TimeSpan.FromSeconds(10) };
         _client.DefaultRequestHeaders.UserAgent.ParseAdd("SystemSweep/2.0");
-        _client.DefaultRequestHeaders.ExpectContinue = false;
     }
 
     public async Task<bool> ValidateKeyAsync(string serial, string? hostId = null)
     {
-        if (string.IsNullOrWhiteSpace(serial))
-        {
-            ErrorMessage = "License key is empty";
-            return false;
-        }
-
-        if (!HasCredentials)
-        {
-            ErrorMessage = "License system not configured";
-            return false;
-        }
+        if (string.IsNullOrWhiteSpace(serial)) { ErrorMessage = "License key is empty"; return false; }
+        if (!HasCredentials) { ErrorMessage = "License system not configured"; return false; }
 
         LicenseKey = serial.Trim();
 
         try
         {
-            var hostIdLocal = hostId ?? GetHostId();
-            var deviceTag = $"Windows_{Environment.OSVersion.Version}__{(Environment.Is64BitOperatingSystem ? "64bits" : "32bits")}";
-            var serialKey = LicenseKey;
-
-            // Try multiple API URLs
-            string[] urls = [
-                "https://api.keyzy.io/v2/licenses/valid",
-                "https://keyzy.io/api/v2/licenses/valid",
-            ];
-
-            foreach (var url in urls)
+            // Build query parameters
+            var parms = new Dictionary<string, string>
             {
-                Debug.WriteLine($"[Keyzy] Trying {url} with key {serialKey[..Math.Min(8, serialKey.Length)]}...");
+                ["app_id"] = AppId,
+                ["api_key"] = ApiKey,
+                ["code"] = ProductCode,
+                ["serial"] = LicenseKey,
+                ["version"] = "1.0",
+                ["host_id"] = hostId ?? GetHostId(),
+                ["device_tag"] = $"Windows_{Environment.OSVersion.Version}__{(Environment.Is64BitOperatingSystem ? "64bits" : "32bits")}"
+            };
 
-                // Send as JSON
-                var payload = new Dictionary<string, object?>
-                {
-                    ["app_id"] = AppId,
-                    ["api_key"] = ApiKey,
-                    ["code"] = ProductCode,
-                    ["serial"] = serialKey,
-                    ["version"] = "2.0",
-                    ["host_id"] = hostIdLocal,
-                    ["device_tag"] = deviceTag
-                };
+            var query = string.Join("&", parms.Select(kv =>
+                $"{Uri.EscapeDataString(kv.Key)}={Uri.EscapeDataString(kv.Value)}"));
 
-                var response = await _client.PostAsync(url,
-                    new StringContent(JsonConvert.SerializeObject(payload), Encoding.UTF8, "application/json"));
-                var body = await response.Content.ReadAsStringAsync();
-                Debug.WriteLine($"[Keyzy] HTTP {(int)response.StatusCode}: {body}");
+            var url = $"https://api.keyzy.io/v2/licenses/validate?{query}";
+            // Security: never log full URL with credentials
+            Debug.WriteLine($"[Keyzy] Validating key {LicenseKey[..Math.Min(8, LicenseKey.Length)]}...");
 
-                if (!response.IsSuccessStatusCode) continue;
+            var response = await _client.GetAsync(url);
+            var body = await response.Content.ReadAsStringAsync();
 
-                var result = JObject.Parse(body);
-                var msg = result["data"]?["message"]?.ToString()?.ToLower()
-                       ?? result["message"]?.ToString()?.ToLower() ?? "";
+            Debug.WriteLine($"[Keyzy] HTTP {(int)response.StatusCode}: '{body}'");
 
-                if (msg == "valid")
-                {
-                    IsValid = true;
-                    LicensedTo = result["data"]?["licensee_name"]?.ToString()
-                               ?? result["licensee_name"]?.ToString() ?? "User";
-                    LicenseeEmail = result["data"]?["licensee_email"]?.ToString();
-                    return true;
-                }
-                ErrorMessage = $"License status: {msg}";
-                return false;
+            // HTTP 200 with empty body = VALID
+            if (response.IsSuccessStatusCode)
+            {
+                IsValid = true;
+                LicensedTo = "Licensed User";
+                return true;
             }
 
-            ErrorMessage = "License server unreachable. Check connection or Keyzy.io status.";
+            // Parse error
+            try
+            {
+                var errResult = JObject.Parse(body);
+                var errMsg = errResult["error"]?["message"]?.ToString();
+                if (!string.IsNullOrEmpty(errMsg))
+                {
+                    ErrorMessage = errMsg;
+                    return false;
+                }
+            }
+            catch { }
+
+            ErrorMessage = $"License rejected ({(int)response.StatusCode})";
             return false;
         }
-        catch (HttpRequestException ex)
-        {
-            ErrorMessage = $"Network: {ex.Message}";
-            Debug.WriteLine($"[Keyzy] HTTP: {ex}");
-            return false;
-        }
-        catch (TaskCanceledException)
-        {
-            ErrorMessage = "Request timed out (15s)";
-            return false;
-        }
-        catch (Exception ex)
-        {
-            ErrorMessage = $"Error: {ex.Message}";
-            Debug.WriteLine($"[Keyzy] {ex}");
-            return false;
-        }
+        catch (HttpRequestException ex) { ErrorMessage = $"Network: {ex.Message}"; return false; }
+        catch (TaskCanceledException) { ErrorMessage = "Connection timed out"; return false; }
+        catch (Exception ex) { ErrorMessage = $"Error: {ex.Message}"; return false; }
     }
 
     private static string GetHostId()
@@ -162,8 +129,5 @@ public class KeyzyLicenseService
         return Environment.MachineName;
     }
 
-    public void Dispose()
-    {
-        _client?.Dispose();
-    }
+    public void Dispose() => _client?.Dispose();
 }
