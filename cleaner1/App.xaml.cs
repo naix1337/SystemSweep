@@ -13,7 +13,7 @@ namespace ModernFileCleaner
             base.OnStartup(e);
             StartupArgs = e.Args;
 
-            // Run anti-tamper checks first
+            // Run anti-tamper checks
             ProtectionPassed = ProtectionService.RunStartupChecks();
 
             // Load settings
@@ -21,6 +21,24 @@ namespace ModernFileCleaner
 
             // Apply theme
             ThemeService.SetTheme(AppSettings.Instance.Theme);
+
+            // Show restore point dialog
+            if (!AppSettings.Instance.RestorePointSkipped)
+            {
+                var restoreDialog = new RestoreDialog();
+                bool? result = restoreDialog.ShowDialog();
+                if (result == true && restoreDialog.RestorePointCreated)
+                {
+                    // Restore point was created - don't show again
+                    AppSettings.Instance.RestorePointSkipped = true;
+                    AppSettings.Instance.Save();
+                }
+                else if (result == true && restoreDialog.Skipped)
+                {
+                    // User skipped - ask next time too
+                    // Don't save RestorePointSkipped = true
+                }
+            }
 
             // Handle command-line arguments
             if (e.Args.Length > 0)

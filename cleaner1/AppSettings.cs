@@ -16,6 +16,7 @@ namespace ModernFileCleaner
         public bool AutoClean { get; set; }
         public bool ShowNotifications { get; set; }
         public bool SafetyBackup { get; set; } = true;
+        public bool RestorePointSkipped { get; set; }
         public DateTime LastCleaned { get; set; }
         public List<long> DiskHistory { get; set; } = new();
 
@@ -28,6 +29,7 @@ namespace ModernFileCleaner
             AutoClean = false;
             ShowNotifications = true;
             SafetyBackup = true;
+            RestorePointSkipped = false;
             LastCleaned = DateTime.MinValue;
             DiskHistory = new List<long>();
         }
@@ -47,6 +49,7 @@ namespace ModernFileCleaner
                         AutoClean = settings.AutoClean;
                         ShowNotifications = settings.ShowNotifications;
                         SafetyBackup = settings.SafetyBackup;
+                        RestorePointSkipped = settings.RestorePointSkipped;
                         LastCleaned = settings.LastCleaned;
                         DiskHistory = settings.DiskHistory ?? new List<long>();
                     }
