@@ -19,7 +19,6 @@ public partial class MainWindow
 
         navDashboard.Click += NavButton_Click;
         navClean.Click += NavButton_Click;
-        navBrowser.Click += NavButton_Click;
         navDuplicates.Click += NavButton_Click;
         navStartup.Click += NavButton_Click;
         navTweaks.Click += NavButton_Click;
@@ -67,12 +66,6 @@ public partial class MainWindow
                     _pages["clean"] = new CleanPage(_historyService);
                 _currentPage = "clean";
                 NavFrame.Navigate(_pages["clean"]);
-                break;
-            case "browsers":
-                if (!_pages.ContainsKey("browsers"))
-                    _pages["browsers"] = new BrowserCachePage();
-                _currentPage = "browsers";
-                NavFrame.Navigate(_pages["browsers"]);
                 break;
             case "duplicates":
                 if (!_pages.ContainsKey("duplicates"))

@@ -75,6 +75,32 @@ public class CleaningService
                     UseShellExecute = false
                 })?.WaitForExit();
                 break;
+            case "browser_chrome":
+                CleanDirectory(Path.Combine(
+                    Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),
+                    "Google", "Chrome", "User Data", "Default", "Cache"));
+                CleanDirectory(Path.Combine(
+                    Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),
+                    "Google", "Chrome", "User Data", "Default", "Code Cache"));
+                break;
+            case "browser_edge":
+                CleanDirectory(Path.Combine(
+                    Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),
+                    "Microsoft", "Edge", "User Data", "Default", "Cache"));
+                break;
+            case "browser_firefox":
+                var firefoxProfiles = Path.Combine(
+                    Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),
+                    "Mozilla", "Firefox", "Profiles");
+                if (Directory.Exists(firefoxProfiles))
+                {
+                    foreach (var dir in Directory.GetDirectories(firefoxProfiles))
+                    {
+                        CleanDirectory(Path.Combine(dir, "cache2"));
+                        CleanDirectory(Path.Combine(dir, "offlinecache"));
+                    }
+                }
+                break;
             case "windows_logs":
                 string winDir = Environment.GetFolderPath(Environment.SpecialFolder.Windows);
                 if (Directory.Exists(winDir))
