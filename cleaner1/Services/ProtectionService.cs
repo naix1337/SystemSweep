@@ -135,10 +135,11 @@ public static class ProtectionService
     {
         try
         {
-            var asm = Assembly.GetExecutingAssembly();
-            var location = asm.Location;
-            if (string.IsNullOrEmpty(location) || !File.Exists(location))
-                return true; // Can't check in-memory assemblies
+            // For single-file apps, check via AppContext.BaseDirectory
+            var location = System.AppContext.BaseDirectory;
+            var asmPath = System.IO.Path.Combine(location, "SystemSweep.exe");
+            if (!File.Exists(asmPath))
+                return true;
 
             using var stream = File.OpenRead(location);
             var hash = SHA256.HashData(stream);

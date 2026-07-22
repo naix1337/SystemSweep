@@ -8,3 +8,14 @@ obj/
 *.key
 *.dat
 video-frames/
+
+# Runtime generated
+settings.json
+history.json
+license.key
+trial.dat
+
+# Build output
+publish/
+.DS_Store
+Thumbs.db
