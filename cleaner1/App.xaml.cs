@@ -22,36 +22,26 @@ namespace ModernFileCleaner
             // Apply theme
             ThemeService.SetTheme(AppSettings.Instance.Theme);
 
-            // Show restore point dialog
-            if (!AppSettings.Instance.RestorePointSkipped)
+            // === SHOW RESTORE POINT DIALOG (every time) ===
+            var restoreDialog = new RestoreDialog();
+            bool? result = restoreDialog.ShowDialog();
+
+            if (result == true && restoreDialog.RestorePointCreated)
             {
-                var restoreDialog = new RestoreDialog();
-                bool? result = restoreDialog.ShowDialog();
-                if (result == true && restoreDialog.RestorePointCreated)
-                {
-                    // Restore point was created - don't show again
-                    AppSettings.Instance.RestorePointSkipped = true;
-                    AppSettings.Instance.Save();
-                }
-                else if (result == true && restoreDialog.Skipped)
-                {
-                    // User skipped - ask next time too
-                    // Don't save RestorePointSkipped = true
-                }
+                // User created restore point - proceed
             }
+            // else: user skipped or closed - still proceed
 
             // Handle command-line arguments
             if (e.Args.Length > 0)
             {
-                HandleCommandLine(e.Args);
+                bool silent = Array.Exists(e.Args, a => a.Equals("--silent", StringComparison.OrdinalIgnoreCase));
+                bool clean = Array.Exists(e.Args, a => a.Equals("--clean", StringComparison.OrdinalIgnoreCase));
             }
-        }
 
-        private static void HandleCommandLine(string[] args)
-        {
-            bool silent = Array.Exists(args, a => a.Equals("--silent", StringComparison.OrdinalIgnoreCase));
-            bool clean = Array.Exists(args, a => a.Equals("--clean", StringComparison.OrdinalIgnoreCase));
-            bool analyze = Array.Exists(args, a => a.Equals("--analyze", StringComparison.OrdinalIgnoreCase));
+            // Create and show main window
+            var mainWindow = new MainWindow();
+            mainWindow.Show();
         }
     }
 }
