@@ -1,5 +1,6 @@
 using System.Diagnostics;
 using System.Net.Http;
+using System.Text;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
@@ -11,7 +12,6 @@ namespace ModernFileCleaner.Services;
 /// </summary>
 public class KeyzyLicenseService
 {
-    private const string ApiUrl = "https://api.keyzy.io/v2/licenses/valid";
     private readonly HttpClient _client;
 
     private static readonly string AppId;
@@ -56,7 +56,6 @@ public class KeyzyLicenseService
     public KeyzyLicenseService()
     {
         _client = new HttpClient { Timeout = TimeSpan.FromSeconds(15) };
-        _client.DefaultRequestHeaders.TryAddWithoutValidation("Content-Type", "application/x-www-form-urlencoded");
     }
 
     public async Task<bool> ValidateKeyAsync(string serial, string? hostId = null)
@@ -77,64 +76,56 @@ public class KeyzyLicenseService
 
         try
         {
-            // Build form-urlencoded data (Keyzy API expects this format)
-            var formData = new Dictionary<string, string>
+            var hostIdLocal = hostId ?? GetHostId();
+            var deviceTag = $"Windows_{Environment.OSVersion.Version}__{(Environment.Is64BitOperatingSystem ? "64bits" : "32bits")}";
+            var serialKey = LicenseKey;
+
+            // Try multiple API URLs
+            string[] urls = [
+                "https://api.keyzy.io/v2/licenses/valid",
+                "https://keyzy.io/api/v2/licenses/valid",
+            ];
+
+            foreach (var url in urls)
             {
-                ["app_id"] = AppId,
-                ["api_key"] = ApiKey,
-                ["code"] = ProductCode,
-                ["serial"] = LicenseKey,
-                ["version"] = "2",
-                ["host_id"] = hostId ?? GetHostId(),
-                ["device_tag"] = $"Windows_{Environment.OSVersion.Version}__{(Environment.Is64BitOperatingSystem ? "64bits" : "32bits")}"
-            };
+                Debug.WriteLine($"[Keyzy] Trying {url} with key {serialKey[..Math.Min(8, serialKey.Length)]}...");
 
-            var content = new FormUrlEncodedContent(formData);
-            Debug.WriteLine($"[Keyzy] Validating {LicenseKey[..Math.Min(8, LicenseKey.Length)]}...");
+                // Send as JSON
+                var payload = new Dictionary<string, object?>
+                {
+                    ["app_id"] = AppId,
+                    ["api_key"] = ApiKey,
+                    ["code"] = ProductCode,
+                    ["serial"] = serialKey,
+                    ["version"] = "2.0",
+                    ["host_id"] = hostIdLocal,
+                    ["device_tag"] = deviceTag
+                };
 
-            var response = await _client.PostAsync(ApiUrl, content);
-            var responseBody = await response.Content.ReadAsStringAsync();
+                var response = await _client.PostAsync(url,
+                    new StringContent(JsonConvert.SerializeObject(payload), Encoding.UTF8, "application/json"));
+                var body = await response.Content.ReadAsStringAsync();
+                Debug.WriteLine($"[Keyzy] HTTP {(int)response.StatusCode}: {body}");
 
-            Debug.WriteLine($"[Keyzy] HTTP {(int)response.StatusCode}: {responseBody}");
+                if (!response.IsSuccessStatusCode) continue;
 
-            if (!response.IsSuccessStatusCode)
-            {
-                ErrorMessage = $"License server error ({response.StatusCode})";
-                if (responseBody.Contains("credentials", StringComparison.OrdinalIgnoreCase)
-                    || responseBody.Contains("invalid", StringComparison.OrdinalIgnoreCase))
-                    ErrorMessage = "Invalid API credentials - check Keyzy.io config";
-                else if ((int)response.StatusCode == 403)
-                    ErrorMessage = "Access denied - verify API credentials in keyzy-config.json";
+                var result = JObject.Parse(body);
+                var msg = result["data"]?["message"]?.ToString()?.ToLower()
+                       ?? result["message"]?.ToString()?.ToLower() ?? "";
+
+                if (msg == "valid")
+                {
+                    IsValid = true;
+                    LicensedTo = result["data"]?["licensee_name"]?.ToString()
+                               ?? result["licensee_name"]?.ToString() ?? "User";
+                    LicenseeEmail = result["data"]?["licensee_email"]?.ToString();
+                    return true;
+                }
+                ErrorMessage = $"License status: {msg}";
                 return false;
             }
 
-            // Parse response (could be JSON or XML)
-            var result = JObject.Parse(responseBody);
-            var message = result["data"]?["message"]?.ToString()?.ToLower()
-                       ?? result["message"]?.ToString()?.ToLower()
-                       ?? "";
-
-            if (message == "valid")
-            {
-                IsValid = true;
-                LicensedTo = result["data"]?["licensee_name"]?.ToString()
-                           ?? result["licensee_name"]?.ToString()
-                           ?? "Licensed User";
-                LicenseeEmail = result["data"]?["licensee_email"]?.ToString();
-                return true;
-            }
-
-            ErrorMessage = $"License status: {message}";
-            return false;
-        }
-        catch (TaskCanceledException)
-        {
-            ErrorMessage = "Connection timed out";
-            return false;
-        }
-        catch (HttpRequestException ex)
-        {
-            ErrorMessage = $"Network error: {ex.Message}";
+            ErrorMessage = "License server unreachable. Check connection or Keyzy.io status.";
             return false;
         }
         catch (Exception ex)
