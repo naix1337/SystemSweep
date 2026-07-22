@@ -15,10 +15,38 @@ public class KeyzyLicenseService
     private const string ApiUrl = "https://api.keyzy.io/v2/licenses/valid";
     private readonly HttpClient _client;
 
-    // TODO: Replace with your Keyzy.io app credentials
-    private const string AppId = "";      // Your Keyzy.io app_id
-    private const string ApiKey = "";     // Your Keyzy.io api_key
-    private const string ProductCode = ""; // Your product code from Keyzy
+    // Keyzy.io API credentials (loaded from config or hardcoded fallback)
+    private static readonly string AppId;
+    private static readonly string ApiKey;
+    private static readonly string ProductCode;
+
+    static KeyzyLicenseService()
+    {
+        // Try loading from config file first
+        try
+        {
+            var configPath = System.IO.Path.Combine(
+                System.AppContext.BaseDirectory, "keyzy-config.json");
+            if (System.IO.File.Exists(configPath))
+            {
+                var json = System.IO.File.ReadAllText(configPath);
+                var config = Newtonsoft.Json.JsonConvert.DeserializeObject<Dictionary<string, string>>(json);
+                if (config != null)
+                {
+                    AppId = config.GetValueOrDefault("app_id", "") ?? "";
+                    ApiKey = config.GetValueOrDefault("api_key", "") ?? "";
+                    ProductCode = config.GetValueOrDefault("product_code", "") ?? "";
+                    return;
+                }
+            }
+        }
+        catch { }
+
+        // Hardcoded fallback
+        AppId = "Ch1e1nvH";
+        ApiKey = "JhbqmDJuUYNCzQxceMsbnL1WqMXT3IYvVQLEZfWn";
+        ProductCode = "c23de390-859e-11f1-85d7-4bbaf11272a1";
+    }
 
     public string? LicenseKey { get; private set; }
     public bool IsValid { get; private set; }
