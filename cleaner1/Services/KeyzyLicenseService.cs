@@ -1,4 +1,3 @@
-using System.Diagnostics;
 using System.Net.Http;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
@@ -37,7 +36,10 @@ public class KeyzyLicenseService
                     return;
                 }
             }
-            catch { }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Trace.WriteLine($"[Keyzy] Config load error: {ex.Message}");
+            }
         }
         AppId = ""; ApiKey = ""; ProductCode = "";
     }
@@ -79,13 +81,8 @@ public class KeyzyLicenseService
                 $"{Uri.EscapeDataString(kv.Key)}={Uri.EscapeDataString(kv.Value)}"));
 
             var url = $"https://api.keyzy.io/v2/licenses/validate?{query}";
-            // Security: never log full URL with credentials
-            Debug.WriteLine($"[Keyzy] Validating key {LicenseKey[..Math.Min(8, LicenseKey.Length)]}...");
-
             var response = await _client.GetAsync(url);
             var body = await response.Content.ReadAsStringAsync();
-
-            Debug.WriteLine($"[Keyzy] HTTP {(int)response.StatusCode}: '{body}'");
 
             // HTTP 200 with empty body = VALID
             if (response.IsSuccessStatusCode)
@@ -95,7 +92,7 @@ public class KeyzyLicenseService
                 return true;
             }
 
-            // Parse error
+            // Parse error message from Keyzy
             try
             {
                 var errResult = JObject.Parse(body);
@@ -106,9 +103,10 @@ public class KeyzyLicenseService
                     return false;
                 }
             }
-            catch { }
+            catch { /* ignore JSON parse errors */ }
 
             ErrorMessage = $"License rejected ({(int)response.StatusCode})";
+            return false;
             return false;
         }
         catch (HttpRequestException ex) { ErrorMessage = $"Network: {ex.Message}"; return false; }
@@ -125,7 +123,10 @@ public class KeyzyLicenseService
             foreach (var item in items)
                 return item["ProcessorId"]?.ToString() ?? Environment.MachineName;
         }
-        catch { }
+        catch
+        {
+            System.Diagnostics.Trace.WriteLine("[Keyzy] Failed to get CPU ID");
+        }
         return Environment.MachineName;
     }
 
