@@ -1,0 +1,8 @@
+private static readonly byte[] RsaPublicKey = Convert.FromBase64String(
+    "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAm22OUR/dXihBv++rGMX1" +
+    "YQGgbnnnlSluR1eRAY0VHFVtYL347fGnWmI7FxBcU/XsTBmm4sgC3FQrEqts3EiC" +
+    "TOuJ09Q8aJwdGZt23h5572JMkDTyiDPkWHQNGHMlxUgefvIBe86zMjOEhP6sXwoK" +
+    "QkTsm9sIgyy0NYhJxHwc/Im7bmgkkoj7f8wJVsCzwLm4wwE/Pm78GNIesEuwUN9l" +
+    "fmLrFbCKqrDf2mmRctwivjzpNWHXbMreTw1x4zDsHS968UNhA1J9MJOn4c3OEURY" +
+    "JIm+AdyyXqvduvXr8sZZvKbrKJwzjP8+TLf+FLzwk/YxV6ffKuDvl5VUnJ5F5mYj" +
+    "uQIDAQAB");
