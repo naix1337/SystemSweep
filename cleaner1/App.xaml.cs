@@ -1,3 +1,4 @@
+using System.Net.Http;
 using System.Windows;
 using ModernFileCleaner.Services;
 
@@ -155,12 +156,24 @@ namespace ModernFileCleaner
                 if (string.IsNullOrEmpty(_savedLicenseKey)) return;
 
                 bool stillValid = await VerifyLicenseWithKeyzy(_savedLicenseKey);
+
                 if (!stillValid)
                 {
+                    // Check if Keyzy is reachable or if it's a network error
+                    var keyzyTest = new KeyzyLicenseService();
+                    bool keyzyReachable = keyzyTest.HasCredentials;
+                    keyzyTest.Dispose();
+
+                    if (!keyzyReachable)
+                    {
+                        // Keyzy not configured - don't shut down (bail out)
+                        return;
+                    }
+
+                    // Keyzy says invalid - shut down
                     _savedLicenseKey = null;
                     _licenseTimer?.Dispose();
 
-                    // Show warning on UI thread
                     AppMainWindow?.Dispatcher.Invoke(() =>
                     {
                         MessageBox.Show("Your license has become invalid or expired.\n\nThe application will now close.",
@@ -169,7 +182,20 @@ namespace ModernFileCleaner
                     });
                 }
             }
-            catch { /* Silent fail on background check - will retry */ }
+            catch (HttpRequestException)
+            {
+                // Network error - don't shut down, retry on next interval
+                System.Diagnostics.Trace.WriteLine("[License] Periodic check failed (network)");
+            }
+            catch (TaskCanceledException)
+            {
+                // Timeout - retry next interval
+                System.Diagnostics.Trace.WriteLine("[License] Periodic check timed out");
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Trace.WriteLine($"[License] Periodic check error: {ex.Message}");
+            }
         }
 
         /// <summary>
