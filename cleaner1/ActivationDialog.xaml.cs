@@ -39,14 +39,6 @@ public partial class ActivationDialog : Window
             DialogResult = true;
             Close();
         }
-        else if (keyzy.ErrorMessage == "KEYZY_NOT_CONFIGURED")
-        {
-            // No API credentials - allow offline activation
-            txtStatus.Text = "✅ Offline mode activated";
-            IsActivated = true;
-            DialogResult = true;
-            Close();
-        }
         else
         {
             txtStatus.Text = $"❌ {keyzy.ErrorMessage}";

@@ -86,10 +86,6 @@ namespace ModernFileCleaner
                     }
                 }
 
-                // Check local RSA license (fallback)
-                if (System.IO.File.Exists("license.dat"))
-                    return true;
-
                 return false;
             }
             catch
