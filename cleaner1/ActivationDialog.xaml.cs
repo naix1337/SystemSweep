@@ -7,6 +7,9 @@ public partial class ActivationDialog : Window
 {
     public bool IsActivated { get; private set; }
     public bool StartedTrial { get; private set; }
+    private DateTime _lastAttempt = DateTime.MinValue;
+    private int _attemptCount = 0;
+    private const int MaxAttempts = 5;
 
     public ActivationDialog()
     {
@@ -15,6 +18,22 @@ public partial class ActivationDialog : Window
 
     private async void Activate_Click(object sender, RoutedEventArgs e)
     {
+        // Rate limiting: max 5 attempts, min 2s between attempts
+        _attemptCount++;
+        if (_attemptCount > MaxAttempts)
+        {
+            txtStatus.Text = "❌ Too many attempts. Restart the app to try again.";
+            btnActivate.IsEnabled = false;
+            return;
+        }
+        var elapsed = DateTime.Now - _lastAttempt;
+        if (elapsed.TotalSeconds < 2)
+        {
+            txtStatus.Text = $"⏳ Please wait...";
+            await Task.Delay(2000 - (int)elapsed.TotalMilliseconds);
+        }
+        _lastAttempt = DateTime.Now;
+
         var key = txtLicenseKey.Text.Trim();
         if (string.IsNullOrWhiteSpace(key))
         {
@@ -51,6 +70,15 @@ public partial class ActivationDialog : Window
 
     private void Trial_Click(object sender, RoutedEventArgs e)
     {
+        // Check trial validity before allowing
+        var licSvc = new LicenseService();
+        if (licSvc.Status == LicenseService.LicenseStatus.Expired)
+        {
+            txtStatus.Text = "❌ Trial has already expired. Please purchase a license.";
+            StatusBox.Background = new System.Windows.Media.SolidColorBrush(
+                System.Windows.Media.Color.FromArgb(0x1A, 0xF4, 0x43, 0x36));
+            return;
+        }
         StartedTrial = true;
         DialogResult = true;
         Close();

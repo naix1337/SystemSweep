@@ -79,11 +79,11 @@ public static class ProtectionService
             _integrityPassed = true;
             return true;
         }
-        catch
+        catch (Exception ex)
         {
-            // If checks throw, allow (fail open for compatibility)
-            _integrityPassed = true;
-            return true;
+            System.Diagnostics.Trace.WriteLine($"[Protection] Startup check failed: {ex.Message}");
+            _integrityPassed = false;
+            return false;
         }
     }
 
