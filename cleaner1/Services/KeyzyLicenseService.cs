@@ -1,4 +1,5 @@
 using System.Net.Http;
+using System.Text;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
@@ -89,6 +90,10 @@ public class KeyzyLicenseService
             {
                 IsValid = true;
                 LicensedTo = "Licensed User";
+
+                // Try to register the activation on Keyzy (fire and forget)
+                try { await RegisterActivationAsync(LicenseKey); } catch { }
+
                 return true;
             }
 
@@ -107,11 +112,44 @@ public class KeyzyLicenseService
 
             ErrorMessage = $"License rejected ({(int)response.StatusCode})";
             return false;
-            return false;
         }
         catch (HttpRequestException ex) { ErrorMessage = $"Network: {ex.Message}"; return false; }
         catch (TaskCanceledException) { ErrorMessage = "Connection timed out"; return false; }
         catch (Exception ex) { ErrorMessage = $"Error: {ex.Message}"; return false; }
+    }
+
+    /// <summary>
+    /// Register the activation on Keyzy (POST to register endpoint).
+    /// This makes the license show as "activated" in the Keyzy dashboard.
+    /// </summary>
+    private async Task RegisterActivationAsync(string serial)
+    {
+        // Try multiple approaches to register the activation
+        var payload = new Dictionary<string, object?>
+        {
+            ["app_id"] = AppId,
+            ["api_key"] = ApiKey,
+            ["code"] = ProductCode,
+            ["serial"] = serial,
+            ["version"] = "1.0",
+            ["host_id"] = GetHostId(),
+            ["device_tag"] = $"Windows_{Environment.OSVersion.Version}__64bits"
+        };
+
+        var json = new StringContent(
+            JsonConvert.SerializeObject(payload), Encoding.UTF8, "application/json");
+
+        // Try 1: POST to register endpoint
+        var regResponse = await _client.PostAsync(
+            "https://api.keyzy.io/v2/licenses/register", json);
+        if (regResponse.IsSuccessStatusCode) return;
+
+        // Try 2: POST to activate endpoint
+        var actResponse = await _client.PostAsync(
+            "https://api.keyzy.io/v2/licenses/activate", json);
+        if (actResponse.IsSuccessStatusCode) return;
+
+        // Registration is optional - app still works without it
     }
 
     private static string GetHostId()
