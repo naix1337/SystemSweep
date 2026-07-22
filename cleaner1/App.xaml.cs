@@ -8,6 +8,8 @@ namespace ModernFileCleaner
         public static string[] StartupArgs = Array.Empty<string>();
         public static bool ProtectionPassed { get; private set; } = true;
         public static MainWindow? AppMainWindow { get; private set; }
+        private static System.Threading.Timer? _licenseTimer;
+        private static string? _savedLicenseKey;
 
         protected override void OnStartup(StartupEventArgs e)
         {
@@ -16,8 +18,6 @@ namespace ModernFileCleaner
 
             // Run anti-tamper checks
             ProtectionPassed = ProtectionService.RunStartupChecks();
-
-            // CRITICAL: If protection checks fail, don't start
             if (!ProtectionPassed)
             {
                 MessageBox.Show("Security checks failed. The application may be tampered with.\n\nPlease download a fresh copy from the official source.",
@@ -28,37 +28,45 @@ namespace ModernFileCleaner
 
             // Load settings
             AppSettings.Instance.Load();
-
-            // Apply theme
             ThemeService.SetTheme(AppSettings.Instance.Theme);
 
             // Create main window (but don't show yet)
             AppMainWindow = new MainWindow();
 
             // === STEP 1: License Verification (EVERY startup) ===
-            // Always verify the license with Keyzy API, don't just check file existence
-            bool licenseValid = VerifyLicenseAtStartup();
+            _savedLicenseKey = LoadLicenseKey();
+            bool licenseValid = VerifyLicenseWithKeyzy(_savedLicenseKey).GetAwaiter().GetResult();
 
             if (!licenseValid)
             {
                 var activationDialog = new ActivationDialog();
                 bool? actResult = activationDialog.ShowDialog();
-
                 bool canProceed = actResult == true &&
                     (activationDialog.IsActivated || activationDialog.StartedTrial);
-
                 if (!canProceed)
                 {
                     Current.Shutdown();
                     return;
                 }
+                // Reload key after activation
+                _savedLicenseKey = LoadLicenseKey();
             }
 
-            // === STEP 2: Restore Point Dialog (always) ===
+            // === STEP 2: Start periodic license check (every 4 minutes) ===
+            if (!string.IsNullOrEmpty(_savedLicenseKey))
+            {
+                _licenseTimer = new System.Threading.Timer(
+                    async _ => await PeriodicLicenseCheck(),
+                    null,
+                    TimeSpan.FromMinutes(4),
+                    TimeSpan.FromMinutes(4));
+            }
+
+            // === STEP 3: Restore Point Dialog ===
             var restoreDialog = new RestoreDialog();
             restoreDialog.ShowDialog();
 
-            // Handle command-line arguments
+            // Handle CLI args
             if (e.Args.Length > 0)
             {
                 bool silent = Array.Exists(e.Args, a => a.Equals("--silent", StringComparison.OrdinalIgnoreCase));
@@ -71,86 +79,117 @@ namespace ModernFileCleaner
         }
 
         /// <summary>
-        /// Verifies license on EVERY startup.
-        /// Checks local license.key file, validates HWID, AND calls Keyzy API.
-        /// If anything fails, license is considered invalid.
+        /// Verifies license against Keyzy API.
+        /// Returns true only if Keyzy confirms validity.
+        /// If Keyzy is not configured, license is DENIED.
         /// </summary>
-        private static bool VerifyLicenseAtStartup()
+        private static async Task<bool> VerifyLicenseWithKeyzy(string? savedKey)
+        {
+            // No key = no license
+            if (string.IsNullOrEmpty(savedKey))
+                return false;
+
+            // Check HWID first
+            var hwid = GetCurrentHwid();
+            if (!VerifyHwidMatch(savedKey, hwid))
+                return false;
+
+            // MUST verify with Keyzy API
+            var keyzy = new KeyzyLicenseService();
+            if (!keyzy.HasCredentials)
+            {
+                keyzy.Dispose();
+                return false; // DENIED: no Keyzy config = no validation possible
+            }
+
+            bool isValid = await keyzy.ValidateKeyAsync(savedKey);
+            keyzy.Dispose();
+
+            if (!isValid)
+            {
+                // Keyzy rejected the key - delete local license
+                try { System.IO.File.Delete("license.key"); } catch { }
+                return false;
+            }
+
+            return true;
+        }
+
+        /// <summary>
+        /// Checks HWID match without calling Keyzy (fast check).
+        /// </summary>
+        private static bool VerifyHwidMatch(string savedKey, string currentHwid)
         {
             try
             {
-                // Step 1: Check if license file exists
-                if (!System.IO.File.Exists("license.key"))
-                {
-                    System.IO.File.Delete("trial.dat"); // Also reset trial on license deletion
-                    return false;
-                }
+                if (!System.IO.File.Exists("license.key")) return false;
 
-                // Step 2: Decrypt and verify HWID
-                string decrypted;
-                try
-                {
-                    var encrypted = System.Convert.FromBase64String(
-                        System.IO.File.ReadAllText("license.key"));
-                    decrypted = System.Text.Encoding.UTF8.GetString(
-                        System.Security.Cryptography.ProtectedData.Unprotect(
-                            encrypted, null,
-                            System.Security.Cryptography.DataProtectionScope.CurrentUser));
-                }
-                catch
-                {
-                    // Corrupted license file
-                    System.IO.File.Delete("license.key");
-                    return false;
-                }
+                var encrypted = System.Convert.FromBase64String(
+                    System.IO.File.ReadAllText("license.key"));
+                var decrypted = System.Text.Encoding.UTF8.GetString(
+                    System.Security.Cryptography.ProtectedData.Unprotect(
+                        encrypted, null,
+                        System.Security.Cryptography.DataProtectionScope.CurrentUser));
 
                 var parts = decrypted.Split(':');
-                if (parts.Length < 4 || parts[2] != "HWID")
-                {
-                    System.IO.File.Delete("license.key");
-                    return false;
-                }
+                if (parts.Length < 4 || parts[2] != "HWID") return false;
+                if (parts[3] != currentHwid) return false;
 
-                // Step 3: Verify HWID match
-                var expectedHwid = parts[3];
-                var currentHwid = GetCurrentHwid();
-                if (expectedHwid != currentHwid)
-                {
-                    // License is for another machine - delete it
-                    System.IO.File.Delete("license.key");
-                    return false;
-                }
-
-                // Step 4: Extract license key and re-validate with Keyzy API
-                var savedKey = parts[1];
-                if (!string.IsNullOrEmpty(savedKey))
-                {
-                    var keyzy = new KeyzyLicenseService();
-                    if (keyzy.HasCredentials)
-                    {
-                        bool keyzyValid = Task.Run(async () =>
-                            await keyzy.ValidateKeyAsync(savedKey)).GetAwaiter().GetResult();
-
-                        if (!keyzyValid)
-                        {
-                            // Keyzy says invalid - remove local license
-                            System.IO.File.Delete("license.key");
-                            keyzy.Dispose();
-                            return false;
-                        }
-                    }
-                    keyzy.Dispose();
-                }
-
-                // All checks passed
                 return true;
             }
             catch
             {
-                // On any error, require re-activation (fail closed)
                 try { System.IO.File.Delete("license.key"); } catch { }
                 return false;
             }
+        }
+
+        /// <summary>
+        /// Periodic license check (runs every 4 minutes).
+        /// If license becomes invalid, forces app to shutdown.
+        /// </summary>
+        private static async Task PeriodicLicenseCheck()
+        {
+            try
+            {
+                if (string.IsNullOrEmpty(_savedLicenseKey)) return;
+
+                bool stillValid = await VerifyLicenseWithKeyzy(_savedLicenseKey);
+                if (!stillValid)
+                {
+                    _savedLicenseKey = null;
+                    _licenseTimer?.Dispose();
+
+                    // Show warning on UI thread
+                    AppMainWindow?.Dispatcher.Invoke(() =>
+                    {
+                        MessageBox.Show("Your license has become invalid or expired.\n\nThe application will now close.",
+                            "License Error", MessageBoxButton.OK, MessageBoxImage.Warning);
+                        Current.Shutdown();
+                    });
+                }
+            }
+            catch { /* Silent fail on background check - will retry */ }
+        }
+
+        /// <summary>
+        /// Extracts the license key from the encrypted license file
+        /// </summary>
+        private static string? LoadLicenseKey()
+        {
+            try
+            {
+                if (!System.IO.File.Exists("license.key")) return null;
+                var encrypted = System.Convert.FromBase64String(
+                    System.IO.File.ReadAllText("license.key"));
+                var decrypted = System.Text.Encoding.UTF8.GetString(
+                    System.Security.Cryptography.ProtectedData.Unprotect(
+                        encrypted, null,
+                        System.Security.Cryptography.DataProtectionScope.CurrentUser));
+                var parts = decrypted.Split(':');
+                return parts.Length >= 2 ? parts[1] : null;
+            }
+            catch { return null; }
         }
 
         private static string GetCurrentHwid()
