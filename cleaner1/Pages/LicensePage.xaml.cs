@@ -72,7 +72,7 @@ public partial class LicensePage
             btnActivate.IsEnabled = false;
             txtLicenseKey.IsEnabled = false;
             SaveLicenseLocally(key);
-            MessageBox.Show($"✅ License activated via Keyzy.io!\n\nUser: {keyzy.LicensedTo}\nProduct: {keyzy.ProductName ?? "System Sweep"}",
+            MessageBox.Show($"✅ License activated via Keyzy.io!\n\nUser: {keyzy.LicensedTo}\nProduct: System Sweep",
                 "Activation Successful", MessageBoxButton.OK, MessageBoxImage.Information);
         }
         else
