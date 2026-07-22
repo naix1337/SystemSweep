@@ -6,11 +6,15 @@ namespace ModernFileCleaner
     public partial class App : Application
     {
         public static string[] StartupArgs = Array.Empty<string>();
+        public static bool ProtectionPassed { get; private set; } = true;
 
         protected override void OnStartup(StartupEventArgs e)
         {
             base.OnStartup(e);
             StartupArgs = e.Args;
+
+            // Run anti-tamper checks first
+            ProtectionPassed = ProtectionService.RunStartupChecks();
 
             // Load settings
             AppSettings.Instance.Load();
@@ -30,9 +34,6 @@ namespace ModernFileCleaner
             bool silent = Array.Exists(args, a => a.Equals("--silent", StringComparison.OrdinalIgnoreCase));
             bool clean = Array.Exists(args, a => a.Equals("--clean", StringComparison.OrdinalIgnoreCase));
             bool analyze = Array.Exists(args, a => a.Equals("--analyze", StringComparison.OrdinalIgnoreCase));
-
-            // CLI flags are handled by MainWindow when it loads
-            // They're passed through StartupArgs
         }
     }
 }

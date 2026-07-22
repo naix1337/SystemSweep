@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Obfuscator>
+  <!-- Obfuscar Configuration for System Sweep Professional -->
+  <Var name="InPath" value=".\bin\Release\net8.0-windows\win-x64" />
+  <Var name="OutPath" value=".\bin\Obfuscated" />
+
+  <!-- Anti-decompilation settings -->
+  <Module file="$(InPath)\SystemSweep.dll">
+    <SkipType name="Wpf.Ui.*" />
+    <SkipType name="ModernFileCleaner.App" />
+    <SkipType name="ModernFileCleaner.MainWindow" />
+
+    <!-- Rename all possible symbols -->
+    <RenameRules>
+      <Rename rule="Public" />
+      <Rename rule="Private" />
+      <Rename rule="Protected" />
+    </RenameRules>
+
+    <!-- String encryption protects license keys and paths -->
+    <StringEncryption />
+
+    <!-- Control flow obfuscation makes decompiled code unreadable -->
+    <ControlFlow />
+  </Module>
+
+  <!-- Search recursively for dependencies but skip system assemblies -->
+  <SearchDir path="$(InPath)" />
+</Obfuscator>

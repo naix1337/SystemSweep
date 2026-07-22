@@ -25,6 +25,7 @@ public partial class TweaksPage
         SystemPanel.Children.Clear();
         NetworkPanel.Children.Clear();
         DiskPanel.Children.Clear();
+        AdvancedPanel.Children.Clear();
         CleanupPanel.Children.Clear();
 
         foreach (var tweak in _allTweaks)
@@ -36,6 +37,7 @@ public partial class TweaksPage
                 "System" => SystemPanel,
                 "Network" => NetworkPanel,
                 "Disk" => DiskPanel,
+                "Advanced" => AdvancedPanel,
                 "Cleanup" => CleanupPanel,
                 _ => SystemPanel
             };
@@ -202,6 +204,7 @@ public partial class TweaksPage
         SystemPanel.Children.Clear();
         NetworkPanel.Children.Clear();
         DiskPanel.Children.Clear();
+        AdvancedPanel.Children.Clear();
         CleanupPanel.Children.Clear();
         foreach (var tweak in _allTweaks)
         {
@@ -212,6 +215,7 @@ public partial class TweaksPage
                 "System" => SystemPanel,
                 "Network" => NetworkPanel,
                 "Disk" => DiskPanel,
+                "Advanced" => AdvancedPanel,
                 "Cleanup" => CleanupPanel,
                 _ => SystemPanel
             };

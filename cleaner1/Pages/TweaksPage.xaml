@@ -34,6 +34,9 @@
             <TextBlock Text="💾 DISK &amp; MEMORY" Foreground="#FF8888FF" FontSize="13" FontWeight="Bold" Margin="0,0,0,12"/>
             <StackPanel x:Name="DiskPanel" Margin="0,0,0,24"/>
 
+            <TextBlock Text="🛡️ ADVANCED" Foreground="#FF8888FF" FontSize="13" FontWeight="Bold" Margin="0,0,0,12"/>
+            <StackPanel x:Name="AdvancedPanel" Margin="0,0,0,24"/>
+
             <TextBlock Text="🧹 CLEANUP" Foreground="#FFFF8888" FontSize="13" FontWeight="Bold" Margin="0,0,0,12"/>
             <StackPanel x:Name="CleanupPanel" Margin="0,0,0,24"/>
 
