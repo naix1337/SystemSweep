@@ -14,6 +14,9 @@ public partial class CleanPage
     private readonly List<CleaningCategory> _categories = new()
     {
         new() { Id = "temp_files", Name = "Temporary Files", Icon = "🗑️", Safety = SafetyLevel.Safe, Description = "Windows temp & user temp files" },
+        new() { Id = "browser_chrome", Name = "Chrome Cache", Icon = "🌐", Safety = SafetyLevel.Safe, Description = "Google Chrome browser cache" },
+        new() { Id = "browser_edge", Name = "Edge Cache", Icon = "🌐", Safety = SafetyLevel.Safe, Description = "Microsoft Edge browser cache" },
+        new() { Id = "browser_firefox", Name = "Firefox Cache", Icon = "🦊", Safety = SafetyLevel.Safe, Description = "Mozilla Firefox browser cache" },
         new() { Id = "recycle_bin", Name = "Recycle Bin", Icon = "♻️", Safety = SafetyLevel.Safe, Description = "Deleted files in Recycle Bin" },
         new() { Id = "download_cache", Name = "Download Cache", Icon = "📥", Safety = SafetyLevel.Safe, Description = "Downloads folder contents" },
         new() { Id = "thumbnail_cache", Name = "Thumbnail Cache", Icon = "🖼️", Safety = SafetyLevel.Safe, Description = "Explorer thumbnail cache DBs" },

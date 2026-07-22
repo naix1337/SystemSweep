@@ -43,6 +43,13 @@ public class CalculationService
             "installer_temp" => GetDirectorySize(
                 Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Windows), "Installer"), "*.tmp"),
             "store_cache" => 100L * 1024 * 1024, // approx
+            "browser_chrome" => GetDirectorySize(Path.Combine(
+                Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),
+                "Google", "Chrome", "User Data", "Default", "Cache")),
+            "browser_edge" => GetDirectorySize(Path.Combine(
+                Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),
+                "Microsoft", "Edge", "User Data", "Default", "Cache")),
+            "browser_firefox" => GetBrowserFirefoxCacheSize(),
             "windows_logs" => CalculateWindowsLogFilesSize(),
             "windows_old" => GetDirectorySize(
                 Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Windows), "..", "Windows.old")),
@@ -70,6 +77,21 @@ public class CalculationService
         if (File.Exists(dumpPath)) { try { size += new FileInfo(dumpPath).Length; } catch (Exception ex) { Debug.WriteLine($"[CalculationService] {ex.Message}"); } }
         string minidumpPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Windows), "Minidump");
         if (Directory.Exists(minidumpPath)) size += GetDirectorySize(minidumpPath);
+        return size;
+    }
+
+    private long GetBrowserFirefoxCacheSize()
+    {
+        long size = 0;
+        string profilesPath = Path.Combine(
+            Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),
+            "Mozilla", "Firefox", "Profiles");
+        if (!Directory.Exists(profilesPath)) return size;
+        foreach (var dir in Directory.GetDirectories(profilesPath))
+        {
+            size += GetDirectorySize(Path.Combine(dir, "cache2"));
+            size += GetDirectorySize(Path.Combine(dir, "offlinecache"));
+        }
         return size;
     }
 
