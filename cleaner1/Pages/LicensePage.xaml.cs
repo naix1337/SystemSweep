@@ -6,68 +6,118 @@ namespace ModernFileCleaner.Pages;
 
 public partial class LicensePage
 {
-    private readonly LicenseService _license = new();
+    private readonly LicenseService _localLicense = new();
 
     public LicensePage()
     {
         InitializeComponent();
         LoadStatus();
-        txtFingerprint.Text = $"Device ID: {_license.GetMachineFingerprint()[..16]}...";
     }
 
     private void LoadStatus()
     {
-        var status = _license.Status;
+        var status = _localLicense.Status;
         switch (status)
         {
             case LicenseService.LicenseStatus.Activated:
-                txtLicenseStatus.Text = "✅ Fully Activated";
-                txtLicenseStatus.Foreground = new System.Windows.Media.SolidColorBrush(System.Windows.Media.Color.FromRgb(76, 175, 80));
-                txtLicenseDetail.Text = $"Licensed to: {_license.LicensedTo ?? "User"}";
-                StatusCard.Background = new System.Windows.Media.SolidColorBrush(System.Windows.Media.Color.FromArgb(0x1A, 0x4C, 0xAF, 0x50));
+                SetStatus("✅ Fully Activated", _localLicense.LicensedTo ?? "User",
+                    System.Windows.Media.Color.FromRgb(76, 175, 80), "Activated");
                 btnActivate.IsEnabled = false;
                 txtLicenseKey.IsEnabled = false;
                 break;
 
             case LicenseService.LicenseStatus.Trial:
-                txtLicenseStatus.Text = $"🔓 Trial Mode ({_license.TrialDaysRemaining} days left)";
-                txtLicenseStatus.Foreground = new System.Windows.Media.SolidColorBrush(System.Windows.Media.Color.FromRgb(255, 193, 7));
-                txtLicenseDetail.Text = "Some advanced features may be limited";
-                StatusCard.Background = new System.Windows.Media.SolidColorBrush(System.Windows.Media.Color.FromArgb(0x1A, 0xFF, 0xAA, 0x00));
+                SetStatus($"🔓 Trial Mode ({_localLicense.TrialDaysRemaining} days left)",
+                    "Some features may be limited",
+                    System.Windows.Media.Color.FromRgb(255, 193, 7), "Trial");
                 break;
 
             case LicenseService.LicenseStatus.Expired:
-                txtLicenseStatus.Text = "❌ Trial Expired";
-                txtLicenseStatus.Foreground = new System.Windows.Media.SolidColorBrush(System.Windows.Media.Color.FromRgb(244, 67, 54));
-                txtLicenseDetail.Text = "Please purchase a license to continue using all features";
-                StatusCard.Background = new System.Windows.Media.SolidColorBrush(System.Windows.Media.Color.FromArgb(0x1A, 0xF4, 0x43, 0x36));
+                SetStatus("❌ Trial Expired",
+                    "Please purchase a license",
+                    System.Windows.Media.Color.FromRgb(244, 67, 54), "Expired");
                 break;
         }
     }
 
-    private void Activate_Click(object sender, RoutedEventArgs e)
+    private void SetStatus(string title, string detail, System.Windows.Media.Color color, string type)
+    {
+        txtLicenseStatus.Text = title;
+        txtLicenseStatus.Foreground = new System.Windows.Media.SolidColorBrush(color);
+        txtLicenseDetail.Text = detail;
+        StatusCard.Background = new System.Windows.Media.SolidColorBrush(
+            System.Windows.Media.Color.FromArgb(0x1A, color.R, color.G, color.B));
+    }
+
+    private async void ActivateKeyzy_Click(object sender, RoutedEventArgs e)
     {
         var key = txtLicenseKey.Text.Trim();
         if (string.IsNullOrWhiteSpace(key))
         {
-            txtStatus.Text = "Please enter a license key";
+            txtStatus.Text = "Please enter a license key from Keyzy.io";
             return;
         }
 
         btnActivate.IsEnabled = false;
-        txtStatus.Text = "Validating license key...";
+        txtStatus.Text = "🔍 Validating with Keyzy.io...";
 
-        if (_license.ValidateLicenseKey(key))
+        var keyzy = new KeyzyLicenseService();
+        bool valid = await keyzy.ValidateKeyAsync(key);
+
+        if (valid)
         {
-            txtStatus.Text = "✅ License activated successfully!";
-            LoadStatus();
-            MessageBox.Show("✅ License activated!\n\nAll features are now unlocked. Thank you for your support!",
-                          "Activation Successful", MessageBoxButton.OK, MessageBoxImage.Information);
+            txtStatus.Text = $"✅ Activated! Licensed to: {keyzy.LicensedTo}";
+            SetStatus("✅ Fully Activated", $"Licensed to: {keyzy.LicensedTo}",
+                System.Windows.Media.Color.FromRgb(76, 175, 80), "Activated");
+            btnActivate.IsEnabled = false;
+            txtLicenseKey.IsEnabled = false;
+            SaveLicenseLocally(key);
+            MessageBox.Show($"✅ License activated via Keyzy.io!\n\nUser: {keyzy.LicensedTo}\nProduct: {keyzy.ProductName ?? "System Sweep"}",
+                "Activation Successful", MessageBoxButton.OK, MessageBoxImage.Information);
         }
         else
         {
-            txtStatus.Text = "❌ Invalid license key. Please check and try again.";
+            txtStatus.Text = $"❌ {keyzy.ErrorMessage}";
             btnActivate.IsEnabled = true;
+        }
+
+        keyzy.Dispose();
+    }
+
+    private void ActivateOffline_Click(object sender, RoutedEventArgs e)
+    {
+        var key = txtLicenseKey.Text.Trim();
+        if (string.IsNullOrWhiteSpace(key))
+        {
+            txtStatus.Text = "Please enter an offline license key";
+            return;
+        }
+
+        if (_localLicense.ValidateLicenseKey(key))
+        {
+            txtStatus.Text = "✅ Offline license activated!";
+            LoadStatus();
+        }
+        else
+        {
+            txtStatus.Text = "❌ Invalid offline license key";
+        }
+    }
+
+    private static void SaveLicenseLocally(string key)
+    {
+        try
+        {
+            var data = Convert.ToBase64String(
+                System.Security.Cryptography.ProtectedData.Protect(
+                    System.Text.Encoding.UTF8.GetBytes($"KEYZY:{key}"),
+                    null,
+                    System.Security.Cryptography.DataProtectionScope.CurrentUser));
+            System.IO.File.WriteAllText("license.key", data);
+        }
+        catch (Exception ex)
+        {
+            Debug.WriteLine($"[License] Save error: {ex.Message}");
         }
     }
 
@@ -75,11 +125,10 @@ public partial class LicensePage
     {
         try
         {
-            var psi = new ProcessStartInfo("https://github.com/nix1337/SystemSweep/releases")
+            Process.Start(new ProcessStartInfo("https://keyzy.io")
             {
                 UseShellExecute = true
-            };
-            System.Diagnostics.Process.Start(psi);
+            });
         }
         catch { }
     }

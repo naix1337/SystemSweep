@@ -3,9 +3,9 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         Title="System Restore Point" Height="320" Width="500"
         WindowStartupLocation="CenterScreen"
-        WindowStyle="None" ResizeMode="NoResize"
-        AllowsTransparency="True" Background="Transparent"
-        Topmost="True">
+        ResizeMode="NoResize"
+        Topmost="True"
+        Background="#FF1E1E1E">
     <Border CornerRadius="16" Background="#FF1E1E1E" BorderBrush="#FF333333" BorderThickness="1" Padding="28">
         <StackPanel>
             <!-- Shield Icon -->
