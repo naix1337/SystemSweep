@@ -35,8 +35,10 @@ namespace ModernFileCleaner
             AppMainWindow = new MainWindow();
 
             // === STEP 1: License Verification (EVERY startup) ===
+            // IMPORTANT: Use Task.Run to avoid deadlock on UI thread
             _savedLicenseKey = LoadLicenseKey();
-            bool licenseValid = VerifyLicenseWithKeyzy(_savedLicenseKey).GetAwaiter().GetResult();
+            bool licenseValid = Task.Run(async () =>
+                await VerifyLicenseWithKeyzy(_savedLicenseKey)).GetAwaiter().GetResult();
 
             if (!licenseValid)
             {
