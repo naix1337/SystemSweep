@@ -56,6 +56,8 @@ public class KeyzyLicenseService
     public KeyzyLicenseService()
     {
         _client = new HttpClient { Timeout = TimeSpan.FromSeconds(15) };
+        _client.DefaultRequestHeaders.UserAgent.ParseAdd("SystemSweep/2.0");
+        _client.DefaultRequestHeaders.ExpectContinue = false;
     }
 
     public async Task<bool> ValidateKeyAsync(string serial, string? hostId = null)
@@ -126,6 +128,17 @@ public class KeyzyLicenseService
             }
 
             ErrorMessage = "License server unreachable. Check connection or Keyzy.io status.";
+            return false;
+        }
+        catch (HttpRequestException ex)
+        {
+            ErrorMessage = $"Network: {ex.Message}";
+            Debug.WriteLine($"[Keyzy] HTTP: {ex}");
+            return false;
+        }
+        catch (TaskCanceledException)
+        {
+            ErrorMessage = "Request timed out (15s)";
             return false;
         }
         catch (Exception ex)
