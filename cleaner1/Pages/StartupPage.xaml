@@ -80,12 +80,21 @@
         </ListView>
 
         <!-- Bottom Buttons -->
-        <StackPanel Grid.Row="2" Orientation="Horizontal" HorizontalAlignment="Center">
-            <ui:Button x:Name="btnRefresh"
-                       Content="&#xE72C;  Refresh"
-                       Appearance="Primary"
-                       Width="140" Height="38"
-                       Click="Refresh_Click"/>
+        <StackPanel Grid.Row="2" HorizontalAlignment="Center">
+            <TextBlock x:Name="txtPending" Text="" FontSize="12" Foreground="#FF888888" HorizontalAlignment="Center" Margin="0,0,0,8"/>
+            <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+                <ui:Button x:Name="btnRefresh"
+                           Content="&#xE72C;  Refresh"
+                           Appearance="Primary"
+                           Width="140" Height="38"
+                           Click="Refresh_Click"/>
+                <ui:Button x:Name="btnApply"
+                           Content="✅  Apply Changes"
+                           Appearance="Success"
+                           Width="160" Height="38"
+                           Margin="12,0,0,0"
+                           Click="Apply_Click"/>
+            </StackPanel>
         </StackPanel>
     </Grid>
 </Page>
