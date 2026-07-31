@@ -1,4 +1,5 @@
 using System.Windows;
+using ModernFileCleaner;
 using ModernFileCleaner.Services;
 
 namespace ModernFileCleaner.Pages;
@@ -11,6 +12,7 @@ public partial class BrowserCachePage
     public BrowserCachePage()
     {
         InitializeComponent();
+        btnClean.IsEnabled = AppLicense.IsFullAccess;
     }
 
     private async void Scan_Click(object? sender, RoutedEventArgs? e)
@@ -25,11 +27,12 @@ public partial class BrowserCachePage
         txtStatus.Text = $"Found {_browsers.Sum(b => b.SizeBytes) / (1024 * 1024)} MB browser cache";
 
         btnScan.IsEnabled = true;
-        btnClean.IsEnabled = true;
+        btnClean.IsEnabled = AppLicense.IsFullAccess;
     }
 
     private async void Clean_Click(object sender, RoutedEventArgs e)
     {
+        if (!AppLicense.IsFullAccess) { txtStatus.Text = "🔒 Demo — license key required"; return; }
         var selected = _browsers.Where(b => b.IsSelected).ToList();
         if (selected.Count == 0)
         {

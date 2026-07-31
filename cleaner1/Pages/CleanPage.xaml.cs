@@ -1,5 +1,6 @@
 using System.Windows;
 using System.Windows.Controls;
+using ModernFileCleaner;
 using ModernFileCleaner.Models;
 using ModernFileCleaner.Services;
 
@@ -31,6 +32,7 @@ public partial class CleanPage
     public CleanPage(HistoryService historyService)
     {
         InitializeComponent();
+        if (!AppLicense.IsFullAccess) { btnAnalyze.IsEnabled = false; btnClean.IsEnabled = false; }
         _historyService = historyService;
         CardsContainer.ItemsSource = _categories;
     }
@@ -85,6 +87,7 @@ public partial class CleanPage
 
     private async void btnAnalyze_Click(object? sender, RoutedEventArgs? e)
     {
+        if (!AppLicense.IsFullAccess) { txtStatus.Text = "🔒 Demo — license key required"; return; }
         try
         {
             btnAnalyze.IsEnabled = false;
@@ -115,6 +118,7 @@ public partial class CleanPage
 
     private async void btnClean_Click(object? sender, RoutedEventArgs? e)
     {
+        if (!AppLicense.IsFullAccess) { txtStatus.Text = "🔒 Demo — license key required"; return; }
         try
         {
             var selected = _categories.Where(c => c.IsSelected).ToList();

@@ -1,6 +1,7 @@
 using System.Collections.ObjectModel;
 using System.IO;
 using System.Windows;
+using ModernFileCleaner;
 using ModernFileCleaner.Services;
 
 namespace ModernFileCleaner.Pages;
@@ -17,6 +18,7 @@ public partial class DuplicatesPage
         InitializeComponent();
         resultsList.ItemsSource = _duplicates;
         cmbPath.SelectedIndex = 0;
+        btnDelete.IsEnabled = AppLicense.IsFullAccess;
     }
 
     private void cmbPath_SelectionChanged(object? sender, System.Windows.Controls.SelectionChangedEventArgs e)
@@ -73,7 +75,7 @@ public partial class DuplicatesPage
                 _duplicates.Add(group);
 
             txtStatus.Text = $"Found {_duplicates.Count} duplicate groups ({_duplicates.Sum(g => g.Files.Count)} files).";
-            btnDelete.IsEnabled = _duplicates.Count > 0;
+            btnDelete.IsEnabled = AppLicense.IsFullAccess && _duplicates.Count > 0;
         }
         catch (OperationCanceledException)
         {
@@ -88,6 +90,7 @@ public partial class DuplicatesPage
 
     private async void btnDelete_Click(object? sender, RoutedEventArgs? e)
     {
+        if (!AppLicense.IsFullAccess) { MessageBox.Show("🔒 Demo — license key required", "Demo Mode", MessageBoxButton.OK, MessageBoxImage.Information); return; }
         var selectedGroups = _duplicates.Where(g => g.IsSelected).ToList();
         if (selectedGroups.Count == 0)
         {
@@ -157,7 +160,7 @@ public partial class DuplicatesPage
 
         ProgressBar.Visibility = Visibility.Collapsed;
         btnScan.IsEnabled = true;
-        btnDelete.IsEnabled = _duplicates.Count > 0;
+        btnDelete.IsEnabled = AppLicense.IsFullAccess && _duplicates.Count > 0;
         txtStatus.Text = $"Deleted {deleted} files, freed {FormatBytes(freed)}.";
     }
 

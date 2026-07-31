@@ -1,4 +1,5 @@
 using System.Windows;
+using ModernFileCleaner;
 using ModernFileCleaner.Models;
 using ModernFileCleaner.Services;
 
@@ -67,6 +68,7 @@ public partial class DashboardPage
 
     private async void QuickClean_Click(object sender, RoutedEventArgs e)
     {
+        if (!AppLicense.IsFullAccess) return;
         try
         {
             var quickCategories = new[] { "temp_files", "recycle_bin", "thumbnail_cache" };
@@ -85,6 +87,7 @@ public partial class DashboardPage
 
     private async void EmptyRecycle_Click(object sender, RoutedEventArgs e)
     {
+        if (!AppLicense.IsFullAccess) return;
         try
         {
             var cat = new CleaningCategory { Id = "recycle_bin" };

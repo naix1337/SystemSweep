@@ -1,6 +1,7 @@
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
+using ModernFileCleaner;
 using ModernFileCleaner.Services;
 
 namespace ModernFileCleaner.Pages;
@@ -54,6 +55,7 @@ public partial class TweaksPage
             VerticalAlignment = VerticalAlignment.Center
         };
         toggle.Click += TweakToggle_Click;
+        toggle.IsEnabled = AppLicense.IsFullAccess;
 
         var grid = new Grid();
         grid.ColumnDefinitions.Add(new ColumnDefinition { Width = GridLength.Auto });
@@ -139,6 +141,7 @@ public partial class TweaksPage
 
     private async void TweakToggle_Click(object sender, RoutedEventArgs e)
     {
+        if (!AppLicense.IsFullAccess) { txtStatus.Text = "🔒 Demo — license key required"; return; }
         if (sender is not Wpf.Ui.Controls.ToggleSwitch toggle) return;
         var id = toggle.Tag?.ToString();
         var tweak = _allTweaks.FirstOrDefault(t => t.Id == id);
@@ -162,6 +165,7 @@ public partial class TweaksPage
 
     private async void ApplyRecommended_Click(object sender, RoutedEventArgs e)
     {
+        if (!AppLicense.IsFullAccess) { txtStatus.Text = "🔒 Demo — license key required"; return; }
         var recommended = _allTweaks.Where(t => t.IsRecommended && !t.IsEnabled).ToList();
         if (recommended.Count == 0)
         {
@@ -181,6 +185,7 @@ public partial class TweaksPage
 
     private async void RevertAll_Click(object sender, RoutedEventArgs e)
     {
+        if (!AppLicense.IsFullAccess) { txtStatus.Text = "🔒 Demo — license key required"; return; }
         var active = _allTweaks.Where(t => t.IsEnabled).ToList();
         if (active.Count == 0)
         {
