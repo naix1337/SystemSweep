@@ -14,7 +14,9 @@ public partial class TweaksPage
     public TweaksPage()
     {
         InitializeComponent();
+        btnApplyRecommended.IsEnabled = btnRevertAll.IsEnabled = AppLicense.IsFullAccess;
         LoadTweaks();
+        IsVisibleChanged += (_, _) => { if (IsVisible) RebuildCards(); };
     }
 
     private void LoadTweaks()

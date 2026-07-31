@@ -13,6 +13,7 @@ public partial class BrowserCachePage
     {
         InitializeComponent();
         btnClean.IsEnabled = AppLicense.IsFullAccess;
+        IsVisibleChanged += (_, _) => { if (IsVisible) btnClean.IsEnabled = AppLicense.IsFullAccess; };
     }
 
     private async void Scan_Click(object? sender, RoutedEventArgs? e)

@@ -19,6 +19,13 @@ public partial class ActivationDialog : Window
 
     private async void Activate_Click(object sender, RoutedEventArgs e)
     {
+        var key = txtLicenseKey.Text.Trim();
+        if (string.IsNullOrWhiteSpace(key))
+        {
+            txtStatus.Text = "⚠️ Please enter a license key";
+            return;
+        }
+
         _attemptCount++;
         if (_attemptCount > MaxAttempts)
         {
@@ -26,6 +33,9 @@ public partial class ActivationDialog : Window
             btnActivate.IsEnabled = false;
             return;
         }
+
+        btnActivate.IsEnabled = false;
+
         var elapsed = DateTime.Now - _lastAttempt;
         if (elapsed.TotalSeconds < 2)
         {
@@ -34,14 +44,6 @@ public partial class ActivationDialog : Window
         }
         _lastAttempt = DateTime.Now;
 
-        var key = txtLicenseKey.Text.Trim();
-        if (string.IsNullOrWhiteSpace(key))
-        {
-            txtStatus.Text = "⚠️ Please enter a license key";
-            return;
-        }
-
-        btnActivate.IsEnabled = false;
         txtStatus.Text = "🔍 Validating license...";
         StatusBox.Background = new SolidColorBrush(Color.FromArgb(0x1A, 0x00, 0x78, 0xD4));
 
@@ -61,12 +63,12 @@ public partial class ActivationDialog : Window
 
         AppLicense.SetFull(App.License.Username, App.License.Subscription, App.License.ExpiryUtc);
         LicenseStorage.Save(key);
+        if (!IsVisible) return;
         txtStatus.Text = $"✅ Activated! Welcome, {App.License.Username ?? "User"}!";
         StatusBox.Background = new SolidColorBrush(Color.FromArgb(0x1A, 0x4C, 0xAF, 0x50));
         IsActivated = true;
         await Task.Delay(800);
-        DialogResult = true;
-        Close();
+        if (IsVisible) { DialogResult = true; Close(); }
     }
 
     private void Demo_Click(object sender, RoutedEventArgs e)

@@ -41,8 +41,8 @@
             <StackPanel x:Name="CleanupPanel" Margin="0,0,0,24"/>
 
             <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Margin="0,8,0,24">
-                <ui:Button Content="✅ Apply All Recommended" Appearance="Primary" Width="200" Height="38" Margin="0,0,12,0" Click="ApplyRecommended_Click"/>
-                <ui:Button Content="↩️ Revert All" Appearance="Secondary" Width="140" Height="38" Click="RevertAll_Click"/>
+                <ui:Button x:Name="btnApplyRecommended" Content="✅ Apply All Recommended" Appearance="Primary" Width="200" Height="38" Margin="0,0,12,0" Click="ApplyRecommended_Click"/>
+                <ui:Button x:Name="btnRevertAll" Content="↩️ Revert All" Appearance="Secondary" Width="140" Height="38" Click="RevertAll_Click"/>
             </StackPanel>
 
             <TextBlock x:Name="txtStatus" Text="Ready" Foreground="#FF888888" HorizontalAlignment="Center" FontSize="13" Margin="0,0,0,16"/>

@@ -33,6 +33,8 @@ public partial class CleanPage
     {
         InitializeComponent();
         if (!AppLicense.IsFullAccess) { btnAnalyze.IsEnabled = false; btnClean.IsEnabled = false; }
+        IsVisibleChanged += (_, _) => { if (IsVisible) btnAnalyze.IsEnabled = btnClean.IsEnabled = AppLicense.IsFullAccess; };
+        if (!AppLicense.IsFullAccess) txtStatus.Text = "🔒 Demo — license key required";
         _historyService = historyService;
         CardsContainer.ItemsSource = _categories;
     }

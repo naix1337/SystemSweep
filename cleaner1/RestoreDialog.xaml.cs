@@ -28,6 +28,7 @@ public partial class RestoreDialog : Window
             txtStatus.Foreground = System.Windows.Media.Brushes.LimeGreen;
             StatusBox.Background = new System.Windows.Media.SolidColorBrush(System.Windows.Media.Color.FromArgb(0x1A, 0x4C, 0xAF, 0x50));
             await Task.Delay(1000);
+            if (!IsVisible) return;
             RestorePointCreated = true;
             DialogResult = true;
             Close();

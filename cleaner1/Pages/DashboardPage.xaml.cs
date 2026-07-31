@@ -14,6 +14,7 @@ public partial class DashboardPage
     public DashboardPage()
     {
         InitializeComponent();
+        btnQuickClean.IsEnabled = btnEmptyRecycle.IsEnabled = AppLicense.IsFullAccess;
         _monitor = new SystemMonitorService();
         _monitor.StatsUpdated += OnStatsUpdated;
     }

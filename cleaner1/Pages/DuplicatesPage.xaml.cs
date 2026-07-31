@@ -19,6 +19,7 @@ public partial class DuplicatesPage
         resultsList.ItemsSource = _duplicates;
         cmbPath.SelectedIndex = 0;
         btnDelete.IsEnabled = AppLicense.IsFullAccess;
+        IsVisibleChanged += (_, _) => { if (IsVisible) btnDelete.IsEnabled = AppLicense.IsFullAccess && _duplicates.Count > 0; };
     }
 
     private void cmbPath_SelectionChanged(object? sender, System.Windows.Controls.SelectionChangedEventArgs e)
@@ -141,9 +142,10 @@ public partial class DuplicatesPage
         {
             try
             {
+                long size = new FileInfo(file).Length;
                 System.IO.File.Delete(file);
                 deleted++;
-                freed += new FileInfo(file).Length;
+                freed += size;
                 txtStatus.Text = $"Deleted {deleted}/{filesToDelete.Count}...";
             }
             catch

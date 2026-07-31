@@ -85,8 +85,8 @@
                 <StackPanel>
                     <TextBlock Text="Quick Actions" FontSize="14" Foreground="#FF888888" Margin="0,0,0,12"/>
                     <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
-                        <ui:Button Content="Quick Clean" Appearance="Primary" Width="140" Height="38" Margin="0,0,10,0" Click="QuickClean_Click"/>
-                        <ui:Button Content="Empty Recycle Bin" Appearance="Caution" Width="160" Height="38" Margin="0,0,10,0" Click="EmptyRecycle_Click"/>
+                        <ui:Button x:Name="btnQuickClean" Content="Quick Clean" Appearance="Primary" Width="140" Height="38" Margin="0,0,10,0" Click="QuickClean_Click"/>
+                        <ui:Button x:Name="btnEmptyRecycle" Content="Empty Recycle Bin" Appearance="Caution" Width="160" Height="38" Margin="0,0,10,0" Click="EmptyRecycle_Click"/>
                         <ui:Button Content="Refresh" Appearance="Secondary" Width="120" Height="38" Click="Refresh_Click"/>
                     </StackPanel>
                 </StackPanel>
