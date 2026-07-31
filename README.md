@@ -10,7 +10,7 @@
 
 <br/>
 
-<h1 align="center">🧹 System Sweep</h1>
+<h1 align="center">System Sweep</h1>
 <p align="center">
   <b>The Ultimate Windows Optimization Toolkit</b><br/>
   Clean · Tweak · Monitor · Supercharge
@@ -33,45 +33,45 @@
 
 ---
 
-## 📋 Inhaltsverzeichnis
+## Inhaltsverzeichnis
 
-- [Features](#-features)
-- [Installation](#-installation)
-- [Nutzung](#-nutzung)
-- [Architektur](#️-architektur)
-- [Tech Stack](#️-tech-stack)
-- [Contributing](#-contributing)
-- [License](#-license)
+- [Features](#features)
+- [Installation](#installation)
+- [Nutzung](#nutzung)
+- [Architektur](#architektur)
+- [Tech Stack](#tech-stack)
+- [Contributing](#contributing)
+- [License](#license)
 
 ---
 
-## ✨ Features
+## Features
 
-### 📊 Dashboard
+### Dashboard
 | Feature | Beschreibung |
 |---------|-------------|
 | Live System Monitor | Echtzeit CPU-, RAM-, Disk- und Uptime-Tracking |
 | Health Score | Gewichteter Algorithmus (Disk 40% + RAM 30% + CPU 30%) |
 | Quick Actions | One-Click Quick Clean, Papierkorb leeren, Refresh |
 
-### 🧹 System Cleaner
+### System Cleaner
 | Kategorie | Sicherheit | Beschreibung |
 |----------|--------|-------------|
-| 🗑️ Temporäre Dateien | ✅ Sicher | Windows- & User-Temp-Dateien |
-| ♻️ Papierkorb | ✅ Sicher | Gelöschte Dateien im Papierkorb |
-| 📥 Download-Cache | ✅ Sicher | Inhalte des Downloads-Ordners |
-| 🖼️ Thumbnail-Cache | ✅ Sicher | Explorer-Thumbnail-Cache |
-| ⚠️ Fehlerberichte | ⚠️ Vorsicht | WER-Reportdateien |
-| 📦 Installer-Temp | ⚠️ Vorsicht | MSI-Installer-Reste |
-| 🏪 Store-Cache | ✅ Sicher | Microsoft Store Cache |
-| 📋 Windows-Logs | ⚠️ Vorsicht | Systemlogdateien |
-| 🪟 Windows.old | 🔴 Gefährlich | Vorherige Windows-Installation |
-| 💾 Memory Dumps | 🔴 Gefährlich | Crash-Dump-Dateien |
+| Temporäre Dateien | ✅ Sicher | Windows- & User-Temp-Dateien |
+| Papierkorb | ✅ Sicher | Gelöschte Dateien im Papierkorb |
+| Download-Cache | ✅ Sicher | Inhalte des Downloads-Ordners |
+| Thumbnail-Cache | ✅ Sicher | Explorer-Thumbnail-Cache |
+| Fehlerberichte | ⚠️ Vorsicht | WER-Reportdateien |
+| Installer-Temp | ⚠️ Vorsicht | MSI-Installer-Reste |
+| Store-Cache | ✅ Sicher | Microsoft Store Cache |
+| Windows-Logs | ⚠️ Vorsicht | Systemlogdateien |
+| Windows.old | 🔴 Gefährlich | Vorherige Windows-Installation |
+| Memory Dumps | 🔴 Gefährlich | Crash-Dump-Dateien |
 
-### ⚡ Performance Tweaks (30+)
+### Performance Tweaks (30+)
 
 <details>
-<summary>🎮 Gaming & FPS (9 Tweaks)</summary>
+<summary>Gaming & FPS (9 Tweaks)</summary>
 
 | Tweak | Wirkung | Empfohlen |
 |-------|--------|:-----------:|
@@ -87,7 +87,7 @@
 </details>
 
 <details>
-<summary>⚡ System Boost (12 Tweaks)</summary>
+<summary>System Boost (12 Tweaks)</summary>
 
 | Tweak | Wirkung | Empfohlen |
 |-------|--------|:-----------:|
@@ -106,7 +106,7 @@
 </details>
 
 <details>
-<summary>💾 Disk & Memory (7 Tweaks)</summary>
+<summary>Disk & Memory (7 Tweaks)</summary>
 
 | Tweak | Wirkung | Empfohlen |
 |-------|--------|:-----------:|
@@ -120,7 +120,7 @@
 </details>
 
 <details>
-<summary>🌐 Netzwerk (8 Tweaks)</summary>
+<summary>Netzwerk (8 Tweaks)</summary>
 
 | Tweak | Wirkung | Empfohlen |
 |-------|--------|:-----------:|
@@ -135,7 +135,7 @@
 </details>
 
 <details>
-<summary>🧹 Cleanup (4 Tweaks)</summary>
+<summary>Cleanup (4 Tweaks)</summary>
 
 | Tweak | Wirkung | Empfohlen |
 |-------|--------|:-----------:|
@@ -145,15 +145,15 @@
 | Recent-Files-Liste löschen | Privacy | |
 </details>
 
-### 🧩 Zusätzliche Tools
+### Zusätzliche Tools
 | Tool | Beschreibung |
 |------|-------------|
-| 🌐 Browser Cache Cleaner | Chrome, Edge, Firefox, Brave Cache |
-| 🗂️ Duplicate File Finder | SHA256-basierte Duplikaterkennung |
-| 🚀 Startup Manager | Registry + Ordner-Autostart-Kontrolle |
-| 📄 Cleaning Reports | Export der Historie als HTML |
+| Browser Cache Cleaner | Chrome, Edge, Firefox, Brave Cache |
+| Duplicate File Finder | SHA256-basierte Duplikaterkennung |
+| Startup Manager | Registry + Ordner-Autostart-Kontrolle |
+| Cleaning Reports | Export der Historie als HTML |
 
-### 🖥️ UI & Experience
+### UI & Experience
 - **Fluent Design** mit Mica-Backdrop
 - **Dark / Light** Theme-Umschaltung
 - **Flüssige Seitenübergänge** und Hover-Effekte
@@ -162,7 +162,7 @@
 
 ---
 
-## 🚀 Installation
+## Installation
 
 ### Option 1: Release herunterladen (empfohlen)
 ```bash
@@ -190,21 +190,21 @@ dotnet run --project cleaner1/cleaner1.csproj
 
 ---
 
-## 🎮 Nutzung
+## Nutzung
 
 ```
 ┌──────────────────────────────────────────────────────────┐
-│ 🧹 System Sweep                                         │
+│ System Sweep                                              │
 │                                                          │
-│ 📊 Dashboard    → Live System Health + Quick Actions     │
-│ 🧹 Clean        → Kategorie-Karten + Presets             │
-│ 🌐 Browser Cache→ Chrome/Edge/Firefox/Brave              │
-│ 🗂️ Duplicates   → Duplikate finden & entfernen           │
-│ 🚀 Startup      → Autostart-Programme verwalten          │
-│ ⚡ Tweaks        → 30+ Performance-Optimierungen         │
-│ 📈 Statistics   → Historie + HTML-Reports                │
-│ ⚙️ Settings      → App-Konfiguration                     │
-│ ℹ️ About        → Version, Updates, Lizenz               │
+│ Dashboard    → Live System Health + Quick Actions     │
+│ Clean        → Kategorie-Karten + Presets             │
+│ Browser Cache→ Chrome/Edge/Firefox/Brave                 │
+│ Duplicates   → Duplikate finden & entfernen              │
+│ Startup      → Autostart-Programme verwalten             │
+│ Tweaks       → 30+ Performance-Optimierungen             │
+│ Statistics   → Historie + HTML-Reports                   │
+│ Settings     → App-Konfiguration                         │
+│ About        → Version, Updates, Lizenz                  │
 └──────────────────────────────────────────────────────────┘
 ```
 
@@ -216,7 +216,7 @@ SystemSweep.exe --analyze          # Nur Analyse
 
 ---
 
-## 🏗️ Architektur
+## Architektur
 
 ```
 cleaner1/
@@ -248,7 +248,7 @@ cleaner1/
 
 ---
 
-## 🛠️ Tech Stack
+## Tech Stack
 
 | Technologie | Zweck |
 |------------|---------|
@@ -260,25 +260,25 @@ cleaner1/
 
 ---
 
-## 🤝 Contributing
+## Contributing
 
 Contributions willkommen! Öffne ein Issue oder PR für:
 
-- 🐛 Bugfixes
-- ✨ Neue Features
-- ⚡ Zusätzliche Tweaks
-- 🌐 Mehr Browser-Support
+- Bugfixes
+- Neue Features
+- Zusätzliche Tweaks
+- Mehr Browser-Support
 
 ---
 
-## 📄 License
+## License
 
 MIT License — siehe [LICENSE](LICENSE) für Details.
 
 ---
 
 <div align="center">
-  <p>Made with ❤️ by <a href="https://github.com/naix1337">naix</a></p>
+  <p>Made by <a href="https://github.com/naix1337">naix</a></p>
   <p>
     <a href="https://github.com/naix1337/SystemSweep/issues">Report Bug</a> ·
     <a href="https://github.com/naix1337/SystemSweep/discussions">Feature Request</a> ·
