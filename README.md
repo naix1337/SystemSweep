@@ -1,156 +1,178 @@
 <div align="center">
-  <img src="https://img.shields.io/badge/version-2.0.0-blue?style=for-the-badge" alt="Version"/>
+  <img src="https://img.shields.io/github/v/release/naix1337/SystemSweep?style=for-the-badge&color=blue" alt="Version"/>
   <img src="https://img.shields.io/badge/Windows-10%20|%2011-00adef?style=for-the-badge&logo=windows" alt="Windows"/>
   <img src="https://img.shields.io/badge/.NET-8.0-512BD4?style=for-the-badge&logo=dotnet" alt=".NET"/>
-  <img src="https://img.shields.io/badge/license-MIT-green?style=for-the-badge" alt="License"/>
+  <img src="https://github.com/naix1337/SystemSweep/actions/workflows/ci.yml/badge.svg?style=for-the-badge" alt="CI"/>
   <br/>
-  <img src="https://img.shields.io/github/downloads/naix1337/SystemSweep/v2.0.0/total?style=social" alt="Downloads"/>
+  <img src="https://img.shields.io/github/downloads/naix1337/SystemSweep/total?style=social" alt="Downloads"/>
   <img src="https://img.shields.io/github/stars/naix1337/SystemSweep?style=social" alt="Stars"/>
 </div>
 
 <br/>
 
-<h1 align="center">🧹 System Sweep Professional</h1>
+<h1 align="center">🧹 System Sweep</h1>
 <p align="center">
   <b>The Ultimate Windows Optimization Toolkit</b><br/>
   Clean · Tweak · Monitor · Supercharge
 </p>
 
 <p align="center">
-  <i>System Sweep is a professional Windows system cleaning and optimization tool.<br/>
-  It cleans temporary files, manages startup programs, finds duplicates, applies 30+ performance tweaks for gaming, and monitors system health — all in a modern Fluent Design interface.</i>
+  System Sweep is a Windows system cleaning and optimization tool built with WPF and Fluent Design.<br/>
+  It cleans temporary files, manages startup programs, finds duplicates, applies 30+ performance tweaks for gaming, and monitors system health in real time.
 </p>
+
+<div align="center">
+
+<!-- SCREENSHOT: Dashboard mit Live-CPU/RAM/Disk-Monitor hier einfügen -->
+<img src="docs/screenshot-dashboard.png" alt="Dashboard Screenshot" width="800"/>
+
+<!-- Optional: GIF, das Clean-Workflow zeigt -->
+<img src="docs/demo.gif" alt="Demo" width="800"/>
+
+</div>
+
+---
+
+## 📋 Inhaltsverzeichnis
+
+- [Features](#-features)
+- [Installation](#-installation)
+- [Nutzung](#-nutzung)
+- [Architektur](#️-architektur)
+- [Tech Stack](#️-tech-stack)
+- [Contributing](#-contributing)
+- [License](#-license)
 
 ---
 
 ## ✨ Features
 
 ### 📊 Dashboard
-| Feature | Description |
+| Feature | Beschreibung |
 |---------|-------------|
-| Live System Monitor | Real-time CPU, RAM, Disk, and Uptime tracking |
-| Health Score | Weighted algorithm (Disk 40% + RAM 30% + CPU 30%) |
-| Quick Actions | One-click Quick Clean, Empty Recycle Bin, Refresh |
+| Live System Monitor | Echtzeit CPU-, RAM-, Disk- und Uptime-Tracking |
+| Health Score | Gewichteter Algorithmus (Disk 40% + RAM 30% + CPU 30%) |
+| Quick Actions | One-Click Quick Clean, Papierkorb leeren, Refresh |
 
 ### 🧹 System Cleaner
-| Category | Safety | Description |
+| Kategorie | Sicherheit | Beschreibung |
 |----------|--------|-------------|
-| 🗑️ Temporary Files | ✅ Safe | Windows & user temp files |
-| ♻️ Recycle Bin | ✅ Safe | Deleted files in Recycle Bin |
-| 📥 Download Cache | ✅ Safe | Downloads folder contents |
-| 🖼️ Thumbnail Cache | ✅ Safe | Explorer thumbnail cache |
-| ⚠️ Error Reports | ⚠️ Caution | WER report files |
-| 📦 Installer Temp | ⚠️ Caution | MSI installer leftovers |
-| 🏪 Store Cache | ✅ Safe | Microsoft Store cache |
-| 📋 Windows Logs | ⚠️ Caution | System log files |
-| 🪟 Windows.old | 🔴 Dangerous | Previous Windows installation |
-| 💾 Memory Dumps | 🔴 Dangerous | Crash dump files |
+| 🗑️ Temporäre Dateien | ✅ Sicher | Windows- & User-Temp-Dateien |
+| ♻️ Papierkorb | ✅ Sicher | Gelöschte Dateien im Papierkorb |
+| 📥 Download-Cache | ✅ Sicher | Inhalte des Downloads-Ordners |
+| 🖼️ Thumbnail-Cache | ✅ Sicher | Explorer-Thumbnail-Cache |
+| ⚠️ Fehlerberichte | ⚠️ Vorsicht | WER-Reportdateien |
+| 📦 Installer-Temp | ⚠️ Vorsicht | MSI-Installer-Reste |
+| 🏪 Store-Cache | ✅ Sicher | Microsoft Store Cache |
+| 📋 Windows-Logs | ⚠️ Vorsicht | Systemlogdateien |
+| 🪟 Windows.old | 🔴 Gefährlich | Vorherige Windows-Installation |
+| 💾 Memory Dumps | 🔴 Gefährlich | Crash-Dump-Dateien |
 
 ### ⚡ Performance Tweaks (30+)
 
 <details>
-<summary>🎮 Gaming & FPS (9 tweaks)</summary>
+<summary>🎮 Gaming & FPS (9 Tweaks)</summary>
 
-| Tweak | Impact | Recommended |
+| Tweak | Wirkung | Empfohlen |
 |-------|--------|:-----------:|
-| Hardware-Accelerated GPU Scheduling | Reduces input lag, improves FPS | ✅ |
-| Enable Game Mode | Prioritizes game processes | ✅ |
-| Disable Xbox Game Bar & DVR | Recovers 5-15% FPS | ✅ |
-| Disable HPET Timer | Reduces input lag | |
-| Disable CPU Core Parking | Keeps all cores active for max perf | ✅ |
-| Disable Mouse Acceleration | Raw aiming for FPS games | |
-| Disable USB Selective Suspend | Prevents controller disconnects | |
-| GPU Maximum Performance Mode | Forces max GPU clock | ✅ |
-| Enable Gaming Focus Assist | Auto-disable notifications | ✅ |
+| Hardware-Accelerated GPU Scheduling | Weniger Input-Lag, mehr FPS | ✅ |
+| Game Mode aktivieren | Priorisiert Game-Prozesse | ✅ |
+| Xbox Game Bar & DVR deaktivieren | 5-15% mehr FPS | ✅ |
+| HPET-Timer deaktivieren | Weniger Input-Lag | |
+| CPU Core Parking deaktivieren | Alle Kerne aktiv für max. Performance | ✅ |
+| Mausbeschleunigung deaktivieren | Raw Aiming für FPS-Spiele | |
+| USB Selective Suspend deaktivieren | Verhindert Controller-Disconnects | |
+| GPU Maximum Performance Mode | Erzwingt max. GPU-Takt | ✅ |
+| Gaming Focus Assist aktivieren | Auto-Deaktivierung von Benachrichtigungen | ✅ |
 </details>
 
 <details>
-<summary>⚡ System Boost (12 tweaks)</summary>
+<summary>⚡ System Boost (12 Tweaks)</summary>
 
-| Tweak | Impact | Recommended |
+| Tweak | Wirkung | Empfohlen |
 |-------|--------|:-----------:|
-| High Performance Power Plan | Max CPU speed always | ✅ |
-| Disable All Visual Effects | Snappiest UI possible | ✅ |
-| Disable SysMain (Superfetch) | Less disk/CPU on SSD | ✅ |
-| Disable Windows Search Indexing | Less disk usage | |
-| Disable Background Apps | Frees RAM & CPU | ✅ |
-| Disable Startup Delay | Faster boot | ✅ |
-| Disable Notification Tray | Cleaner systray | |
-| Disable Windows Error Reporting | Less background CPU | |
-| Disable Transparency Effects | Frees GPU resources | ✅ |
-| Disable Auto Disk Defrag | Not needed on SSDs | ✅ |
-| Disable Tips & Suggestions | No ads in Windows | |
-| Disable Cortana | Frees 200-500MB RAM | |
+| High Performance Power Plan | Max. CPU-Speed dauerhaft | ✅ |
+| Visuelle Effekte deaktivieren | Schnellste UI möglich | ✅ |
+| SysMain (Superfetch) deaktivieren | Weniger Disk/CPU auf SSD | ✅ |
+| Windows Search Indexing deaktivieren | Weniger Disk-Nutzung | |
+| Hintergrund-Apps deaktivieren | Gibt RAM & CPU frei | ✅ |
+| Startup-Delay deaktivieren | Schnellerer Boot | ✅ |
+| Notification Tray deaktivieren | Aufgeräumter Systray | |
+| Windows Error Reporting deaktivieren | Weniger Hintergrund-CPU | |
+| Transparenz-Effekte deaktivieren | Gibt GPU-Ressourcen frei | ✅ |
+| Auto Disk Defrag deaktivieren | Nicht nötig auf SSDs | ✅ |
+| Tips & Suggestions deaktivieren | Keine Werbung in Windows | |
+| Cortana deaktivieren | Gibt 200-500MB RAM frei | |
 </details>
 
 <details>
-<summary>💾 Disk & Memory (7 tweaks)</summary>
+<summary>💾 Disk & Memory (7 Tweaks)</summary>
 
-| Tweak | Impact | Recommended |
+| Tweak | Wirkung | Empfohlen |
 |-------|--------|:-----------:|
-| Disable Hibernation | Frees RAM-sized disk space | ✅ |
-| Disable NTFS Last Access Time | Less disk writes | ✅ |
-| Disable 8.3 Filename Creation | Faster NTFS | |
-| Disable Large System Cache | Frees RAM | |
-| Disable Memory Compression | Less CPU overhead (16GB+ RAM) | |
-| Clear Page File on Shutdown | Security/privacy | |
-| Disable Thumbnail Cache | Saves disk space | |
+| Ruhezustand deaktivieren | Gibt RAM-großen Speicherplatz frei | ✅ |
+| NTFS Last Access Time deaktivieren | Weniger Disk-Writes | ✅ |
+| 8.3 Filename Creation deaktivieren | Schnelleres NTFS | |
+| Large System Cache deaktivieren | Gibt RAM frei | |
+| Memory Compression deaktivieren | Weniger CPU-Overhead (16GB+ RAM) | |
+| Page File beim Shutdown leeren | Security/Privacy | |
+| Thumbnail-Cache deaktivieren | Spart Speicherplatz | |
 </details>
 
 <details>
-<summary>🌐 Network (8 tweaks)</summary>
+<summary>🌐 Netzwerk (8 Tweaks)</summary>
 
-| Tweak | Impact | Recommended |
+| Tweak | Wirkung | Empfohlen |
 |-------|--------|:-----------:|
-| Flush DNS Cache | Fixes stale DNS | |
-| Disable Nagle's Algorithm | Less network lag | ✅ |
-| Enable TCP Auto-Tuning | Faster downloads | ✅ |
-| Disable QoS Bandwidth Limit | Full network speed | ✅ |
-| Disable IPv6 | Less overhead (IPv4-only) | |
-| Enable RSS (multi-core networking) | Better throughput | |
-| Disable TCP Chimney Offload | Fixes game stutters | |
-| Set Optimal MTU (1492) | Less fragmentation | |
+| DNS-Cache leeren | Behebt veraltete DNS-Einträge | |
+| Nagle's Algorithm deaktivieren | Weniger Netzwerk-Lag | ✅ |
+| TCP Auto-Tuning aktivieren | Schnellere Downloads | ✅ |
+| QoS-Bandbreitenlimit deaktivieren | Volle Netzwerkgeschwindigkeit | ✅ |
+| IPv6 deaktivieren | Weniger Overhead (IPv4-only) | |
+| RSS (Multi-Core-Networking) aktivieren | Besserer Durchsatz | |
+| TCP Chimney Offload deaktivieren | Behebt Game-Stutters | |
+| Optimales MTU (1492) setzen | Weniger Fragmentierung | |
 </details>
 
 <details>
-<summary>🧹 Cleanup (4 tweaks)</summary>
+<summary>🧹 Cleanup (4 Tweaks)</summary>
 
-| Tweak | Impact | Recommended |
+| Tweak | Wirkung | Empfohlen |
 |-------|--------|:-----------:|
-| Clear Prefetch Files | Removes old traces | |
-| Clear Windows Update Cache | Frees 2-10GB | ✅ |
-| Clear Font Cache | Fixes font issues | |
-| Clear Recent Files List | Privacy | |
+| Prefetch-Dateien löschen | Entfernt alte Spuren | |
+| Windows-Update-Cache leeren | Gibt 2-10GB frei | ✅ |
+| Font-Cache leeren | Behebt Font-Probleme | |
+| Recent-Files-Liste löschen | Privacy | |
 </details>
 
-### 🧩 Additional Tools
-| Tool | Description |
+### 🧩 Zusätzliche Tools
+| Tool | Beschreibung |
 |------|-------------|
-| 🌐 Browser Cache Cleaner | Chrome, Edge, Firefox, Brave cache |
-| 🗂️ Duplicate File Finder | SHA256-based duplicate detection |
-| 🚀 Startup Manager | Registry + Folder autostart control |
-| 📄 Cleaning Reports | Export history as HTML |
+| 🌐 Browser Cache Cleaner | Chrome, Edge, Firefox, Brave Cache |
+| 🗂️ Duplicate File Finder | SHA256-basierte Duplikaterkennung |
+| 🚀 Startup Manager | Registry + Ordner-Autostart-Kontrolle |
+| 📄 Cleaning Reports | Export der Historie als HTML |
 
 ### 🖥️ UI & Experience
-- **Fluent Design** with Mica backdrop
-- **Dark / Light** theme toggle
-- **Smooth page transitions** and hover effects
-- **Real-time Dashboard** with system health monitoring
-- **Cleaning history** with statistics
+- **Fluent Design** mit Mica-Backdrop
+- **Dark / Light** Theme-Umschaltung
+- **Flüssige Seitenübergänge** und Hover-Effekte
+- **Echtzeit-Dashboard** mit System-Health-Monitoring
+- **Cleaning-Historie** mit Statistiken
 
 ---
 
 ## 🚀 Installation
 
-### Option 1: Download Release (Recommended)
+### Option 1: Release herunterladen (empfohlen)
 ```bash
-# 1. Download from GitHub Releases
+# 1. Von GitHub Releases herunterladen
 https://github.com/naix1337/SystemSweep/releases
 
-# 2. Run SystemSweep.exe (as Administrator)
+# 2. SystemSweep.exe ausführen (als Administrator)
 ```
 
-### Option 2: Build from Source
+### Option 2: Aus Quellcode bauen
 ```bash
 git clone https://github.com/naix1337/SystemSweep.git
 cd SystemSweep
@@ -158,125 +180,100 @@ dotnet build cleaner1/cleaner1.csproj
 dotnet run --project cleaner1/cleaner1.csproj
 ```
 
-### Option 3: Publish Single-File
+### Option 3: Single-File Publish
 ```powershell
 .\publish.ps1
 # Output: ./publish/SystemSweep.exe (7 MB)
 ```
 
-> ⚠️ **Run as Administrator** for full functionality (Windows.old, Memory Dumps, Performance Tweaks)
+> ⚠️ **Als Administrator ausführen** für volle Funktionalität (Windows.old, Memory Dumps, Performance Tweaks)
 
 ---
 
-## 🎮 Usage
+## 🎮 Nutzung
 
 ```
 ┌──────────────────────────────────────────────────────────┐
 │ 🧹 System Sweep                                         │
 │                                                          │
-│ 📊 Dashboard    → Live system health + quick actions     │
-│ 🧹 Clean        → Category cards + presets              │
-│ 🌐 Browser Cache→ Chrome/Edge/Firefox/Brave             │
-│ 🗂️ Duplicates   → Find and remove duplicate files       │
-│ 🚀 Startup      → Manage autostart programs             │
-│ ⚡ Tweaks        → 30+ performance optimizations        │
-│ 📈 Statistics   → History + HTML reports                │
-│ ⚙️ Settings      → App configuration                    │
-│ ℹ️ About        → Version, license, updates             │
-│ 🔐 License      → Activation & trial status             │
+│ 📊 Dashboard    → Live System Health + Quick Actions     │
+│ 🧹 Clean        → Kategorie-Karten + Presets             │
+│ 🌐 Browser Cache→ Chrome/Edge/Firefox/Brave              │
+│ 🗂️ Duplicates   → Duplikate finden & entfernen           │
+│ 🚀 Startup      → Autostart-Programme verwalten          │
+│ ⚡ Tweaks        → 30+ Performance-Optimierungen         │
+│ 📈 Statistics   → Historie + HTML-Reports                │
+│ ⚙️ Settings      → App-Konfiguration                     │
+│ ℹ️ About        → Version, Updates, Lizenz               │
 └──────────────────────────────────────────────────────────┘
 ```
 
 ### Command Line
 ```bash
-SystemSweep.exe --silent --clean   # Clean without UI
-SystemSweep.exe --analyze           # Analysis only
+SystemSweep.exe --silent --clean   # Bereinigung ohne UI
+SystemSweep.exe --analyze          # Nur Analyse
 ```
 
 ---
 
-## 🔑 License System
-
-System Sweep uses RSA 2048-bit signed license keys:
-
-```
-Format:  Base64( RSA_Signature | MachineFP | User | Expiry )
-```
-
-### Generate License Keys
-```bash
-cd tools/KeyGenerator
-dotnet run -- gen-keys                    # Generate key pair
-dotnet run -- create <FP> <User> <Date>   # Single license
-dotnet run -- batch licenses.csv           # Bulk generation
-```
-
----
-
-## 🏗️ Architecture
+## 🏗️ Architektur
 
 ```
 cleaner1/
-├── Pages/              # UI pages (8 pages)
-│   ├── DashboardPage   # System health monitor
-│   ├── CleanPage       # File cleaning
-│   ├── TweaksPage      # Performance tweaks
+├── Pages/              # UI-Seiten (8 Seiten)
+│   ├── DashboardPage   # System-Health-Monitor
+│   ├── CleanPage       # Dateibereinigung
+│   ├── TweaksPage      # Performance-Tweaks
 │   ├── BrowserCachePage
 │   ├── DuplicatesPage
 │   ├── StartupPage
 │   ├── SettingsPage
-│   └── AboutPage       # Version, updates, license
-├── Services/           # Business logic
-│   ├── CleaningService # File cleaning operations
+│   └── AboutPage       # Version, Updates
+├── Services/            # Business-Logik
+│   ├── CleaningService
 │   ├── CalculationService
-│   ├── HistoryService  # Cleaning history persistence
+│   ├── HistoryService
 │   ├── SystemMonitorService
-│   ├── TweaksService   # 30+ registry/power tweaks
+│   ├── TweaksService
 │   ├── BrowserCacheService
 │   ├── DuplicateFinderService
 │   ├── StartupService
-│   ├── ReportService   # HTML export
-│   ├── ThemeService    # Dark/Light switching
-│   ├── UpdateService   # Auto-update check
-│   └── LicenseService  # RSA-based activation
-├── Models/             # Data models
-├── Controls/           # Reusable UI controls
-└── Styles/             # Custom styles & themes
-
-tools/
-└── KeyGenerator/       # License key generation tool
+│   ├── ReportService
+│   ├── ThemeService
+│   └── UpdateService
+├── Models/              # Datenmodelle
+├── Controls/            # Wiederverwendbare UI-Controls
+└── Styles/              # Custom Styles & Themes
 ```
 
 ---
 
 ## 🛠️ Tech Stack
 
-| Technology | Purpose |
+| Technologie | Zweck |
 |------------|---------|
-| **.NET 8.0** | Runtime framework |
-| **WPF** | Desktop UI framework |
-| **WPF-UI 3.x** | Fluent Design controls |
-| **RSA 2048-bit** | License key signing |
-| **DPAPI** | Secure local storage |
-| **System.Management** | Hardware monitoring |
-| **PerformanceCounter** | CPU/RAM tracking |
+| **.NET 8.0** | Runtime-Framework |
+| **WPF** | Desktop-UI-Framework |
+| **WPF-UI 3.x** | Fluent Design Controls |
+| **System.Management** | Hardware-Monitoring |
+| **PerformanceCounter** | CPU/RAM-Tracking |
 
 ---
 
 ## 🤝 Contributing
 
-Contributions welcome! Open an issue or PR for:
+Contributions willkommen! Öffne ein Issue oder PR für:
 
-- 🐛 Bug fixes
-- ✨ New features
-- ⚡ Additional tweaks
-- 🌐 More browser support
+- 🐛 Bugfixes
+- ✨ Neue Features
+- ⚡ Zusätzliche Tweaks
+- 🌐 Mehr Browser-Support
 
 ---
 
 ## 📄 License
 
-MIT License — see [LICENSE](LICENSE) for details.
+MIT License — siehe [LICENSE](LICENSE) für Details.
 
 ---
 
