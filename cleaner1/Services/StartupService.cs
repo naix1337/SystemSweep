@@ -3,12 +3,20 @@ using Microsoft.Win32;
 
 namespace ModernFileCleaner.Services;
 
-public class StartupItem
+public class StartupItem : System.ComponentModel.INotifyPropertyChanged
 {
+    private bool _enabled;
     public string Name { get; set; } = "";
     public string Command { get; set; } = "";
-    public bool Enabled { get; set; }
     public string Source { get; set; } = "Registry";
+
+    public bool Enabled
+    {
+        get => _enabled;
+        set { if (_enabled != value) { _enabled = value; PropertyChanged?.Invoke(this, new System.ComponentModel.PropertyChangedEventArgs(nameof(Enabled))); } }
+    }
+
+    public event System.ComponentModel.PropertyChangedEventHandler? PropertyChanged;
 }
 
 public class StartupService
@@ -74,5 +82,27 @@ public class StartupService
                 File.Move(file, file + ".disabled");
         }
         item.Enabled = !item.Enabled;
+    }
+
+    /// <summary>Set a startup item to the given enabled state (idempotent).</summary>
+    public void SetEnabled(StartupItem item, bool enable)
+    {
+        if (item.Source == "Registry")
+        {
+            using var key = Registry.CurrentUser.OpenSubKey(@"Software\Microsoft\Windows\CurrentVersion\Run", true);
+            if (enable)
+                key?.SetValue(item.Name, item.Command);
+            else
+                key?.DeleteValue(item.Name, false);
+        }
+        else
+        {
+            var file = item.Command;
+            if (enable && file.EndsWith(".disabled"))
+                File.Move(file, file.Replace(".disabled", ""));
+            else if (!enable && !file.EndsWith(".disabled"))
+                File.Move(file, file + ".disabled");
+        }
+        item.Enabled = enable;
     }
 }

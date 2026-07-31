@@ -69,10 +69,11 @@
 
                             <!-- Toggle Switch -->
                             <ui:ToggleSwitch Grid.Row="0" Grid.Column="1" Grid.RowSpan="2"
-                                             IsChecked="{Binding Enabled, Mode=OneWay}"
+                                             IsChecked="{Binding Enabled, Mode=TwoWay}"
                                              VerticalAlignment="Center"
                                              Margin="12,0,0,0"
-                                             Click="ToggleSwitch_Click"/>
+                                             Checked="ToggleSwitch_Changed"
+                                             Unchecked="ToggleSwitch_Changed"/>
                         </Grid>
                     </Border>
                 </DataTemplate>
