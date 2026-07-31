@@ -34,4 +34,13 @@
     <PackageReference Include="WPF-UI" Version="3.*" />
   </ItemGroup>
 
+  <!-- Copy the local (gitignored) .env next to the exe so KeyAuth credentials
+       are found when the app is launched from its own directory (not only
+       from the project root). Skipped when no .env exists. -->
+  <Target Name="CopyEnvFileToOutput" AfterTargets="Build">
+    <Copy SourceFiles="$(MSBuildProjectDirectory)\..\.env"
+          DestinationFolder="$(OutDir)"
+          Condition="Exists('$(MSBuildProjectDirectory)\..\.env')" />
+  </Target>
+
 </Project>
