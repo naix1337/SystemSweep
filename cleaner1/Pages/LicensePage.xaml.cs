@@ -1,7 +1,3 @@
-using System.Diagnostics;
-using System.IO;
-using System.Security.Cryptography;
-using System.Text;
 using System.Windows;
 using ModernFileCleaner.Services;
 
@@ -9,8 +5,6 @@ namespace ModernFileCleaner.Pages;
 
 public partial class LicensePage
 {
-    private readonly LicenseService _localLicense = new();
-
     public LicensePage()
     {
         InitializeComponent();
@@ -19,35 +13,17 @@ public partial class LicensePage
 
     private void LoadLicenseInfo()
     {
-        // Show HWID always
-        txtHwid.Text = GetHwid();
+        txtHwid.Text = KeyAuthService.GetHwid();
 
-        string? savedKey = LoadSavedLicenseKey();
-        var status = _localLicense.Status;
-
-        if (!string.IsNullOrEmpty(savedKey) || status == LicenseService.LicenseStatus.Activated)
-        {
-            // Activated!
-            ShowActivated(savedKey);
-        }
-        else if (status == LicenseService.LicenseStatus.Trial)
-        {
-            // Trial mode
-            ShowTrial();
-        }
-        else if (status == LicenseService.LicenseStatus.Expired)
-        {
-            // Expired
-            ShowExpired();
-        }
+        if (AppLicense.IsFullAccess)
+            ShowActivated();
+        else if (AppLicense.Mode == LicenseMode.Demo)
+            ShowDemo();
         else
-        {
-            // No license - show activation form
             ShowNoLicense();
-        }
     }
 
-    private void ShowActivated(string? savedKey)
+    private void ShowActivated()
     {
         txtIcon.Text = "✅";
         txtTitle.Text = "License Active";
@@ -60,73 +36,51 @@ public partial class LicensePage
         txtLicenseStatus.Text = "✅ Fully Activated";
         txtLicenseStatus.Foreground = new System.Windows.Media.SolidColorBrush(
             System.Windows.Media.Color.FromRgb(76, 175, 80));
-        txtLicenseDetail.Text = "License is valid and hardware-bound";
+        txtLicenseDetail.Text = "License is valid via KeyAuth";
 
         txtLicStatus.Text = "✅ Active";
         txtLicStatus.Foreground = new System.Windows.Media.SolidColorBrush(
             System.Windows.Media.Color.FromRgb(76, 175, 80));
 
-        if (!string.IsNullOrEmpty(savedKey))
-            txtLicKey.Text = savedKey.Length > 24
-                ? savedKey[..8] + "..." + savedKey[^8..]
-                : savedKey;
-
-        txtLicUser.Text = "Licensed User";
-        txtLicExpiry.Text = "Never (Perpetual)";
+        var savedKey = LicenseStorage.Load() ?? "";
+        txtLicKey.Text = savedKey.Length > 24 ? savedKey[..8] + "..." + savedKey[^8..] : (savedKey.Length > 0 ? savedKey : "—");
+        txtLicUser.Text = AppLicense.Username ?? "Licensed User";
+        txtLicExpiry.Text = AppLicense.ExpiryUtc.HasValue
+            ? AppLicense.ExpiryUtc.Value.ToLocalTime().ToString("yyyy-MM-dd")
+            : "Perpetual";
         txtLicExpiry.Foreground = new System.Windows.Media.SolidColorBrush(
             System.Windows.Media.Color.FromRgb(76, 175, 80));
-        txtTrialDays.Text = "—";
+        txtSubscription.Text = AppLicense.Subscription ?? "Default";
 
-        // Hide activation form
         ActivationCard.Visibility = Visibility.Collapsed;
         btnContinue.Content = "⏭  Go to Dashboard";
     }
 
-    private void ShowTrial()
+    private void ShowDemo()
     {
-        txtIcon.Text = "🔓";
+        txtIcon.Text = "🔒";
+        txtTitle.Text = "Demo Mode";
+        txtSubtitle.Text = "Browse only — actions are disabled";
+
         StatusCard.Background = new System.Windows.Media.SolidColorBrush(
             System.Windows.Media.Color.FromArgb(0x1A, 0xFF, 0xAA, 0x00));
         StatusCard.BorderBrush = new System.Windows.Media.SolidColorBrush(
             System.Windows.Media.Color.FromArgb(0x33, 0xFF, 0xAA, 0x00));
-        txtLicenseStatus.Text = $"🔓 Trial Mode ({_localLicense.TrialDaysRemaining} days)";
+        txtLicenseStatus.Text = "🔒 Demo Mode";
         txtLicenseStatus.Foreground = new System.Windows.Media.SolidColorBrush(
             System.Windows.Media.Color.FromRgb(255, 193, 7));
-        txtLicenseDetail.Text = "Enter a license key to unlock all features permanently";
+        txtLicenseDetail.Text = "Enter a license key to unlock all features";
 
-        txtLicStatus.Text = "🔓 Trial";
+        txtLicStatus.Text = "🔒 Demo";
         txtLicStatus.Foreground = new System.Windows.Media.SolidColorBrush(
             System.Windows.Media.Color.FromRgb(255, 193, 7));
         txtLicKey.Text = "—";
         txtLicUser.Text = Environment.UserName;
-        txtLicExpiry.Text = $"In {_localLicense.TrialDaysRemaining} days";
-        txtLicExpiry.Foreground = new System.Windows.Media.SolidColorBrush(
-            System.Windows.Media.Color.FromRgb(255, 193, 7));
-        txtTrialDays.Text = $"{_localLicense.TrialDaysRemaining} days";
+        txtLicExpiry.Text = "—";
+        txtSubscription.Text = "—";
 
         ActivationCard.Visibility = Visibility.Visible;
-        btnContinue.Content = "⏭  Continue Trial";
-    }
-
-    private void ShowExpired()
-    {
-        txtIcon.Text = "❌";
-        StatusCard.Background = new System.Windows.Media.SolidColorBrush(
-            System.Windows.Media.Color.FromArgb(0x1A, 0xF4, 0x43, 0x36));
-        StatusCard.BorderBrush = new System.Windows.Media.SolidColorBrush(
-            System.Windows.Media.Color.FromArgb(0x33, 0xF4, 0x43, 0x36));
-        txtLicenseStatus.Text = "❌ Trial Expired";
-        txtLicenseStatus.Foreground = new System.Windows.Media.SolidColorBrush(
-            System.Windows.Media.Color.FromRgb(244, 67, 54));
-        txtLicenseDetail.Text = "Please purchase a license to continue";
-
-        txtLicStatus.Text = "❌ Expired";
-        txtLicStatus.Foreground = new System.Windows.Media.SolidColorBrush(
-            System.Windows.Media.Color.FromRgb(244, 67, 54));
-        txtTrialDays.Text = "0 days";
-
-        ActivationCard.Visibility = Visibility.Visible;
-        btnContinue.IsEnabled = false;
+        btnContinue.Content = "⏭  Continue in Demo";
     }
 
     private void ShowNoLicense()
@@ -143,13 +97,15 @@ public partial class LicensePage
         txtLicenseDetail.Text = "Enter a license key to unlock all features";
 
         txtLicStatus.Text = "⏳ Not Activated";
-        txtTrialDays.Text = "30 days";
+        txtLicUser.Text = Environment.UserName;
+        txtLicExpiry.Text = "—";
+        txtSubscription.Text = "—";
 
         ActivationCard.Visibility = Visibility.Visible;
-        btnContinue.Content = "⏭  Start Trial";
+        btnContinue.Content = "⏭  Start Demo";
     }
 
-    private async void ActivateKeyzy_Click(object sender, RoutedEventArgs e)
+    private async void ActivateKeyAuth_Click(object sender, RoutedEventArgs e)
     {
         var key = txtLicenseKey.Text.Trim();
         if (string.IsNullOrWhiteSpace(key))
@@ -161,81 +117,40 @@ public partial class LicensePage
         btnActivate.IsEnabled = false;
         txtLicenseStatus.Text = "🔍 Validating...";
 
-        var keyzy = new KeyzyLicenseService();
-        bool valid = await keyzy.ValidateKeyAsync(key);
-
-        if (valid)
+        var init = await App.License.InitAsync();
+        if (!init.Success)
         {
-            SaveLicenseLocally(key);
-            txtLicenseDetail.Text = "✅ License activated!";
+            txtLicenseDetail.Text = $"❌ {init.Message}";
+            btnActivate.IsEnabled = true;
+            return;
+        }
+
+        var login = await App.License.LoginWithKeyAsync(key);
+        if (login.Success)
+        {
+            AppLicense.SetFull(App.License.Username, App.License.Subscription, App.License.ExpiryUtc);
+            LicenseStorage.Save(key);
+            MessageBox.Show($"✅ License activated successfully!\n\nWelcome, {App.License.Username ?? "User"}!",
+                "Activation Successful", MessageBoxButton.OK, MessageBoxImage.Information);
             LoadLicenseInfo();
-            MessageBox.Show($"✅ License activated successfully!\n\nYour device has been bound to this license.\nHWID: {GetHwid()[..16]}...",
-                          "Activation Successful", MessageBoxButton.OK, MessageBoxImage.Information);
         }
         else
         {
-            txtLicenseDetail.Text = $"❌ {keyzy.ErrorMessage}";
+            txtLicenseDetail.Text = $"❌ {login.Message}";
             btnActivate.IsEnabled = true;
         }
-
-        keyzy.Dispose();
-    }
-
-    private static void SaveLicenseLocally(string key)
-    {
-        try
-        {
-            var hwid = GetHwid();
-            var data = $"KEYZY:{key}:HWID:{hwid}";
-            var encrypted = ProtectedData.Protect(
-                Encoding.UTF8.GetBytes(data), null, DataProtectionScope.CurrentUser);
-            File.WriteAllText("license.key", Convert.ToBase64String(encrypted));
-        }
-        catch (Exception ex)
-        {
-            Debug.WriteLine($"[License] Save error: {ex.Message}");
-        }
-    }
-
-    private static string? LoadSavedLicenseKey()
-    {
-        try
-        {
-            if (!File.Exists("license.key")) return null;
-            var encrypted = Convert.FromBase64String(File.ReadAllText("license.key"));
-            var decrypted = Encoding.UTF8.GetString(
-                ProtectedData.Unprotect(encrypted, null, DataProtectionScope.CurrentUser));
-            var parts = decrypted.Split(':');
-            if (parts.Length >= 2 && parts[0] == "KEYZY")
-                return parts[1]; // The license key
-        }
-        catch { }
-        return null;
-    }
-
-    private static string GetHwid()
-    {
-        try
-        {
-            using var mc = new System.Management.ManagementClass("Win32_Processor");
-            using var items = mc.GetInstances();
-            foreach (var item in items)
-                return (item["ProcessorId"]?.ToString() ?? "") + Environment.MachineName;
-        }
-        catch { }
-        return Environment.MachineName;
     }
 
     private void BuyLicense_Click(object sender, RoutedEventArgs e)
     {
         try
         {
-            Process.Start(new ProcessStartInfo("https://keyzy.io") { UseShellExecute = true });
+            System.Diagnostics.Process.Start(new System.Diagnostics.ProcessStartInfo("https://keyauth.cc/app/") { UseShellExecute = true });
         }
         catch { }
     }
 
-    private void ContinueTrial_Click(object sender, RoutedEventArgs e)
+    private void Continue_Click(object sender, RoutedEventArgs e)
     {
         var mainWindow = (MainWindow)Application.Current.MainWindow;
         mainWindow.NavigateToCleanPage();

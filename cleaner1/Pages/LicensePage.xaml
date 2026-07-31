@@ -62,8 +62,8 @@
                             <ColumnDefinition Width="120"/>
                             <ColumnDefinition Width="*"/>
                         </Grid.ColumnDefinitions>
-                        <TextBlock Grid.Column="0" Text="Trial Days Left" Foreground="#FF888888" FontSize="13"/>
-                        <TextBlock x:Name="txtTrialDays" Grid.Column="1" Text="—" Foreground="#FFFFAA00" FontSize="13"/>
+                        <TextBlock Grid.Column="0" Text="Subscription" Foreground="#FF888888" FontSize="13"/>
+                        <TextBlock x:Name="txtSubscription" Grid.Column="1" Text="—" Foreground="#FFFFAA00" FontSize="13"/>
                     </Grid>
                     <Rectangle Height="1" Fill="#FF333333" Margin="0,4,0,12"/>
                     <Grid>
@@ -85,9 +85,9 @@
                              HorizontalAlignment="Stretch" Padding="12,0"
                              BorderBrush="#FF444444" BorderThickness="1"
                              Background="#FF1E1E1E" Foreground="White" CaretBrush="White"/>
-                    <TextBlock Text="Enter your Keyzy.io license key" FontSize="11" Foreground="#FF666666" Margin="0,6,0,12"/>
+                    <TextBlock Text="Enter your KeyAuth license key" FontSize="11" Foreground="#FF666666" Margin="0,6,0,12"/>
                     <ui:Button x:Name="btnActivate" Content="🔑  Activate License" Appearance="Primary"
-                               Width="220" Height="38" HorizontalAlignment="Left" Click="ActivateKeyzy_Click"/>
+                               Width="220" Height="38" HorizontalAlignment="Left" Click="ActivateKeyAuth_Click"/>
                 </StackPanel>
             </Border>
 
@@ -101,7 +101,7 @@
             </Border>
 
             <ui:Button x:Name="btnContinue" Content="⏭  Continue" Appearance="Secondary"
-                       Width="160" Height="34" HorizontalAlignment="Center" Click="ContinueTrial_Click"/>
+                       Width="160" Height="34" HorizontalAlignment="Center" Click="Continue_Click"/>
         </StackPanel>
     </ScrollViewer>
 </Page>
