@@ -21,6 +21,7 @@ public partial class MainWindow
         navDashboard.Click += NavButton_Click;
         navClean.Click += NavButton_Click;
         navStartup.Click += NavButton_Click;
+        navInstaller.Click += NavButton_Click;
         navTweaks.Click += NavButton_Click;
         navStats.Click += NavButton_Click;
         navSettings.Click += NavButton_Click;
@@ -72,6 +73,12 @@ public partial class MainWindow
                     _pages["startup"] = new StartupPage();
                 _currentPage = "startup";
                 NavFrame.Navigate(_pages["startup"]);
+                break;
+            case "installer":
+                if (!_pages.ContainsKey("installer"))
+                    _pages["installer"] = new InstallerPage();
+                _currentPage = "installer";
+                NavFrame.Navigate(_pages["installer"]);
                 break;
             case "tweaks":
                 if (!_pages.ContainsKey("tweaks"))
