@@ -51,11 +51,7 @@ namespace ModernFileCleaner
 
             if (AppLicense.IsFullAccess)
             {
-                _licenseTimer = new Timer(
-                    async _ => await PeriodicLicenseCheck(),
-                    null,
-                    TimeSpan.FromMinutes(4),
-                    TimeSpan.FromMinutes(4));
+                EnsurePeriodicCheck();
 
                 var restoreDialog = new RestoreDialog();
                 restoreDialog.ShowDialog();
@@ -75,11 +71,13 @@ namespace ModernFileCleaner
             string? savedKey = LicenseStorage.Load();
             if (string.IsNullOrEmpty(savedKey)) return false;
 
+            bool deleteKey = false;
             bool ok = Task.Run(async () =>
             {
                 var init = await License.InitAsync();
                 if (!init.Success) return false;
                 var login = await License.LoginWithKeyAsync(savedKey!);
+                deleteKey = login.IsRejection;
                 return login.Success;
             }).GetAwaiter().GetResult();
 
@@ -88,8 +86,7 @@ namespace ModernFileCleaner
                 AppLicense.SetFull(License.Username, License.Subscription, License.ExpiryUtc);
                 return true;
             }
-
-            LicenseStorage.Delete();
+            if (deleteKey) LicenseStorage.Delete();
             return false;
         }
 
@@ -97,12 +94,22 @@ namespace ModernFileCleaner
         /// Periodically re-validates the KeyAuth session. Network errors are retried
         /// on the next interval; a hard rejection shuts the app down.
         /// </summary>
+        public static void EnsurePeriodicCheck()
+        {
+            if (!AppLicense.IsFullAccess || _licenseTimer != null) return;
+            _licenseTimer = new Timer(
+                async _ => await PeriodicLicenseCheck(),
+                null,
+                TimeSpan.FromMinutes(4),
+                TimeSpan.FromMinutes(4));
+        }
+
         private static async Task PeriodicLicenseCheck()
         {
             try
             {
                 var check = await License.CheckAsync();
-                if (check.Success || check.IsNetworkError) return;
+                if (check.Success || !check.IsRejection) return;
 
                 _licenseTimer?.Dispose();
                 await AppMainWindow!.Dispatcher.InvokeAsync(() =>

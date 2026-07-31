@@ -8,6 +8,7 @@ public class KeyAuthResponse
 {
     public bool Success { get; set; }
     public bool IsNetworkError { get; set; }
+    public bool IsRejection { get; set; }
     public string? Message { get; set; }
     public string? SessionId { get; set; }
     public KeyAuthUserInfo? Info { get; set; }
@@ -150,6 +151,7 @@ public class KeyAuthService : IDisposable
                     Subscriptions = info["subscriptions"]?.ToObject<List<KeyAuthSubscription>>() ?? new List<KeyAuthSubscription>()
                 };
             }
+            result.IsRejection = !result.Success;
             return result;
         }
         catch (HttpRequestException ex)

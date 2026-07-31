@@ -129,6 +129,7 @@ public partial class LicensePage
         if (login.Success)
         {
             AppLicense.SetFull(App.License.Username, App.License.Subscription, App.License.ExpiryUtc);
+            App.EnsurePeriodicCheck();
             LicenseStorage.Save(key);
             MessageBox.Show($"✅ License activated successfully!\n\nWelcome, {App.License.Username ?? "User"}!",
                 "Activation Successful", MessageBoxButton.OK, MessageBoxImage.Information);
