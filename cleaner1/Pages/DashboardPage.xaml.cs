@@ -68,7 +68,7 @@ public partial class DashboardPage
 
     private async void QuickClean_Click(object sender, RoutedEventArgs e)
     {
-        if (!AppLicense.IsFullAccess) return;
+        if (!AppLicense.IsFullAccess) { MessageBox.Show("🔒 Demo — license key required", "Demo Mode", MessageBoxButton.OK, MessageBoxImage.Information); return; }
         try
         {
             var quickCategories = new[] { "temp_files", "recycle_bin", "thumbnail_cache" };
@@ -87,7 +87,7 @@ public partial class DashboardPage
 
     private async void EmptyRecycle_Click(object sender, RoutedEventArgs e)
     {
-        if (!AppLicense.IsFullAccess) return;
+        if (!AppLicense.IsFullAccess) { MessageBox.Show("🔒 Demo — license key required", "Demo Mode", MessageBoxButton.OK, MessageBoxImage.Information); return; }
         try
         {
             var cat = new CleaningCategory { Id = "recycle_bin" };

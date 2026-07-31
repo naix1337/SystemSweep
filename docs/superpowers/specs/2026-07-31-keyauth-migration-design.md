@@ -44,8 +44,8 @@ Quelle: `KeyAuth/KeyAuth-CSHARP-Example` auf GitHub.
 ## Credentials
 
 - Name: `System sweep`
-- Ownerid: `yuuA7J35yC`
-- Secret: `56dc5c56dc483087774db04b70ef1f19c9e422e13e59bde6cfa7ca2ddf1316b9`
+- Ownerid: siehe `.env` (Platzhalter in `.env.example`)
+- Secret: siehe `.env` (Platzhalter in `.env.example`; nicht committen)
 - Version: `1.0` (aus `.env`; Dashboard-Version einsetzen, sobald bekannt)
 
 Kein Hardcoding im Source. `.env` wird in `.gitignore` aufgenommen. `.env.example` wird committet. Git-History-Check ergab: **keine KeyAuth-Credentials in vergangenen Commits**.

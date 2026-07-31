@@ -50,8 +50,8 @@ KEYAUTH_VERSION=1.0
 `.env` (echte Werte aus KeyAuth-Dashboard, wird von git ignoriert):
 ```
 KEYAUTH_NAME=System sweep
-KEYAUTH_OWNERID=yuuA7J35yC
-KEYAUTH_SECRET=56dc5c56dc483087774db04b70ef1f19c9e422e13e59bde6cfa7ca2ddf1316b9
+KEYAUTH_OWNERID=<ownerid aus KeyAuth-Dashboard>
+KEYAUTH_SECRET=<secret aus KeyAuth-Dashboard>
 KEYAUTH_VERSION=1.0
 ```
 
