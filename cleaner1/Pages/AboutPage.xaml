@@ -39,7 +39,7 @@
                             <ColumnDefinition Width="*"/>
                         </Grid.ColumnDefinitions>
                         <TextBlock Grid.Column="0" Text="License" Foreground="#FF888888" FontSize="13"/>
-                        <TextBlock Grid.Column="1" Text="Single-User License" Foreground="White" FontSize="13"/>
+                        <TextBlock Grid.Column="1" x:Name="txtLicenseInfo" Text="—" Foreground="White" FontSize="13"/>
                     </Grid>
                     <Grid>
                         <Grid.ColumnDefinitions>

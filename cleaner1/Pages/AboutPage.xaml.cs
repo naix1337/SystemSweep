@@ -12,6 +12,9 @@ public partial class AboutPage
     {
         InitializeComponent();
         txtVersion.Text = _updateService.CurrentVersion;
+        txtLicenseInfo.Text = AppLicense.IsFullAccess
+            ? $"KeyAuth · {AppLicense.Username ?? "User"}"
+            : "Demo Mode";
     }
 
     private async void CheckUpdate_Click(object sender, RoutedEventArgs e)
