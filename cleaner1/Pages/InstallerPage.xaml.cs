@@ -32,12 +32,32 @@ public partial class InstallerPage
         // Utilities
         new() { Id = "7zip.7zip", Name = "7-Zip", Icon = "🗜️", Category = "Utilities" },
         new() { Id = "RARLab.WinRAR", Name = "WinRAR", Icon = "🗂️", Category = "Utilities" },
-        new() { Id = "Notepad++.Notepad++", Name = "Notepad++", Icon = "📄", Category = "Utilities" },
+
+        // Editors
+        new() { Id = "Notepad++.Notepad++", Name = "Notepad++", Icon = "📄", Category = "Editors" },
+        new() { Id = "Microsoft.VisualStudioCode", Name = "Visual Studio Code", Icon = "📝", Category = "Editors" },
+        new() { Id = "SublimeHQ.SublimeText.4", Name = "Sublime Text", Icon = "✨", Category = "Editors" },
+        new() { Id = "Vim.Vim", Name = "Vim", Icon = "⌨️", Category = "Editors" },
+        new() { Id = "Geany.Geany", Name = "Geany", Icon = "🔤", Category = "Editors" },
+
+        // Runtimes & Libraries
+        new() { Id = "Microsoft.DotNet.DesktopRuntime.8", Name = ".NET Desktop Runtime 8", Icon = "🟣", Category = "Runtimes" },
+        new() { Id = "Microsoft.DotNet.Runtime.8", Name = ".NET Runtime 8", Icon = "🟣", Category = "Runtimes" },
+        new() { Id = "Microsoft.VCRedist.2015+.x64", Name = "VC++ Redistributable x64", Icon = "🔷", Category = "Runtimes" },
+        new() { Id = "Microsoft.OpenJDK.17", Name = "OpenJDK 17", Icon = "☕", Category = "Runtimes" },
+        new() { Id = "Oracle.JavaRuntime", Name = "Java Runtime", Icon = "☕", Category = "Runtimes" },
+        new() { Id = "Python.Python.3.12", Name = "Python 3.12", Icon = "🐍", Category = "Runtimes" },
+        new() { Id = "OpenJS.NodeJS", Name = "Node.js LTS", Icon = "🟢", Category = "Runtimes" },
+
+        // Security
+        new() { Id = "KeePassXCTeam.KeePassXC", Name = "KeePassXC", Icon = "🔑", Category = "Security" },
+        new() { Id = "Bitwarden.Bitwarden", Name = "Bitwarden", Icon = "🛡️", Category = "Security" },
+        new() { Id = "Malwarebytes.Malwarebytes", Name = "Malwarebytes", Icon = "🦠", Category = "Security" },
+        new() { Id = "IDRIX.VeraCrypt", Name = "VeraCrypt", Icon = "🔐", Category = "Security" },
+        new() { Id = "WireGuard.WireGuard", Name = "WireGuard VPN", Icon = "🌍", Category = "Security" },
 
         // Development
-        new() { Id = "Microsoft.VisualStudioCode", Name = "Visual Studio Code", Icon = "📝", Category = "Development" },
         new() { Id = "Git.Git", Name = "Git", Icon = "🔀", Category = "Development" },
-        new() { Id = "Oracle.JavaRuntime", Name = "Java Runtime", Icon = "☕", Category = "Development" },
 
         // Gaming
         new() { Id = "Valve.Steam", Name = "Steam", Icon = "🎮", Category = "Gaming" }
@@ -60,6 +80,9 @@ public partial class InstallerPage
                 "Media" => MediaPanel,
                 "Messaging" => MessagingPanel,
                 "Utilities" => UtilitiesPanel,
+                "Editors" => EditorsPanel,
+                "Runtimes" => RuntimesPanel,
+                "Security" => SecurityPanel,
                 "Development" => DevPanel,
                 "Gaming" => GamingPanel,
                 _ => UtilitiesPanel

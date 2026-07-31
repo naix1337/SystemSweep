@@ -27,7 +27,16 @@
             <TextBlock Text="🧰  UTILITIES" Foreground="#FFE91E63" FontSize="13" FontWeight="Bold" Margin="0,0,0,12"/>
             <StackPanel x:Name="UtilitiesPanel" Margin="0,0,0,24"/>
 
-            <TextBlock Text="👨‍💻  DEVELOPMENT" Foreground="#FF00BCD4" FontSize="13" FontWeight="Bold" Margin="0,0,0,12"/>
+            <TextBlock Text="📝  EDITORS" Foreground="#FF00BCD4" FontSize="13" FontWeight="Bold" Margin="0,0,0,12"/>
+            <StackPanel x:Name="EditorsPanel" Margin="0,0,0,24"/>
+
+            <TextBlock Text="🔧  RUNTIMES &amp; LIBRARIES" Foreground="#FFFF5722" FontSize="13" FontWeight="Bold" Margin="0,0,0,12"/>
+            <StackPanel x:Name="RuntimesPanel" Margin="0,0,0,24"/>
+
+            <TextBlock Text="🛡️  SECURITY" Foreground="#FF4CAF50" FontSize="13" FontWeight="Bold" Margin="0,0,0,12"/>
+            <StackPanel x:Name="SecurityPanel" Margin="0,0,0,24"/>
+
+            <TextBlock Text="👨‍💻  DEVELOPMENT" Foreground="#FF8BC34A" FontSize="13" FontWeight="Bold" Margin="0,0,0,12"/>
             <StackPanel x:Name="DevPanel" Margin="0,0,0,24"/>
 
             <TextBlock Text="🎮  GAMING" Foreground="#FF9C27B0" FontSize="13" FontWeight="Bold" Margin="0,0,0,12"/>
