@@ -98,6 +98,7 @@ public class TweaksService
         await Task.Run(() =>
         {
             progress?.Report($"Applying {tweak.Name}...");
+            TweakSnapshotService.BeginTweak(tweak.Id);
             switch (tweak.Id)
             {
                 // == Gaming ==
@@ -310,6 +311,7 @@ public class TweaksService
                     CleanDirectory(Environment.GetFolderPath(Environment.SpecialFolder.Recent));
                     break;
             }
+            TweakSnapshotService.EndTweak();
             tweak.IsEnabled = true;
         });
     }
@@ -477,6 +479,7 @@ public class TweaksService
                 case "recent_files":
                     break;
             }
+            TweakSnapshotService.RestoreTweak(tweak.Id);
             tweak.IsEnabled = false;
         });
     }
@@ -498,6 +501,7 @@ public class TweaksService
 
     private static void SetRegistry(string path, string name, object value)
     {
+        TweakSnapshotService.Snapshot(false, path, name);
         try
         {
             using var key = Registry.CurrentUser.OpenSubKey(path, true) ?? Registry.CurrentUser.CreateSubKey(path);
@@ -508,6 +512,7 @@ public class TweaksService
 
     private static void SetRegistryLocal(string path, string name, object value)
     {
+        TweakSnapshotService.Snapshot(true, path, name);
         try
         {
             using var key = Registry.LocalMachine.OpenSubKey(path, true) ?? Registry.LocalMachine.CreateSubKey(path);
@@ -533,6 +538,7 @@ public class TweaksService
 
     private static void SetSystemPerformanceToMaximum()
     {
+        TweakSnapshotService.Snapshot(false, @"Software\Microsoft\Windows\CurrentVersion\Explorer\VisualEffects", "VisualFXSetting");
         try
         {
             var key = Registry.CurrentUser.OpenSubKey(@"Software\Microsoft\Windows\CurrentVersion\Explorer\VisualEffects", true)

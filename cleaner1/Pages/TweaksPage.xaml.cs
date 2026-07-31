@@ -11,12 +11,16 @@ public partial class TweaksPage
     private readonly TweaksService _tweaksService = new();
     private readonly List<TweakItem> _allTweaks = new();
 
+    /// <summary>Staged toggle changes: tweak id -> desired enabled state. Applied via "Apply Changes".</summary>
+    private readonly Dictionary<string, bool> _pending = new();
+
     public TweaksPage()
     {
         InitializeComponent();
         btnApplyRecommended.IsEnabled = btnRevertAll.IsEnabled = AppLicense.IsFullAccess;
         LoadTweaks();
         IsVisibleChanged += (_, _) => { if (IsVisible) RebuildCards(); };
+        UpdatePendingState();
     }
 
     private void LoadTweaks()
@@ -24,28 +28,8 @@ public partial class TweaksPage
         _allTweaks.Clear();
         _allTweaks.AddRange(_tweaksService.GetAllTweaks());
 
-        GamingPanel.Children.Clear();
-        SystemPanel.Children.Clear();
-        NetworkPanel.Children.Clear();
-        DiskPanel.Children.Clear();
-        AdvancedPanel.Children.Clear();
-        CleanupPanel.Children.Clear();
-
-        foreach (var tweak in _allTweaks)
-        {
-            var card = CreateTweakCard(tweak);
-            var panel = tweak.Category switch
-            {
-                "Gaming" => GamingPanel,
-                "System" => SystemPanel,
-                "Network" => NetworkPanel,
-                "Disk" => DiskPanel,
-                "Advanced" => AdvancedPanel,
-                "Cleanup" => CleanupPanel,
-                _ => SystemPanel
-            };
-            panel.Children.Add(card);
-        }
+        RebuildCards();
+        UpdatePendingState();
     }
 
     private Border CreateTweakCard(TweakItem tweak)
@@ -141,7 +125,7 @@ public partial class TweaksPage
         };
     }
 
-    private async void TweakToggle_Click(object sender, RoutedEventArgs e)
+    private void TweakToggle_Click(object sender, RoutedEventArgs e)
     {
         if (!AppLicense.IsFullAccess) { txtStatus.Text = "🔒 Demo — license key required"; return; }
         if (sender is not Wpf.Ui.Controls.ToggleSwitch toggle) return;
@@ -149,60 +133,84 @@ public partial class TweaksPage
         var tweak = _allTweaks.FirstOrDefault(t => t.Id == id);
         if (tweak == null) return;
 
-        try
-        {
-            txtStatus.Text = tweak.IsEnabled ? $"Reverting {tweak.Name}..." : $"Applying {tweak.Name}...";
-            if (tweak.IsEnabled)
-                await _tweaksService.RevertTweakAsync(tweak);
-            else
-                await _tweaksService.ApplyTweakAsync(tweak);
-            txtStatus.Text = $"✅ {tweak.Name} completed";
-        }
-        catch (Exception ex)
-        {
-            System.Diagnostics.Debug.WriteLine($"[Tweaks] {ex.Message}");
-            txtStatus.Text = $"Error: {ex.Message}";
-        }
+        // Stage the change - nothing is written until "Apply Changes".
+        _pending[id!] = toggle.IsChecked ?? false;
+        UpdatePendingState();
     }
 
-    private async void ApplyRecommended_Click(object sender, RoutedEventArgs e)
+    private void ApplyRecommended_Click(object sender, RoutedEventArgs e)
     {
         if (!AppLicense.IsFullAccess) { txtStatus.Text = "🔒 Demo — license key required"; return; }
         var recommended = _allTweaks.Where(t => t.IsRecommended && !t.IsEnabled).ToList();
         if (recommended.Count == 0)
         {
-            txtStatus.Text = "All recommended tweaks already applied!";
+            txtStatus.Text = "All recommended tweaks are already enabled.";
             return;
         }
-
-        txtStatus.Text = $"Applying {recommended.Count} tweaks...";
         foreach (var tweak in recommended)
-        {
-            try { await _tweaksService.ApplyTweakAsync(tweak); }
-            catch (Exception ex) { System.Diagnostics.Debug.WriteLine($"[Tweaks] {ex.Message}"); }
-        }
-        txtStatus.Text = $"✅ Applied {recommended.Count} recommended tweaks";
-        RebuildCards();
+            _pending[tweak.Id] = true;
+        UpdatePendingState();
+        txtStatus.Text = $"{recommended.Count} recommended tweaks staged. Press Apply Changes.";
     }
 
-    private async void RevertAll_Click(object sender, RoutedEventArgs e)
+    private void RevertAll_Click(object sender, RoutedEventArgs e)
     {
         if (!AppLicense.IsFullAccess) { txtStatus.Text = "🔒 Demo — license key required"; return; }
         var active = _allTweaks.Where(t => t.IsEnabled).ToList();
         if (active.Count == 0)
         {
-            txtStatus.Text = "No tweaks to revert";
+            txtStatus.Text = "No enabled tweaks to revert.";
             return;
         }
-
-        txtStatus.Text = $"Reverting {active.Count} tweaks...";
         foreach (var tweak in active)
+            _pending[tweak.Id] = false;
+        UpdatePendingState();
+        txtStatus.Text = $"{active.Count} tweaks staged for revert. Press Apply Changes.";
+    }
+
+    private async void Apply_Click(object sender, RoutedEventArgs e)
+    {
+        if (!AppLicense.IsFullAccess || _pending.Count == 0) return;
+
+        // Best-effort restore point before touching the system.
+        if (!RestorePointService.EnsureRestorePoint())
+            txtStatus.Text = "⚠️ Could not create a restore point — applying anyway (best-effort).";
+        else
+            txtStatus.Text = "🛡️ Restore point created.";
+
+        int applied = 0;
+        foreach (var kvp in _pending)
         {
-            try { await _tweaksService.RevertTweakAsync(tweak); }
-            catch (Exception ex) { System.Diagnostics.Debug.WriteLine($"[Tweaks] {ex.Message}"); }
+            var tweak = _allTweaks.FirstOrDefault(t => t.Id == kvp.Key);
+            if (tweak == null) continue;
+            if (kvp.Value == tweak.IsEnabled) continue; // already in desired state
+
+            try
+            {
+                if (kvp.Value)
+                    await _tweaksService.ApplyTweakAsync(tweak);
+                else
+                    await _tweaksService.RevertTweakAsync(tweak);
+                applied++;
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"[Tweaks] {ex.Message}");
+            }
         }
-        txtStatus.Text = $"↩️ Reverted {active.Count} tweaks";
+
+        _pending.Clear();
         RebuildCards();
+        UpdatePendingState();
+        txtStatus.Text = applied > 0 ? $"✅ Applied {applied} change(s). Each tweak can be reverted individually." : "No changes to apply.";
+    }
+
+    private void Discard_Click(object sender, RoutedEventArgs e)
+    {
+        _pending.Clear();
+        RebuildCards();
+        UpdatePendingState();
+        txtStatus.Text = "Pending changes discarded.";
     }
 
     private void RebuildCards()
@@ -228,5 +236,14 @@ public partial class TweaksPage
             };
             panel.Children.Add(card);
         }
+    }
+
+    private void UpdatePendingState()
+    {
+        if (btnApply == null) return;
+        bool enabled = AppLicense.IsFullAccess && _pending.Count > 0;
+        btnApply.IsEnabled = enabled;
+        btnDiscard.IsEnabled = AppLicense.IsFullAccess && _pending.Count > 0;
+        txtPending.Text = _pending.Count > 0 ? $"{_pending.Count} pending change(s)" : "";
     }
 }

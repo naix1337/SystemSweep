@@ -82,4 +82,26 @@ public static class RestorePointService
         }
         catch { return false; }
     }
+
+    private static bool _createdThisSession;
+
+    /// <summary>
+    /// Best-effort: creates a restore point once per session before system-modifying
+    /// operations (tweaks / cleanup). Returns true if a restore point exists (was
+    /// already created or just created). Never throws.
+    /// </summary>
+    public static bool EnsureRestorePoint(string description = "System Sweep - Pre-optimization restore point")
+    {
+        if (_createdThisSession) return true;
+        try
+        {
+            if (CreateRestorePoint(description))
+            {
+                _createdThisSession = true;
+                return true;
+            }
+        }
+        catch { }
+        return false;
+    }
 }

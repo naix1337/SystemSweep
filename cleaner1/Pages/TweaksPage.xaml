@@ -40,9 +40,16 @@
             <TextBlock Text="🧹 CLEANUP" Foreground="#FFFF8888" FontSize="13" FontWeight="Bold" Margin="0,0,0,12"/>
             <StackPanel x:Name="CleanupPanel" Margin="0,0,0,24"/>
 
-            <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Margin="0,8,0,24">
-                <ui:Button x:Name="btnApplyRecommended" Content="✅ Apply All Recommended" Appearance="Primary" Width="200" Height="38" Margin="0,0,12,0" Click="ApplyRecommended_Click"/>
-                <ui:Button x:Name="btnRevertAll" Content="↩️ Revert All" Appearance="Secondary" Width="140" Height="38" Click="RevertAll_Click"/>
+            <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Margin="0,8,0,4">
+                <ui:Button x:Name="btnApplyRecommended" Content="✅ Stage Recommended" Appearance="Secondary" Width="200" Height="38" Margin="0,0,12,0" Click="ApplyRecommended_Click"/>
+                <ui:Button x:Name="btnRevertAll" Content="↩️ Stage Revert All" Appearance="Secondary" Width="170" Height="38" Click="RevertAll_Click"/>
+            </StackPanel>
+
+            <TextBlock x:Name="txtPending" Text="" Foreground="#FFFFAA00" HorizontalAlignment="Center" FontSize="12" Margin="0,4,0,8"/>
+
+            <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Margin="0,0,0,16">
+                <ui:Button x:Name="btnDiscard" Content="✖  Discard" Appearance="Secondary" Width="140" Height="38" Margin="0,0,12,0" Click="Discard_Click"/>
+                <ui:Button x:Name="btnApply" Content="✅  Apply Changes" Appearance="Success" Width="180" Height="38" Click="Apply_Click"/>
             </StackPanel>
 
             <TextBlock x:Name="txtStatus" Text="Ready" Foreground="#FF888888" HorizontalAlignment="Center" FontSize="13" Margin="0,0,0,16"/>
