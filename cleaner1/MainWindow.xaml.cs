@@ -16,6 +16,7 @@ public partial class MainWindow
     {
         InitializeComponent();
         _historyService.Load();
+        AdminBanner.Visibility = IsAdministrator() ? Visibility.Collapsed : Visibility.Visible;
 
         navDashboard.Click += NavButton_Click;
         navClean.Click += NavButton_Click;
@@ -114,5 +115,25 @@ public partial class MainWindow
         txtThemeLabel.Text = isDark ? "Dark Mode" : "Light Mode";
         txtThemeIcon.Text = isDark ? "&#xE706;" : "&#xE707;";
         NavigateTo("dashboard");
+    }
+
+    /// <summary>True if the process is running with administrator privileges.</summary>
+    public static bool IsAdministrator()
+    {
+        using var identity = System.Security.Principal.WindowsIdentity.GetCurrent();
+        return new System.Security.Principal.WindowsPrincipal(identity)
+            .IsInRole(System.Security.Principal.WindowsBuiltInRole.Administrator);
+    }
+
+    private void RelaunchAdmin_Click(object sender, RoutedEventArgs e)
+    {
+        try
+        {
+            var exe = System.Diagnostics.Process.GetCurrentProcess().MainModule?.FileName;
+            if (exe != null)
+                System.Diagnostics.Process.Start(new System.Diagnostics.ProcessStartInfo(exe) { Verb = "runas", UseShellExecute = true });
+        }
+        catch { }
+        Application.Current.Shutdown();
     }
 }

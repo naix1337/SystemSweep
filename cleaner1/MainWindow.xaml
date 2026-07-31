@@ -79,6 +79,20 @@
         </Border>
 
         <!-- Content Area -->
-        <Frame x:Name="NavFrame" Grid.Column="1" NavigationUIVisibility="Hidden"/>
+        <Grid Grid.Column="1">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="*"/>
+            </Grid.RowDefinitions>
+            <Border x:Name="AdminBanner" Grid.Row="0" Background="#FFFFAA00" Padding="12,8" Visibility="Collapsed">
+                <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+                    <TextBlock Text="⚠️  Not running as administrator — some features need admin rights."
+                               Foreground="#FF1E1E1E" FontSize="13" FontWeight="SemiBold"
+                               VerticalAlignment="Center" Margin="0,0,12,0"/>
+                    <ui:Button Content="🛡  Restart as Admin" Appearance="Primary" Height="30" Padding="16,0" Click="RelaunchAdmin_Click"/>
+                </StackPanel>
+            </Border>
+            <Frame x:Name="NavFrame" Grid.Row="1" NavigationUIVisibility="Hidden"/>
+        </Grid>
     </Grid>
 </ui:FluentWindow>

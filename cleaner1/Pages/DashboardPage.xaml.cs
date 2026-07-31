@@ -64,7 +64,23 @@ public partial class DashboardPage
                 >= 50 => "Some attention needed",
                 _ => "Your system needs a cleanup!"
             };
+
+            txtRecommendations.Text = BuildRecommendations(stats);
         });
+    }
+
+    private static string BuildRecommendations(SystemStats s)
+    {
+        var recs = new List<string>();
+        if (s.CpuUsage > 75)
+            recs.Add($"🔴 High CPU load ({s.CpuFormatted}) — disable background apps in Tweaks.");
+        if (s.RamUsage > 80)
+            recs.Add($"🟠 High RAM usage ({s.RamUsage:F0}%) — close heavy apps or disable memory-heavy tweaks.");
+        if (s.DiskTotal > 0 && (double)s.DiskFree / s.DiskTotal < 0.10)
+            recs.Add($"🟠 Low free disk ({s.DiskFormatted}) — run a Clean scan and remove temp files.");
+        if (recs.Count == 0)
+            recs.Add("✅ System healthy — nothing needs attention.");
+        return string.Join("\n", recs);
     }
 
     private async void QuickClean_Click(object sender, RoutedEventArgs e)

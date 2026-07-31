@@ -105,7 +105,8 @@ public partial class CleanPage
             ProgressBar.Visibility = Visibility.Collapsed;
             btnAnalyze.IsEnabled = true;
             btnClean.IsEnabled = true;
-            txtStatus.Text = "Analysis complete. Ready to clean.";
+            var total = _categories.Sum(c => c.SizeInBytes);
+            txtStatus.Text = $"Analysis complete. {FormatBytes(total)} ready to clean.";
         }
         catch (Exception ex)
         {
@@ -140,6 +141,10 @@ public partial class CleanPage
                     "Confirm Cleaning");
                 if (result != MessageBoxResult.Yes) return;
             }
+
+            // Best-effort system restore point before deleting anything.
+            if (!RestorePointService.EnsureRestorePoint())
+                txtStatus.Text = "⚠️ No restore point (System Restore disabled) — cleaning anyway.";
 
             btnAnalyze.IsEnabled = false;
             btnClean.IsEnabled = false;
