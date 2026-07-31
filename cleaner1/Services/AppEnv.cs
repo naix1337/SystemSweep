@@ -5,8 +5,7 @@ namespace ModernFileCleaner.Services;
 
 /// <summary>
 /// Minimal .env loader (no external package).
-/// Searches .env in: app base dir, current dir, then walks up toward the
-/// project root so it works both in `dotnet run` and published builds.
+/// Searches only the app base directory and the current directory; never walks up parent directories (prevents a planted .env from redirecting the KeyAuth tenant).
 /// </summary>
 public static class AppEnv
 {
@@ -27,13 +26,6 @@ public static class AppEnv
     private static bool TryLoad()
     {
         var dirs = new List<string> { AppContext.BaseDirectory, Environment.CurrentDirectory };
-        var dir = new DirectoryInfo(AppContext.BaseDirectory);
-        for (int i = 0; i < 4 && dir != null; i++)
-        {
-            dirs.Add(dir.FullName);
-            dir = dir.Parent;
-        }
-
         foreach (var d in dirs)
         {
             var path = Path.Combine(d, ".env");
