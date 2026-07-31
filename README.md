@@ -285,3 +285,26 @@ MIT License — siehe [LICENSE](LICENSE) für Details.
     <a href="https://github.com/naix1337/SystemSweep/releases">Download</a>
   </p>
 </div>
+
+---
+
+## License Configuration (KeyAuth)
+
+Licensing is handled by KeyAuth (https://keyauth.cc). The app authenticates a
+license key against the KeyAuth API on every start (online only) and re-checks
+the session every 4 minutes. There is no offline mode.
+
+Configuration is read at runtime from a `.env` file placed next to the exe or
+in the project root:
+
+| Variable | Description |
+|---|---|
+| `KEYAUTH_NAME` | KeyAuth application name |
+| `KEYAUTH_OWNERID` | KeyAuth owner id |
+| `KEYAUTH_SECRET` | KeyAuth application secret (used by Seller API; not sent by the v1.3 client) |
+| `KEYAUTH_VERSION` | App version as configured in the KeyAuth dashboard |
+
+Copy `.env.example` to `.env`, fill in the values from your KeyAuth dashboard,
+and never commit `.env`. Users who enter a valid key get full access; the
+"Demo Mode" button on the activation screen runs the app with all cleaning and
+tweak actions disabled.
