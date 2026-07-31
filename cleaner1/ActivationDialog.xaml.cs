@@ -1,4 +1,5 @@
 using System.Windows;
+using System.Windows.Media;
 using ModernFileCleaner.Services;
 
 namespace ModernFileCleaner;
@@ -6,7 +7,7 @@ namespace ModernFileCleaner;
 public partial class ActivationDialog : Window
 {
     public bool IsActivated { get; private set; }
-    public bool StartedTrial { get; private set; }
+    public bool IsDemo { get; private set; }
     private DateTime _lastAttempt = DateTime.MinValue;
     private int _attemptCount = 0;
     private const int MaxAttempts = 5;
@@ -18,7 +19,6 @@ public partial class ActivationDialog : Window
 
     private async void Activate_Click(object sender, RoutedEventArgs e)
     {
-        // Rate limiting: max 5 attempts, min 2s between attempts
         _attemptCount++;
         if (_attemptCount > MaxAttempts)
         {
@@ -29,7 +29,7 @@ public partial class ActivationDialog : Window
         var elapsed = DateTime.Now - _lastAttempt;
         if (elapsed.TotalSeconds < 2)
         {
-            txtStatus.Text = $"⏳ Please wait...";
+            txtStatus.Text = "⏳ Please wait...";
             await Task.Delay(2000 - (int)elapsed.TotalMilliseconds);
         }
         _lastAttempt = DateTime.Now;
@@ -43,73 +43,44 @@ public partial class ActivationDialog : Window
 
         btnActivate.IsEnabled = false;
         txtStatus.Text = "🔍 Validating license...";
-        StatusBox.Background = new System.Windows.Media.SolidColorBrush(System.Windows.Media.Color.FromArgb(0x1A, 0, 0x78, 0xD4));
+        StatusBox.Background = new SolidColorBrush(Color.FromArgb(0x1A, 0x00, 0x78, 0xD4));
 
-        var keyzy = new KeyzyLicenseService();
-        bool valid = await keyzy.ValidateKeyAsync(key);
-
-        if (valid)
+        var init = await App.License.InitAsync();
+        if (!init.Success)
         {
-            txtStatus.Text = $"✅ Activated! Welcome, {keyzy.LicensedTo}!";
-            StatusBox.Background = new System.Windows.Media.SolidColorBrush(System.Windows.Media.Color.FromArgb(0x1A, 0x4C, 0xAF, 0x50));
-            IsActivated = true;
-            SaveLicense(key);
-            await Task.Delay(800);
-            DialogResult = true;
-            Close();
-        }
-        else
-        {
-            txtStatus.Text = $"❌ {keyzy.ErrorMessage}";
-            StatusBox.Background = new System.Windows.Media.SolidColorBrush(System.Windows.Media.Color.FromArgb(0x1A, 0xF4, 0x43, 0x36));
-            btnActivate.IsEnabled = true;
-        }
-
-        keyzy.Dispose();
-    }
-
-    private void Trial_Click(object sender, RoutedEventArgs e)
-    {
-        // Check trial validity before allowing
-        var licSvc = new LicenseService();
-        if (licSvc.Status == LicenseService.LicenseStatus.Expired)
-        {
-            txtStatus.Text = "❌ Trial has already expired. Please purchase a license.";
-            StatusBox.Background = new System.Windows.Media.SolidColorBrush(
-                System.Windows.Media.Color.FromArgb(0x1A, 0xF4, 0x43, 0x36));
+            ShowError(init.Message ?? "Could not connect to license server");
             return;
         }
-        StartedTrial = true;
+
+        var login = await App.License.LoginWithKeyAsync(key);
+        if (!login.Success)
+        {
+            ShowError(login.Message ?? "Invalid license key");
+            return;
+        }
+
+        AppLicense.SetFull(App.License.Username, App.License.Subscription, App.License.ExpiryUtc);
+        LicenseStorage.Save(key);
+        txtStatus.Text = $"✅ Activated! Welcome, {App.License.Username ?? "User"}!";
+        StatusBox.Background = new SolidColorBrush(Color.FromArgb(0x1A, 0x4C, 0xAF, 0x50));
+        IsActivated = true;
+        await Task.Delay(800);
         DialogResult = true;
         Close();
     }
 
-    private static void SaveLicense(string key)
+    private void Demo_Click(object sender, RoutedEventArgs e)
     {
-        try
-        {
-            // HWID-bound license: includes machine fingerprint
-            var hwid = GetHardwareId();
-            var licenseData = $"KEYZY:{key}:HWID:{hwid}";
-            var encrypted = System.Security.Cryptography.ProtectedData.Protect(
-                System.Text.Encoding.UTF8.GetBytes(licenseData),
-                null,
-                System.Security.Cryptography.DataProtectionScope.CurrentUser);
-            System.IO.File.WriteAllText("license.key", Convert.ToBase64String(encrypted));
-        }
-        catch { }
+        AppLicense.SetDemo();
+        IsDemo = true;
+        DialogResult = true;
+        Close();
     }
 
-    private static string GetHardwareId()
+    private void ShowError(string message)
     {
-        try
-        {
-            using var mc = new System.Management.ManagementClass("Win32_Processor");
-            using var items = mc.GetInstances();
-            foreach (var item in items)
-                return (item["ProcessorId"]?.ToString() ?? "") + Environment.MachineName;
-        }
-        catch { }
-        return Environment.MachineName;
+        txtStatus.Text = $"❌ {message}";
+        StatusBox.Background = new SolidColorBrush(Color.FromArgb(0x1A, 0xF4, 0x43, 0x36));
+        btnActivate.IsEnabled = true;
     }
 }

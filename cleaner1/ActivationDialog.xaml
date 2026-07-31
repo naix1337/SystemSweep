@@ -13,7 +13,7 @@
 
             <TextBlock Text="Activate System Sweep" FontSize="22" FontWeight="Bold" Foreground="White" HorizontalAlignment="Center"/>
             <TextBlock TextWrapping="Wrap" FontSize="13" Foreground="#FF999999" HorizontalAlignment="Center" TextAlignment="Center" Margin="0,8,0,20">
-                Enter your license key to unlock all features. You can also start a free trial.
+                Enter your license key to unlock all features, or continue in demo mode.
             </TextBlock>
 
             <!-- Status -->
@@ -27,18 +27,18 @@
                      BorderBrush="#FF444444" BorderThickness="1"
                      Background="#FF111111" Foreground="White" CaretBrush="White"
                      Text="" Margin="0,0,0,6"/>
-            <TextBlock Text="Paste your Keyzy.io license key here" FontSize="11" Foreground="#FF666666" Margin="0,0,0,16"/>
+            <TextBlock Text="Enter your KeyAuth license key" FontSize="11" Foreground="#FF666666" Margin="0,0,0,16"/>
 
             <!-- Buttons -->
             <ui:Button x:Name="btnActivate" Content="🔑  Activate License" Appearance="Primary"
                        Width="240" Height="42" HorizontalAlignment="Center" Margin="0,0,0,12"
                        Click="Activate_Click"/>
 
-            <ui:Button x:Name="btnTrial" Content="⏭  Continue in Trial Mode" Appearance="Secondary"
+            <ui:Button x:Name="btnDemo" Content="🔒  Use Demo Mode" Appearance="Secondary"
                        Width="220" Height="34" HorizontalAlignment="Center" Margin="0,0,0,4"
-                       Click="Trial_Click"/>
+                       Click="Demo_Click"/>
 
-            <TextBlock Text="Trial: 30 days full access" FontSize="11" Foreground="#FF555555" HorizontalAlignment="Center"/>
+            <TextBlock Text="Demo: browse only — cleaning and tweaks are disabled" FontSize="11" Foreground="#FF555555" HorizontalAlignment="Center"/>
         </StackPanel>
     </Border>
 </Window>
