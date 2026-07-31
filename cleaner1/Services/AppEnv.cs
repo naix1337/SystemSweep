@@ -11,13 +11,21 @@ namespace ModernFileCleaner.Services;
 public static class AppEnv
 {
     private static readonly Dictionary<string, string> _values = new(System.StringComparer.OrdinalIgnoreCase);
+    private static readonly object _lock = new();
     private static bool _loaded;
 
     public static void EnsureLoaded()
     {
         if (_loaded) return;
-        _loaded = true;
+        lock (_lock)
+        {
+            if (_loaded) return;
+            _loaded = TryLoad();
+        }
+    }
 
+    private static bool TryLoad()
+    {
         var dirs = new List<string> { AppContext.BaseDirectory, Environment.CurrentDirectory };
         var dir = new DirectoryInfo(AppContext.BaseDirectory);
         for (int i = 0; i < 4 && dir != null; i++)
@@ -29,8 +37,9 @@ public static class AppEnv
         foreach (var d in dirs)
         {
             var path = Path.Combine(d, ".env");
-            if (File.Exists(path)) { Parse(path); return; }
+            if (File.Exists(path)) { Parse(path); return true; }
         }
+        return false;
     }
 
     private static void Parse(string path)
