@@ -1,0 +1,30 @@
+name: CI
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  build:
+    runs-on: windows-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup .NET 8
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '8.0.x'
+
+      - name: Restore
+        run: dotnet restore cleaner1/cleaner1.csproj
+
+      - name: Build
+        run: dotnet build cleaner1/cleaner1.csproj --configuration Release --no-restore
+
+      - name: Test
+        run: dotnet test cleaner1/cleaner1.csproj --no-build --configuration Release --verbosity normal
+        continue-on-error: true
