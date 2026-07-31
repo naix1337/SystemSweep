@@ -20,3 +20,6 @@ trial.dat
 publish/
 .DS_Store
 Thumbs.db
+
+# KeyAuth credentials
+.env
