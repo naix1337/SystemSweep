@@ -31,7 +31,7 @@ namespace ModernFileCleaner
             }
 
             AppSettings.Instance.Load();
-            ThemeService.SetTheme(AppSettings.Instance.Theme);
+            ThemeService.ApplyFromSettings();
             AppMainWindow = new MainWindow();
 
             // === License: KeyAuth (online only, session-based) ===

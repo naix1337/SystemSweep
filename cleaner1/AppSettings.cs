@@ -12,6 +12,7 @@ namespace ModernFileCleaner
         public static AppSettings Instance { get { return lazy.Value; } }
 
         public string Theme { get; set; } = "Dark";
+        public string Accent { get; set; } = "#0078D4";
         public bool AutoAnalyze { get; set; }
         public bool AutoClean { get; set; }
         public bool ShowNotifications { get; set; }
@@ -45,6 +46,7 @@ namespace ModernFileCleaner
                     if (settings != null)
                     {
                         Theme = settings.Theme;
+                        Accent = string.IsNullOrEmpty(settings.Accent) ? "#0078D4" : settings.Accent;
                         AutoAnalyze = settings.AutoAnalyze;
                         AutoClean = settings.AutoClean;
                         ShowNotifications = settings.ShowNotifications;

@@ -45,6 +45,30 @@
                 </StackPanel>
             </Border>
 
+            <!-- Theme & Accent Section -->
+            <Border CornerRadius="12" Background="#FF2D2D2D" Padding="20" Margin="0,0,0,12">
+                <StackPanel>
+                    <TextBlock Text="Theme &amp; Accent" FontSize="16" FontWeight="SemiBold" Foreground="White" Margin="0,0,0,16"/>
+                    <StackPanel Orientation="Horizontal" Margin="0,0,0,16">
+                        <RadioButton x:Name="rdoDark" Content="Dark" GroupName="theme" Checked="Theme_Checked" Margin="0,0,16,0" Foreground="White"/>
+                        <RadioButton x:Name="rdoLight" Content="Light" GroupName="theme" Checked="Theme_Checked" Margin="0,0,16,0" Foreground="White"/>
+                        <RadioButton x:Name="rdoSystem" Content="System" GroupName="theme" Checked="Theme_Checked" Foreground="White"/>
+                    </StackPanel>
+                    <TextBlock Text="Accent color" FontSize="13" Foreground="#FF888888" Margin="0,0,0,10"/>
+                    <WrapPanel x:Name="AccentPanel">
+                        <Border Background="#FF0078D4" Width="28" Height="28" CornerRadius="6" Margin="0,0,8,8" Cursor="Hand" MouseLeftButtonUp="Accent_Click" Tag="#0078D4"/>
+                        <Border Background="#FF009688" Width="28" Height="28" CornerRadius="6" Margin="0,0,8,8" Cursor="Hand" MouseLeftButtonUp="Accent_Click" Tag="#009688"/>
+                        <Border Background="#FF4CAF50" Width="28" Height="28" CornerRadius="6" Margin="0,0,8,8" Cursor="Hand" MouseLeftButtonUp="Accent_Click" Tag="#4CAF50"/>
+                        <Border Background="#FFFF9800" Width="28" Height="28" CornerRadius="6" Margin="0,0,8,8" Cursor="Hand" MouseLeftButtonUp="Accent_Click" Tag="#FF9800"/>
+                        <Border Background="#FF9C27B0" Width="28" Height="28" CornerRadius="6" Margin="0,0,8,8" Cursor="Hand" MouseLeftButtonUp="Accent_Click" Tag="#9C27B0"/>
+                        <Border Background="#FFF44336" Width="28" Height="28" CornerRadius="6" Margin="0,0,8,8" Cursor="Hand" MouseLeftButtonUp="Accent_Click" Tag="#F44336"/>
+                        <Border Background="#FFE91E63" Width="28" Height="28" CornerRadius="6" Margin="0,0,8,8" Cursor="Hand" MouseLeftButtonUp="Accent_Click" Tag="#E91E63"/>
+                        <Border Background="#FF00BCD4" Width="28" Height="28" CornerRadius="6" Margin="0,0,8,8" Cursor="Hand" MouseLeftButtonUp="Accent_Click" Tag="#00BCD4"/>
+                        <Border Background="#FF607D8B" Width="28" Height="28" CornerRadius="6" Margin="0,0,8,8" Cursor="Hand" MouseLeftButtonUp="Accent_Click" Tag="#607D8B"/>
+                    </WrapPanel>
+                </StackPanel>
+            </Border>
+
             <!-- Save Button -->
             <ui:Button x:Name="btnSave" Content="💾 Save Settings"
                        Appearance="Primary"
