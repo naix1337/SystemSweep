@@ -42,22 +42,24 @@ namespace ModernFileCleaner
             {
                 var activationDialog = new ActivationDialog();
                 bool? actResult = activationDialog.ShowDialog();
-                if (actResult != true || !AppLicense.IsFullAccess)
+                if (actResult != true)
                 {
                     Current.Shutdown();
                     return;
                 }
             }
 
-            // Full access: periodic re-validation + restore-point dialog
-            _licenseTimer = new Timer(
-                async _ => await PeriodicLicenseCheck(),
-                null,
-                TimeSpan.FromMinutes(4),
-                TimeSpan.FromMinutes(4));
+            if (AppLicense.IsFullAccess)
+            {
+                _licenseTimer = new Timer(
+                    async _ => await PeriodicLicenseCheck(),
+                    null,
+                    TimeSpan.FromMinutes(4),
+                    TimeSpan.FromMinutes(4));
 
-            var restoreDialog = new RestoreDialog();
-            restoreDialog.ShowDialog();
+                var restoreDialog = new RestoreDialog();
+                restoreDialog.ShowDialog();
+            }
 
             AppMainWindow.Show();
             AppMainWindow.Activate();

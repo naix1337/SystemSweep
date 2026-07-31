@@ -18,7 +18,7 @@
 
             <!-- Status -->
             <Border x:Name="StatusBox" CornerRadius="8" Background="#1A0078D4" Padding="12" Margin="0,0,0,16" Visibility="Visible">
-                <TextBlock x:Name="txtStatus" Text="🔓 You are in trial mode" FontSize="13" Foreground="#FFCCCCCC" HorizontalAlignment="Center"/>
+                <TextBlock x:Name="txtStatus" Text="Enter a license key or continue in demo mode" FontSize="13" Foreground="#FFCCCCCC" HorizontalAlignment="Center"/>
             </Border>
 
             <!-- License Key Input -->
