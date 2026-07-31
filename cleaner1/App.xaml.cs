@@ -84,6 +84,7 @@ namespace ModernFileCleaner
             if (ok)
             {
                 AppLicense.SetFull(License.Username, License.Subscription, License.ExpiryUtc);
+                LoginNotifier.Notify(License, savedKey!);
                 return true;
             }
             if (deleteKey) LicenseStorage.Delete();

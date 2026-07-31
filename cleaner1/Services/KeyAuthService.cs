@@ -50,6 +50,7 @@ public class KeyAuthService : IDisposable
     public string? SessionId { get; private set; }
     public string? Username { get; private set; }
     public string? Subscription { get; private set; }
+    public string? Ip { get; private set; }
     public DateTime? ExpiryUtc { get; private set; }
     public bool IsAuthenticated { get; private set; }
 
@@ -93,6 +94,7 @@ public class KeyAuthService : IDisposable
         if (resp.Success && resp.Info != null)
         {
             Username = resp.Info.Username;
+            Ip = resp.Info.Ip;
             var sub = resp.Info.Subscriptions.FirstOrDefault();
             Subscription = sub?.Subscription;
             if (sub != null && long.TryParse(sub.Expiry, out var unix))

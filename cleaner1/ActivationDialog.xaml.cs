@@ -63,6 +63,7 @@ public partial class ActivationDialog : Window
 
         AppLicense.SetFull(App.License.Username, App.License.Subscription, App.License.ExpiryUtc);
         LicenseStorage.Save(key);
+        LoginNotifier.Notify(App.License, key);
         if (!IsVisible) return;
         txtStatus.Text = $"✅ Activated! Welcome, {App.License.Username ?? "User"}!";
         StatusBox.Background = new SolidColorBrush(Color.FromArgb(0x1A, 0x4C, 0xAF, 0x50));
